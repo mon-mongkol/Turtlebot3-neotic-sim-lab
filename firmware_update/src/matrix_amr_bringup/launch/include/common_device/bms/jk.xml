@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="port" default="/dev/matrix_bms_jk"/>
+  <arg name="name" default="matrix_bms_base_jk"/>
+  
+    <node pkg="jk_bms" type="jk_main.py" name="jk_bms" output="screen">
+      <param name="port" value="$(arg port)"/>
+  </node> 
+
+</launch>

@@ -1,0 +1,7 @@
+<launch>
+  <!-- Start Motor driver-->
+
+  <include file="$(find aragorn_bringup)/launch/include/camera/camera_$(env MATRIX_UVD_SERIAL_NO)/start_camera1.launch" />
+  <include file="$(find aragorn_bringup)/launch/include/camera/camera_$(env MATRIX_UVD_SERIAL_NO)/start_camera2.launch" />
+
+</launch>

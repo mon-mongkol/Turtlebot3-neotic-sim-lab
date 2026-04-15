@@ -1,0 +1,10 @@
+<launch>
+    <!--<node name="control_movinmatrix_docking_ar_operationg" pkg="ir_auto_docking" type="control_moving.py" output="log"/>-->
+    <node name="matrix_docking_ar_operation" pkg="matrix_docking_ar_operation" type="matrix_docking_ar_operation_node" output="screen">
+        <!-- <rosparam file="$(find matrix_docking_track)/param/docking_track.yaml"/> -->
+        <param name="skip_confirm_state" type="bool" value="false"/>
+    </node>
+
+
+
+</launch>

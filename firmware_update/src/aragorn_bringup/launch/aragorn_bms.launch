@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+    <!--<node pkg="deligreencs_bms" type="deligreen_bms_pub" name="Deligreen_bms"/>-->
+  <arg name="port" default="/dev/aragorn_bms"/>
+  
+  <node pkg="daly_bms" type="daly_bms_node.py" name="daly_bms" output="screen">
+	  <param name="serial_port" value="$(arg port)"/>
+  </node>
+
+</launch>
+

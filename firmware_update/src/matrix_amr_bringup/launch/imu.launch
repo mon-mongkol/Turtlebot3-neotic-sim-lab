@@ -1,0 +1,15 @@
+<!-- Node for merging magnetometer and accelerometer data into a single imu message -->
+
+<launch>
+    
+    <arg name="sub_model" default="$(env sub_model)"/>
+    <arg name="imu_model" default="$(env imu_model)"/>
+    <arg name="port" default="$(env imu_port)" />
+    
+    <include file="$(find matrix_amr_bringup)/launch/include/common_device/imu/$(arg imu_model)_imu.xml" >
+        <arg name="port" default="/dev/$(arg port)" />
+    </include>
+
+
+</launch>
+

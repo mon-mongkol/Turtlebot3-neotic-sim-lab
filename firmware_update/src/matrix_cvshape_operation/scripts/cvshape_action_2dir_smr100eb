@@ -1,0 +1,560 @@
+#!/usr/bin/env python3
+
+import rospy
+import actionlib
+from matrix_msgs.msg import RobotMode, CenterVShapeTrackingAction, CenterVShapeTrackingGoal, CenterVShapeTrackingFeedback, CenterVShapeTrackingResult
+from sensor_msgs.msg import LaserScan
+from geometry_msgs.msg import Twist
+from nav_msgs.msg import Odometry
+from rospy.exceptions import ROSInterruptException
+from enum import Enum
+
+import math
+import numpy as np
+import random
+import sys
+import time
+
+
+class Sequence(Enum):
+    INIT = 0,
+    DATA_CHECKING = 1,
+    INIT_PARAM = 2,
+    CENTER_VSHAPE_TRACKING = 3,
+    FINISH = 4,
+    PAUSE = 5,
+    ERROR = 6
+
+
+class ActionServer():
+
+    def __init__(self):
+        if not rospy.has_param("~f_right_angle"):
+            rospy.set_param("~f_right_angle", 1742)
+        if not rospy.has_param("~f_right_angle_offset"):
+            rospy.set_param("~f_right_angle_offset", 50)
+        if not rospy.has_param("~f_left_angle"):
+            rospy.set_param("~f_left_angle", 1843)
+        if not rospy.has_param("~f_left_angle_offset"):
+            rospy.set_param("~f_left_angle_offset", 50)
+        if not rospy.has_param("~f_center"):
+            rospy.set_param("~f_center", 0)
+
+        if not rospy.has_param("~r_right_angle"):
+            rospy.set_param("~r_right_angle", 1742)
+        if not rospy.has_param("~r_right_angle_offset"):
+            rospy.set_param("~r_right_angle_offset", 50)
+        if not rospy.has_param("~r_left_angle"):
+            rospy.set_param("~r_left_angle", 1843)
+        if not rospy.has_param("~r_left_angle_offset"):
+            rospy.set_param("~r_left_angle_offset", 50)
+        if not rospy.has_param("~r_center"):
+            rospy.set_param("~r_center", 0)
+
+        self.f_right_angle_param = rospy.get_param("~f_right_angle")
+        self.f_right_angle_offset_param = rospy.get_param(
+            "~f_right_angle_offset")
+        self.f_left_angle_param = rospy.get_param("~f_left_angle")
+        self.f_left_angle_offset_param = rospy.get_param(
+            "~f_left_angle_offset")
+        self.f_center_param = rospy.get_param("~f_center")
+
+        self.r_right_angle_param = rospy.get_param("~r_right_angle")
+        self.r_right_angle_offset_param = rospy.get_param(
+            "~r_right_angle_offset")
+        self.r_left_angle_param = rospy.get_param("~r_left_angle")
+        self.r_left_angle_offset_param = rospy.get_param(
+            "~r_left_angle_offset")
+        self.r_center_param = rospy.get_param("~r_center")
+
+        self.sub_LaserScan = rospy.Subscriber(
+            '/scan', LaserScan, self.scan_callback)
+        self.sub_LaserScan = rospy.Subscriber(
+            '/scan_f_filtered', LaserScan, self.scan_f_callback)
+        self.sub_LaserScan = rospy.Subscriber(
+            '/scan_r_filtered', LaserScan, self.scan_r_callback)
+        
+        self.sub_Odom = rospy.Subscriber('/odom', Odometry, self.odom_callback)
+        self.sub_RobotMode = rospy.Subscriber(
+            '/matrix_mode_controller/mode', RobotMode, self.mode_callback)
+        self.pub_cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
+
+        self.glob_linear_x_vel = 0.0
+        self.glob_travel_distance = 0.0
+        self.glob_prev_travel_distance = 0.0
+        self.timestmp_begin = 0.0
+        self.timestmp_old = 0.0
+        self.total_time = 0.0
+        self.timer_counter = 0.0
+        self.current_robotmode = 0
+
+        self.msg = LaserScan()
+        self.msg_select = LaserScan()
+        self.msg_f = LaserScan()
+        self.msg_r = LaserScan()
+
+        self.a_server = actionlib.SimpleActionServer(
+            "matrix_cvshape_2dir_operation", CenterVShapeTrackingAction, execute_cb=self.execute_cb, auto_start=False)
+        self.a_server.start()
+
+    def mode_callback(self, msg):
+        self.current_robotmode = msg.robot_mode
+
+    def odom_callback(self, msg):
+        dt = 0.02
+        current_linear_x_vel = msg.twist.twist.linear.x
+        current_angular_z_vel = msg.twist.twist.angular.z
+
+        current_distance = current_linear_x_vel*dt
+        # print(current_distance)
+        self.glob_travel_distance = self.glob_travel_distance + current_distance
+        # print(self.glob_travel_distance)
+        # self.glob_prev_travel_distance = self.glob_linear_x_vel
+        # print(".")
+
+    def scan_callback(self, raw_msg):
+        self.msg = raw_msg
+        # print(self.msg.ranges[1742:1842])
+        # print("----")
+    
+    def scan_f_callback(self, raw_msg):
+        self.msg_f = raw_msg
+        # print(self.msg.ranges[1742:1842])
+        # print("----")
+    
+    def scan_r_callback(self, raw_msg):
+        self.msg_r = raw_msg
+        # print(self.msg.ranges[1742:1842])
+        # print("----")
+
+    def update_command_vel(self, linear_vel, angular_vel, _isBacakward):
+        msg = Twist()
+
+        # print("--")
+        # print(linear_vel)
+        # print(angular_vel)
+        # print("----")
+
+        max_lin = 0.05
+        max_ang = max_lin * 2
+
+        if linear_vel >= max_lin:
+            linear_vel = max_lin
+        elif linear_vel <= -max_lin:
+            linear_vel = -max_lin
+        else:
+            pass
+
+        if angular_vel >= max_ang:
+            angular_vel = max_ang
+        elif angular_vel <= -max_ang:
+            angular_vel = -max_ang
+        else:
+            pass
+
+        if (_isBacakward):
+            msg.linear.x = linear_vel * -1.0
+            msg.angular.z = angular_vel * -1.0
+
+        else:
+            msg.linear.x = linear_vel
+            msg.angular.z = angular_vel
+
+        self.pub_cmd_vel.publish(msg)
+
+    def execute_cb(self, goal):
+
+        success = True
+        finish = False
+
+        feedback = CenterVShapeTrackingFeedback()
+        result = CenterVShapeTrackingResult()
+        rate = rospy.Rate(10)
+
+        sequence = Sequence.INIT.value
+        text = ""
+        timeout = 0
+        total_time = 0
+
+        task_result = CenterVShapeTrackingResult.SUCCESS
+
+        period_state = 0
+        period_text = ""
+        period_timeout_coutdown = 0
+        setTimeOut = 0
+
+        self.glob_travel_distance = 0.0
+
+        while not finish:
+            # print(text)
+            if self.a_server.is_preempt_requested():
+                rospy.logwarn("Preemting !!!!!")
+
+                success = False
+                finish = True
+
+                result.result = CenterVShapeTrackingResult.PREEMTING
+                result.sequence = feedback.sequence
+                result.text = "preemting"
+
+                result.travel_dist = feedback.current_travel_dist
+                result.total_time = feedback.total_time
+
+                self.a_server.set_preempted(result)
+
+                break
+
+            if sequence == Sequence.INIT.value:
+                text = "INIT"
+                # print("[seq]--> current order target process: " + str(i))
+                # print("x: " + str(goal.target[i].pose.position.x))
+                # print("y: " + str(goal.target[i].pose.position.y))
+                # print("heading w : " + str(goal.target[i].pose.orientation.w))
+                sequence = Sequence.DATA_CHECKING.value
+                # break
+
+            elif sequence == Sequence.DATA_CHECKING.value:
+                text = "DATA_CHECKING"
+                # if len(self.msg.ranges) == goal.num_lidar_data:
+                #     sequence = Sequence.INIT_PARAM.value
+                # else:
+                #     text = text + "Data missmatch"
+                #     task_result = CenterVShapeTrackingResult.NUM_DATA_MISSMATCH
+                #     sequence = Sequence.ERROR.value
+                sequence = Sequence.INIT_PARAM.value
+                # break
+
+            elif sequence == Sequence.INIT_PARAM.value:
+                text = "INIT_PARAM"
+                self.timestmp_begin = rospy.get_rostime().secs
+                setTimeOut = rospy.get_rostime().secs + goal.timeout
+                sequence = Sequence.CENTER_VSHAPE_TRACKING.value
+                # break
+
+            elif sequence == Sequence.CENTER_VSHAPE_TRACKING.value:
+                text = "CENTER_VSHAPE_TRACKING"
+
+                # --------------------------------------------------------------------------------------#
+                #
+                #
+                #                           Center VShape Tracking Control Begin
+                #
+                # ---------------------------------------------------------------------------------------#
+                #
+
+                #                       ### SDR100  ### SMR200  ###
+                # lenght                ### 3600    ### 3584    ###
+                # f_center_angle          ### 0       ### 1792    ###
+                # f_right_angle           ### 3550    ### 1742    ###
+                # f_left_angle            ### 50      ### 1842    ###
+                # f_left_angle_offset     ### 1       ### 50      ###
+                # f_right_angle_offset    ### 1       ### 50      ###
+
+                # r_center_angle          ### 1800    ### 1792    ###
+                # r_right_angle           ### 1850    ### 1742    ###
+                # r_left_angle            ### 1750    ### 1842    ###
+                # r_left_angle_offset     ### 1       ### 50      ###
+                # r_right_angle_offset    ### 1       ### 50      ###
+
+                center_angle = 0.0
+                right_angle = 0.0
+                left_angle = 0.0
+                right_offset = 0.0
+                left_offset = 0.0
+                _isBacakward = False
+
+                if goal.lin_vel_max <= -0.01:
+                    # bacakward
+                    self.msg_select = self.msg_r
+                    center_angle = self.r_center_param
+                    right_angle = self.r_right_angle_param  # degree from x-axis
+                    left_angle = self.r_left_angle_param  # degree from x-axis
+                    right_offset = self.r_right_angle_offset_param
+                    left_offset = self.r_left_angle_offset_param
+                    _isBacakward = True
+                else:
+                    # forward
+                    self.msg_select = self.msg_f
+                    center_angle = self.f_center_param
+                    right_angle = self.f_right_angle_param  # degree from x-axis
+                    left_angle = self.f_left_angle_param  # degree from x-axis
+                    right_offset = self.f_right_angle_offset_param
+                    left_offset = self.f_left_angle_offset_param
+                    _isBacakward = False
+
+                print("center_angle:{} , right_angle:{}, left_angle:{}".format(
+                    center_angle, right_angle, left_angle))
+
+                right = self.msg_select.ranges[right_angle]
+                left = self.msg_select.ranges[left_angle]
+
+                # **********************************************#
+                #
+                # Maintainer Jarubank Wed Jul 5 2023, 15:30 begin
+                #
+                # **********************************************#
+                right_array = self.msg_select.ranges[right_angle:right_angle +
+                                              right_offset]
+                left_array = self.msg_select.ranges[left_angle:left_angle +
+                                             left_offset]
+
+                left_avr = 0.0
+                l_n = 0
+
+                right_avr = 0.0
+                r_n = 0
+
+                for x in left_array:
+                    if x != 31.0:
+                        left_avr += x
+                        l_n += 1
+                print(left_avr)
+                left_avr = left_avr/l_n
+
+                for x in right_array:
+                    if x != 31.0:
+                        right_avr += x
+                        r_n += 1
+                right_avr = right_avr/r_n
+
+                left = left_avr
+                right = right_avr
+
+                print("left_avr {},  right_avr {}".format(left_avr, right_avr))
+
+                # **********************************************#
+                #
+                # Maintainer Jarubank Wed Jul 5 2023, 15:30 end
+                #
+                # **********************************************#
+
+                # print(right)
+                # print(left)
+                # print("")
+
+                stop_max_range = 3.0
+                stop_min_range = 0.01
+
+                if goal.lin_vel_max <= -0.01:
+                    stop_zone_left = np.array(
+                        self.msg_select.ranges[left_angle:center_angle])  # [0:300]
+                    stop_zone_right = np.array(
+                        self.msg_select.ranges[center_angle:right_angle])  # [3408:3585]
+                else:
+                    stop_zone_left = np.array(
+                        self.msg_select.ranges[center_angle:left_angle])  # [0:300]
+                    stop_zone_right = np.array(
+                        self.msg_select.ranges[right_angle:center_angle])  # [3408:3585]
+
+                # print(self.msg.ranges[left_angle:center_angle])
+                # print(stop_zone_left)
+
+                stop_zone_left_clipped = np.clip(
+                    stop_zone_left, stop_min_range, stop_max_range)
+                # print(len(stop_zone_left_clipped))
+                # print(stop_zone_left_clipped)
+                # print(np.mean(stop_zone_left_clipped))
+
+                # print(len(stop_zone_right))
+                # print(stop_zone_right)
+
+                stop_zone_right_clipped = np.clip(
+                    stop_zone_right, stop_min_range, stop_max_range)
+                # print(len(stop_zone_right_clipped))
+                # print(np.mean(stop_zone_right_clipped))
+
+                # stop_zone_clipped = (stop_zone_left_clipped + stop_zone_right_clipped)
+                # stop_zone_clipped = np.concatenate(stop_zone_left_clipped, stop_zone_right_clipped)
+                stop_zone_clipped = np.hstack(
+                    (stop_zone_left_clipped, stop_zone_right_clipped))
+                # print(len(stop_zone_clipped))
+                # print(stop_zone_clipped)
+                stop_zone_avr = np.mean(stop_zone_clipped)
+                # print(stop_zone_avr)
+
+                vel_max_scale = 1.0
+                vel_rate = vel_max_scale / (stop_max_range - stop_min_range)
+                # print(vel_rate)
+                # print(stop_zone_avr)
+                vel_scale = stop_zone_avr * vel_rate
+                # print(vel_scale)
+
+                # stop_zone_avr = np.mean(stop_zone)
+                # print(stop_zone_avr)
+
+                # print("---------------------")
+
+                right_offset = goal.right_offset  # abitally value
+                left_offset = goal.left_offset   # abitally value
+
+                error = (left+left_offset) - (right+right_offset)
+                # left = msg.ranges[2251]
+                # right = msg.ranges[750]
+                # left = msg.ranges[2251]
+                # right = msg.ranges[375]
+                # left = msg.ranges[1125]
+                # error = left - right
+                # kp = 0.6
+                kp = 2.0
+                print("kp: {}".format(kp))
+
+                # if (goal.lin_vel_max <= -0.01):
+                #     if error > 0.3:
+                #         error = 0.3
+                #     elif error < -0.3:
+                #         error = -0.3
+                #     else:
+                #         error = error
+                # else:
+                #     pass
+
+                lin_vel_max = abs(goal.lin_vel_max)  # 0.05
+                ang_vel_max = lin_vel_max * 2
+                ang_vel = kp*error
+
+                if ang_vel > ang_vel_max:
+                    ang_vel = ang_vel_max
+                elif ang_vel < -ang_vel_max:
+                    ang_vel = -ang_vel_max
+                else:
+                    ang_vel = ang_vel
+
+                # print("lin:{}, ang:{}".format(lin_vel_max, ang_vel))
+
+                distance_to_travel = goal.travel_dist   # 60.10 # [m]
+                stop_distance = goal.stop_dist  # 0.75 # [m]
+
+                # if vel_scale < stop_distance:
+                # if ((right+left)/2) <= stop_distance:
+                if ((left)/1) <= stop_distance:
+                    vel_scale = 0
+                    print('!!! STOP !!!')
+                    self.update_command_vel(0, 0, _isBacakward)
+                    text = "Arrived Destination"
+                    task_result = CenterVShapeTrackingResult.SUCCESS
+                    success = True
+                    sequence = Sequence.FINISH.value
+                else:
+                    vel_scale = vel_scale
+                    if self.glob_travel_distance >= distance_to_travel:
+                        # print('!!! Arrived !!!')
+                        self.update_command_vel(0, 0, _isBacakward)
+                        # TODO
+                        # print('!!! Stop and Kill this node !!!')
+                        text = "Arrived Destination"
+                        task_result = CenterVShapeTrackingResult.SUCCESS
+                        success = True
+                        sequence = Sequence.FINISH.value
+                    else:
+                        # print('!!! GO GO GO !!!', glob_travel_distance)
+                        print('!!! GO GO GO !!!', ((right+left)/2))
+                        print("distance left {}, distance right {}".format(
+                            left, right))
+                        self.update_command_vel(vel_scale*lin_vel_max, vel_scale*ang_vel, _isBacakward)
+
+                # ------------ TIMEOUT CHECKING -----------#
+                self.timer_counter = rospy.get_rostime().secs - self.timestmp_begin
+                total_time = self.timer_counter
+
+                if goal.timeout != CenterVShapeTrackingGoal.IGNORE_PARAMETER:
+                    timeout = setTimeOut - rospy.get_rostime().secs
+                    rospy.loginfo(
+                        "[matrix_cvshape_operation]:Check timeout countdown " + str(timeout))
+                    if rospy.get_rostime().secs > setTimeOut:
+                        text = text + "Timeout"
+                        task_result = CenterVShapeTrackingResult.TIME_OUT
+                        sequence = Sequence.ERROR.value
+                        rospy.logerr(text)
+                    else:
+                        pass
+                else:
+                    timeout = CenterVShapeTrackingGoal.IGNORE_PARAMETER
+                    # rospy.loginfo("no timeout")
+
+                # --------------------------------------------------------------------------------------#
+                #
+                #
+                #                           Center VShape Tracking Control END
+                #
+                # ---------------------------------------------------------------------------------------#
+
+                # timeout = goal.timeout - total_time
+
+                # if goal.timeout != CenterVShapeTrackingGoal.IGNORE_PARAMETER:
+                #     if timeout > goal.timeout:
+                #         text = "Timeout"
+                #         task_result = CenterVShapeTrackingResult.TIME_OUT
+                #         sequence = Sequence.ERROR.value
+                #     else:
+                #         pass
+
+            elif sequence == Sequence.ERROR.value:
+                self.update_command_vel(0, 0, False)
+                success = True
+                sequence = Sequence.FINISH.value
+
+            elif sequence == Sequence.PAUSE.value:
+                if self.current_robotmode != RobotMode.PAUSE:
+                    sequence = period_state
+                    text = period_text
+                    period_text = ""
+                    setTimeOut = rospy.get_rostime().secs + period_timeout_coutdown
+                else:
+                    pass
+                # break
+
+            elif sequence == Sequence.FINISH.value:
+                text = "FINISH"
+                finish = True
+                success = True
+                # break
+
+            else:
+                break
+
+            # //**********************************************************//
+            # //                                                          //
+            # //                      check pause state                   //
+            # //                                                          //
+            # //**********************************************************//
+            if self.current_robotmode == RobotMode.PAUSE and sequence != Sequence.PAUSE.value:
+                period_state = sequence
+                period_text = text
+                sequence = Sequence.PAUSE.value
+                period_timeout_coutdown = setTimeOut - rospy.get_rostime().secs
+                text = period_text + "  [Pausing_mode]"
+            else:
+                pass
+
+            # feedback.sequence = sequence
+            feedback.text = text
+            feedback.current_travel_dist = self.glob_travel_distance
+            feedback.total_time = total_time
+            feedback.timeout = timeout
+            self.a_server.publish_feedback(feedback)
+            print("")
+
+            rate.sleep()
+
+        print("")
+        print("")
+        print("")
+
+        result.result = task_result
+        result.sequence = feedback.sequence
+        result.text = feedback.text
+
+        result.travel_dist = feedback.current_travel_dist
+        result.total_time = feedback.total_time
+
+        print(success)
+        if success == True:
+            self.a_server.set_succeeded(result)
+        else:
+            pass
+
+
+if __name__ == "__main__":
+    rospy.init_node("action_server")
+    s = ActionServer()
+    rospy.spin()

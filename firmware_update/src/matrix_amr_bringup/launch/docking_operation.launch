@@ -1,0 +1,32 @@
+<launch>
+    <arg name="sub_model" default="$(env sub_model)"/>
+
+
+    <group if="$(eval sub_model == 'sdr100')">
+        <node name="matrix_docking_operation" pkg="matrix_docking_operation" type="matrix_docking_operation_node" output="screen">
+        <!-- <rosparam file="$(find matrix_docking_track)/param/docking_track.yaml"/> -->
+        <!-- <group if="$(eval sub_model == 'sdr100')"> -->
+            <rosparam file="$(find matrix_amr_bringup)/param/$(env sub_model)/$(env serial_no)/docking_id/docking_id.yaml"/>
+        <!-- </group> -->
+        </node>
+    </group>
+
+    <group unless="$(eval sub_model == 'sdr100')">
+        <node name="matrix_docking_operation" pkg="matrix_docking_operation" type="matrix_docking_operation_node" output="screen">
+        <!-- <rosparam file="$(find matrix_docking_track)/param/docking_track.yaml"/> -->
+        <!-- <group if="$(eval sub_model == 'sdr100')"> -->
+            <!-- <rosparam file="$(find matrix_amr_bringup)/param/$(env sub_model)/$(env serial_no)/docking_id/docking_id.yaml"/> -->
+        <!-- </group> -->
+        </node>
+    </group>
+
+
+
+    <!--<node name="control_moving" pkg="ir_auto_docking" type="control_moving.py" output="log"/>-->
+    <node name="matrix_schedule_operation" pkg="matrix_schedule_operation" type="matrix_schedule_operation_node" output="screen">
+        <!-- <rosparam file="$(find matrix_docking_track)/param/docking_track.yaml"/> -->
+    </node>
+
+    <!-- <include file="$(find matrix_autodock)/launch/matrix_dock.launch" /> -->
+
+</launch>

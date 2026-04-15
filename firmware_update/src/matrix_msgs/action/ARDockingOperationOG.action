@@ -1,0 +1,35 @@
+
+uint8 mode
+uint8 charger_id
+float backward_vel
+uint64 ar_tracking_timeout
+
+# when robot in charging state
+uint64 charging_time
+matrix_msgs/Date schedule
+string[] wait_serial
+
+---------------
+# result definition
+uint8 RESULT_PROCESSING = 0
+uint8 RESULT_NOTFOUND_DOCKING=1
+uint8 RESULT_NOTFOUND_AR_TRACK=2
+uint8 RESULT_DOCKING_BUSY=3
+uint8 RESULT_DOCKING_NOT_READY=4
+uint8 RESULT_DOCKING_NOT_RESPONSE=5
+uint8 RESULT_TIMEOUT=6
+uint8 RESULT_TIMEOUT_CHARGING_CONFIRM_STATE=7
+uint8 RESULT_BMS_FINISH=8
+uint8 RESULT_SERIAL_FINISH=9
+uint8 RESULT_TIMMER_FINISH=10
+uint8 RESULT_SCHEDULE_FINISH=11
+
+uint8 success
+uint8 result
+string text
+uint8 current_sequence
+---------------
+
+# feedback definition
+uint8 current_sequence
+string text

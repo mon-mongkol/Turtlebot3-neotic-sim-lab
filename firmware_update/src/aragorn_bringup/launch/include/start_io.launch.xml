@@ -1,0 +1,15 @@
+<launch>
+ <!-- Industrial shields-->
+  <!--<node pkg="rosserial_python" type="serial_node.py" name="Industrial_sheild" output="screen">
+    <param name="port" value="/dev/aragorn_indus"/>
+    <param name="baud" value="115200"/>
+    
+  </node>-->
+
+    <node pkg="rosserial_python" type="serial_node.py" name="Teensy" output="screen">
+      <param name="port" value="/dev/aragorn_io"/>
+      <param name="baud" value="115200"/>
+    </node>
+
+    
+</launch>

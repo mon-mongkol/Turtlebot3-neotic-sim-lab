@@ -1,0 +1,16 @@
+<launch>
+  <!-- Start Motor driver-->
+
+  <!-- <include file="$(find rohm_amr_description)/launch/display.launch" /> -->
+  
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_footprint_to_imu_link" args="0.0 0.0 0.0 0.0 0.0 0.0 /base_footprint /base_link"/>
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_imu_link" args="0.15 0.0 0.2 0.0 0.0 0.0 /base_link /imu_link"/>
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_laser_link" args="0.0 0.0 0.3 3.12 0.0 0.0 /base_link /lidar_merged_link"/>
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_camera_front_link" args="0.2 0.0 0.08 0.0 -0.524 0.0 /base_link /depth_cam_mount_point_link"/>
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_camera_rear_link" args="-0.2 0.0 0.08 1.5708 0.0 4.712 /base_link /camera_rear_link"/>
+
+</launch>

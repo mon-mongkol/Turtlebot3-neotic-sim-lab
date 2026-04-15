@@ -1,0 +1,7 @@
+<launch>
+    <!--<node name="control_moving" pkg="ir_auto_docking" type="control_moving.py" output="log"/>-->
+    <node name="matrix_docking_track" pkg="matrix_docking_track" type="ar_track_operation" output="screen">
+        <!-- <rosparam file="$(find matrix_docking_track)/param/docking_track.yaml"/> -->
+    </node>
+
+</launch>

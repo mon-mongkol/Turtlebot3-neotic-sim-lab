@@ -1,0 +1,24 @@
+skip_bms: false
+skip_camera: false
+skip_core: false
+skip_diagnostics: false
+skip_imu: false
+skip_lidar_f: false
+skip_lidar_r: false
+skip_lidar_merger: false 
+skip_localization: false
+skip_mcu1: false
+skip_mcu2: true
+skip_movement_state: false
+skip_sound: true
+skip_tf: false
+skip_docking: true
+skip_dynamic_param: false
+skip_laser_odom: true
+skip_aragorn_bridge: false
+skip_mode_controller: false
+skip_communication: false
+skip_serial_operation: false 
+skip_swapmap_operation: false
+skip_docking_operation: false
+

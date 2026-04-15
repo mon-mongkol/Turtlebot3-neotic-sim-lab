@@ -1,0 +1,43 @@
+
+int8 MODE_R2M = 1
+int8 MODE_R2T = 2
+int8 MODE_T2T = 3
+int8 MODE_UTAC = 4
+int8 MODE_SERVE = 5
+int8 MODE_MODERN = 6
+
+
+#goal definition
+uint8 mode
+BoxPose[] order
+
+
+#d = destination # mode = MODE_MODERN !!only
+string d_poi=poi
+string d_robot=robot
+string d_machine=machine 
+
+uint8 operation_mode_PickPlace=1
+uint8 operation_mode_Swap=2
+
+bool material_register
+
+int8 project_speed
+
+ModernBoxPose[] orders
+---
+
+#result definition
+bool success 
+MatError[] error_order
+string text
+int8 result 
+---
+
+#feedback
+uint8 order_sequence
+uint8 operate_order_sequence
+uint8 curent_order
+uint8 total_order
+BoxPose order_detail
+Exchange_pose exchange_pose 

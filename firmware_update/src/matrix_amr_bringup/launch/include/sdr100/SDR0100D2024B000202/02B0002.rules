@@ -1,0 +1,69 @@
+#IMU
+		#--- 1A
+#KERNEL=="ttyACM?", SUBSYSTEM=="tty", ATTRS{idVendor}=="1b4f", ATTRS{idProduct}=="9d0f", ATTRS{serial}=="009379C35055344A342E3120FF071A44", MODE="0666", SYMLINK+="matrix_imu"
+		#--- 2A
+#KERNEL=="ttyACM?", SUBSYSTEM=="tty", ATTRS{idVendor}=="1b4f", ATTRS{idProduct}=="9d0f", ATTRS{serial}=="03F6C832504A5230352E3120FF171D01", MODE="0666", SYMLINK+="matrix_imu"
+		#--- 3A
+#KERNEL=="ttyACM?", SUBSYSTEM=="tty", ATTRS{idVendor}=="1b4f", ATTRS{idProduct}=="9d0f", ATTRS{serial}=="F25FF50950555733352E3120FF162E11", MODE="0666", SYMLINK+="matrix_imu"
+
+		#--- 4A
+#KERNEL=="ttyACM?", SUBSYSTEM=="tty", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="804d", ATTRS{serial}=="66CEF88750555733352E3120FF091429", MODE="0666", SYMLINK+="matrix_imu"
+
+
+#--- ICM20948
+#KERNEL=="ttyACM?", SUBSYSTEM=="tty", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", ATTRS{serial}=="00000000001A", MODE="0666", SYMLINK+="matrix_imu20948"
+
+
+
+#RearLidar
+		#--- 1A
+#KERNEL=="ttyUSB?", SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ATTRS{serial}=="5232d0845386eb11be5430739693f7bc", MODE="0666" SYMLINK+="matrix_rear_lidar"
+		#--- 2A
+#KERNEL=="ttyUSB?", SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ATTRS{serial}=="ec79af2c3013ec118692f4ef7a109228", MODE="0666" SYMLINK+="matrix_rear_lidar"
+
+
+#ForntLidar
+#KERNEL=="ttyUSB?", SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ATTRS{serial}=="02e39487ac13ec11b97ff2ef7a109228", MODE="0666" SYMLINK+="matrix_front_lidar"
+KERNEL=="ttyUSB?", SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ATTRS{serial}=="7a1dcccbda89ec119760bf71d76262f7", MODE="0666" SYMLINK+="matrix_front_lidar"
+
+
+#BMS mobile
+		#--- 1A
+#KERNEL=="ttyUSB?", SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{serial}=="A10JNLVA", MODE="0666" SYMLINK+="matrix_bms_0"  #matrix bms
+
+		#--- 2A
+
+KERNEL=="ttyUSB?", SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", MODE="0666", SYMLINK+="matrix_bms_daly" 
+
+
+
+#BMS Plugin
+#KERNEL=="ttyUSB?", SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{serial}=="AB0L768O", MODE="0666" SYMLINK+="matrix_bms_1"	#topmodule bms
+
+
+
+#xbee
+KERNEL=="ttyUSB?", SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{manufacturer}=="FTDI", ATTRS{product}=="FT232R USB UART", ATTRS{serial}=="A50285BI", MODE="0666" SYMLINK+="matrix_xbee"
+
+#Matrix_controller
+#KERNEL=="ttyACM?", SUBSYSTEM=="tty", ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="0483", ATTRS{serial}=="12139340", MODE="0666" SYMLINK+="matrix_controller"
+
+#Matrix_io
+KERNEL=="ttyACM?", SUBSYSTEM=="tty", ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="0483", ATTRS{serial}=="13255990", MODE="0666" SYMLINK+="matrix_io"
+#KERNEL=="ttyACM?", SUBSYSTEM=="tty", ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="0483", ATTRS{serial}=="12143470", MODE="0666" SYMLINK+="matrix_io"
+#MCU02
+#KERNEL=="ttyACM?", SUBSYSTEM=="tty", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="8036", ATTRS{product}=="Arduino Leonardo", MODE="0666" SYMLINK+="matrix_mcu02"
+
+#MCU01
+		#--- 1A
+#KERNEL=="ttyACM?", SUBSYSTEM=="tty", ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="0483", ATTRS{serial}=="7876590", MODE="0666" SYMLINK+="matrix_mcu01"
+
+		#--- 2A
+#KERNEL=="ttyACM?", SUBSYSTEM=="tty", ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="0483", ATTRS{serial}=="9665290", MODE="0666" SYMLINK+="matrix_mcu01"
+
+#Rear camera
+KERNEL=="video*", SUBSYSTEM=="video4linux", ATTR{index}=="0", ATTR{name}==" Feeltek HD Webcam 720P:  Feelt", MODE="0666", SYMLINK+="matrix_rgb_camera"
+KERNEL=="video*", SUBSYSTEM=="video4linux", ATTR{index}=="0", ATTRS{manufacturer}=="XHT-5693-20092", SYMLINK+="matrix_rgb_camera_NWC500"
+KERNEL=="video*", SUBSYSTEM=="video4linux", ATTR{index}=="0", ATTRS{manufacturer}=="AX-5693-231110-ZW", SYMLINK+="matrix_rgb_camera_NWC500"
+
+KERNEL=="ttyACM?", SUBSYSTEM=="tty", ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="0483", ATTRS{serial}=="9954670", MODE="0666", SYMLINK+="matrix_shl100"

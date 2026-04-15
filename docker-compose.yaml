@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  ros-noetic:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ros-noetic-turtlebot3-slam:latest
+    container_name: ros_noetic_sdr100_port
+    # runtime: nvidia
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+      # - NVIDIA_VISIBLE_DEVICES=all
+      # - NVIDIA_DRIVER_CAPABILITIES=all
+      - TURTLEBOT3_MODEL=waffle
+      - ROS_MASTER_URI=http://localhost:11311
+      # ROS_IP and ROS_HOSTNAME are intentionally not set
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      #- ./catkin_ws:/root/catkin_ws
+      - ./firmware_update:/root/firmware_update
+      - ./map:/root/map
+      - ./scripts:/root/scripts
+      - ./lab:/root/lab
+      - ./fukoku:/root/fukoku
+      - ./turtlebot3_config:/root/turtlebot3_config
+    network_mode: host
+    privileged: true
+    stdin_open: true
+    tty: true

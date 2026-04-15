@@ -1,0 +1,2 @@
+SMRTrayInfo[] trays
+string objects

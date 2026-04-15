@@ -1,0 +1,30 @@
+#goal definition
+int32 mode
+float32 radius 
+int32 uvc_operate_time
+int32 cooldown_time
+std_msgs/Time last_operate
+MissionRoom room
+RequestInfo request
+DisinfectionInfo info
+#geometry_msgs/Point[4] rect
+---
+#result definition
+int32 index
+int32 state
+int32 uvc_operate_time
+int32 cooldown_time
+std_msgs/Time last_operate
+RequestInfo request
+DisinfectionInfo info
+OperatePoint[] sequence
+---
+#feedback
+int32 index
+int32 state
+int32 uvc_operate_time
+int32 cooldown_time
+std_msgs/Time last_operate
+RequestInfo request
+DisinfectionInfo info
+OperatePoint[] sequence

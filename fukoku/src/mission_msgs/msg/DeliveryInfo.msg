@@ -1,0 +1,9 @@
+string start_time
+string end_time
+int32 id
+int32 result
+string type
+int32 mode
+string[] deliveries
+string[] uuids
+string objects

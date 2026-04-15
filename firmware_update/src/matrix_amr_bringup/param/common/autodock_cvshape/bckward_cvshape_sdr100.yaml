@@ -1,0 +1,7 @@
+cv_lin_vel_max: -0.2
+cv_travel_dist: 2.0
+cv_stop_dist: 0.415 #0.43
+cv_stop_dist_B: 0.40 #0.43
+cv_right_offset: 0.0
+cv_left_offset: 0.0
+cv_timeout: 60

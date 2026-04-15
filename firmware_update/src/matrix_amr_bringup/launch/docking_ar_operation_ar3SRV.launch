@@ -1,0 +1,11 @@
+<launch>
+    <!-- <include file="$(find matrix_docking_operation)/launch/docking_operation_node.launch" />
+    <include file="$(find matrix_schedule_operation)/launch/schedule.launch" /> -->
+    <include file="$(find matrix_amr_bringup)/launch/ar3mark_operation_rear.launch" />
+    <include file="$(find matrix_docking_ar_operation)/launch/docking_ar_operation_node_ar3SRV.launch" />
+
+    
+    <!-- <include file="$(find matrix_autodock)/launch/matrix_dock.launch" /> -->
+    <!-- <include file="$(find ist_docking)/launch/docking.launch" /> -->
+
+</launch>

@@ -1,0 +1,13 @@
+#goal definition mission count
+string command
+string[] args
+---
+#result definition
+string command
+int32 state
+string[] sequence
+---
+#feedback
+string command
+int32 state
+string[] sequence

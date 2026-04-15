@@ -1,0 +1,6 @@
+image_transport: "compressed"
+publish_images: true
+do_pose_estimation: true
+verbose: false
+dictionary: 8
+fiducial_len_override: "1-255: 0.076"

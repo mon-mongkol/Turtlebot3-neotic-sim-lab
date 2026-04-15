@@ -1,0 +1,9 @@
+
+
+
+
+serial_data_receive_topic: "/matrix_io/rs485_receive"
+serial_data_send_topic: "/matrix_io/rs485_send"
+serial_data_receive_bridge_topic: "/matrix_serial_bridge/rs485_receive"
+serial_data_send_bridge_topic: "/matrix_serial_bridge/rs485_send"
+serial_communication_srv: "/matrix_serial_bridge/serial_communication_srv"

@@ -1,0 +1,8 @@
+<launch>  
+  
+  <!-- Output: screen, log -->
+  <arg name="output" default="screen" />
+  <node name="ist_layouts_srv" pkg="ist_layouts_srv" type="ist_layouts_srv_node" output="$(arg output)">
+  </node>
+
+</launch>

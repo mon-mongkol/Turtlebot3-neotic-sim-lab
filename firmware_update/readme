@@ -1,0 +1,18 @@
+sudo apt-get install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+sudo apt-get install gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly
+sudo apt-get install ros-noetic-serial
+sudo apt-get install libvlc-dev vlc
+sudo apt-get install ros-noetic-sparse-bundle-adjustment
+sudo apt-get install libceres-dev libsuitesparse-dev
+sudo apt-get install ros-noetic-vision-msgs
+sudo apt-get install ros-noetic-sbpl
+sudo apt-get install libopenvdb-dev
+sudo apt-get install ros-noetic-async-web-server-cpp
+python3 -m pip install empy==3.3.4
+git config --global --add safe.directory '*'
+sudo apt-get install libv4l-dev
+sudo apt-get install ros-noetic-robot-localization
+sudo apt-get install nlohmann-json3-dev
+
+
+For SDR100 PRODUCTION

@@ -1,0 +1,5 @@
+string cmd
+RequestInfo[] info
+---
+int64 result
+RequestInfo[] ret

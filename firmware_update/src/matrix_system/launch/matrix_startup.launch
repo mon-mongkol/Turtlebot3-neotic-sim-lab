@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<launch>    
+    <arg name="sub_model" default="$(env sub_model)"/>
+    
+    <group if="$(eval sub_model == 'smr200')">
+        <arg name="model" default="$(env model)"/>
+        <!-- <arg name="sub_model" default="$(env sub_model)"/> -->
+        <arg name="serial_no" default="$(env serial_no)"/>
+
+        <arg name="robot_pkg" default="matrix_$(arg model)_bringup"/>
+
+        <node name="matrix_startup" pkg="matrix_system" type="launch_controller_common_$(arg sub_model)" output="screen">
+            <param name="model" type="str"  value="$(arg model)"/>
+            <param name="serial_no" type="str"  value="$(arg serial_no)"/> 
+            <rosparam file="$(find matrix_amr_bringup)/param/$(arg sub_model)/$(arg serial_no)/launch_controller/launch_controller_$(arg serial_no).yaml"/>
+        </node>
+    </group>
+
+
+    <group if="$(eval sub_model == 'smr100')">
+        <arg name="model" default="$(env model)"/>
+        <!-- <arg name="sub_model" default="$(env sub_model)"/> -->
+        <arg name="serial_no" default="$(env serial_no)"/>
+
+        <arg name="robot_pkg" default="matrix_$(arg model)_bringup"/>
+
+        <node name="matrix_startup" pkg="matrix_system" type="launch_controller_common_smr200" output="screen">
+            <param name="model" type="str"  value="$(arg model)"/>
+            <param name="serial_no" type="str"  value="$(arg serial_no)"/> 
+            <rosparam file="$(find matrix_amr_bringup)/param/$(arg sub_model)/$(arg serial_no)/launch_controller/launch_controller_$(arg serial_no).yaml"/>
+        </node>
+        <include file="$(find matrix_monitor)/launch/matrix_monitor.launch">
+        </include>
+    </group>
+
+    <group if="$(eval sub_model == 'smr100rt059')">
+        <arg name="model" default="$(env model)"/>
+        <!-- <arg name="sub_model" default="$(env sub_model)"/> -->
+        <arg name="serial_no" default="$(env serial_no)"/>
+
+        <arg name="robot_pkg" default="matrix_$(arg model)_bringup"/>
+
+        <node name="matrix_startup" pkg="matrix_system" type="launch_controller_common_smr200" output="screen">
+            <param name="model" type="str"  value="$(arg model)"/>
+            <param name="serial_no" type="str"  value="$(arg serial_no)"/> 
+            <rosparam file="$(find matrix_amr_bringup)/param/$(arg sub_model)/$(arg serial_no)/launch_controller/launch_controller_$(arg serial_no).yaml"/>
+        </node>
+        <include file="$(find matrix_monitor)/launch/matrix_monitor.launch">
+        </include>
+    </group>
+
+
+    <group if="$(eval sub_model == 'smr100et')">
+        <arg name="model" default="$(env model)"/>
+        <!-- <arg name="sub_model" default="$(env sub_model)"/> -->
+        <arg name="serial_no" default="$(env serial_no)"/>
+
+        <arg name="robot_pkg" default="matrix_$(arg model)_bringup"/>
+
+        <node name="matrix_startup" pkg="matrix_system" type="launch_controller_common_smr200" output="screen">
+            <param name="model" type="str"  value="$(arg model)"/>
+            <param name="serial_no" type="str"  value="$(arg serial_no)"/> 
+            <rosparam file="$(find matrix_amr_bringup)/param/$(arg sub_model)/$(arg serial_no)/launch_controller/launch_controller_$(arg serial_no).yaml"/>
+        </node>
+        
+        
+
+    </group>
+
+    <group if="$(eval sub_model == 'smr100eb')">
+        <arg name="model" default="$(env model)"/>
+        <!-- <arg name="sub_model" default="$(env sub_model)"/> -->
+        <arg name="serial_no" default="$(env serial_no)"/>
+
+        <arg name="robot_pkg" default="matrix_$(arg model)_bringup"/>
+
+        <node name="matrix_startup" pkg="matrix_system" type="launch_controller_common_smr200" output="screen">
+            <param name="model" type="str"  value="$(arg model)"/>
+            <param name="serial_no" type="str"  value="$(arg serial_no)"/> 
+            <rosparam file="$(find matrix_amr_bringup)/param/$(arg sub_model)/$(arg serial_no)/launch_controller/launch_controller_$(arg serial_no).yaml"/>
+        </node>
+        
+        <!-- <include file="$(find matrix_stamp)/launch/pose2db.launch">
+        </include>
+
+        <include file="$(find matrix_monitor)/launch/matrix_monitor.launch">
+        </include> -->
+
+    </group>
+
+
+    <group if="$(eval sub_model == 'sdr100')">
+        <arg name="model" default="$(env model)"/>
+        <!-- <arg name="sub_model" default="$(env sub_model)"/> -->
+        <arg name="serial_no" default="$(env serial_no)"/>
+
+        <arg name="robot_pkg" default="matrix_$(arg model)_bringup"/>
+
+        <node name="matrix_startup" pkg="matrix_system" type="launch_controller_common_smr200" output="screen">
+            <param name="model" type="str"  value="$(arg model)"/>
+            <param name="serial_no" type="str"  value="$(arg serial_no)"/> 
+            <rosparam file="$(find matrix_amr_bringup)/param/$(arg sub_model)/$(arg serial_no)/launch_controller/launch_controller_$(arg serial_no).yaml"/>
+        </node>
+    </group>
+
+    <group if="$(eval sub_model == 'delivery')">
+        <node name="matrix_startup" pkg="matrix_system" type="launch_controller_common" output="screen">
+        <param name="model" type="str"  value="$(env model)"/>
+        <param name="serial_no" type="str"  value="$(env serial_no)"/> 
+        <rosparam file="$(find matrix_delivery_bringup)/param/$(env model)/$(env sub_model)/$(env serial_no)/launch_controller/launch_controller.yaml"/>
+    </node>
+    </group>
+
+
+    <group if="$(eval sub_model == 'smr1000')">
+        <arg name="model" default="$(env model)"/>
+        <!-- <arg name="sub_model" default="$(env sub_model)"/> -->
+        <arg name="serial_no" default="$(env serial_no)"/>
+
+        <arg name="robot_pkg" default="matrix_$(arg model)_bringup"/>
+
+        <node name="matrix_startup" pkg="matrix_system" type="launch_controller_common_smr200" output="screen">
+            <param name="model" type="str"  value="$(arg model)"/>
+            <param name="serial_no" type="str"  value="$(arg serial_no)"/> 
+            <rosparam file="$(find matrix_amr_bringup)/param/$(arg sub_model)/$(arg serial_no)/launch_controller/launch_controller_$(arg serial_no).yaml"/>
+        </node>
+    </group>
+    
+
+    
+    <include file="$(find web_interface)/launch/istweb.launch"/>
+    <include file="$(find matrix_stamp)/launch/distance.launch"/>
+    <include file="$(find matrix_stamp)/launch/pose2db.launch"/>
+    <include file="$(find matrix_map)/launch/matrix_map.launch"/>
+    <include file="$(find matrix_localdns)/launch/matrix_localdns.launch"/>
+
+</launch>

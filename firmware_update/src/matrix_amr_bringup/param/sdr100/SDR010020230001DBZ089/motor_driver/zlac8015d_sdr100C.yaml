@@ -1,0 +1,38 @@
+device_name: "ZLAC8015D"
+dual_driver_motor: true
+use_matrix_navgo_bypass: false
+can_device: "can0"
+can_bitrate: 500000
+dual_motor_id: 1
+motor_1_id: 1
+motor_2_id: 2
+accel_time: 100
+decel_time: 100
+velocity_unit_rpm: 0.1 
+
+# /*
+# ROBOT ORIENTATION
+#          FRONT
+#     MOTOR1  MOTOR2  (2WD/ACKERMANN)
+#     MOTOR3  MOTOR4  (4WD/MECANUM)  
+#          BACK
+# */
+
+
+wheels_x_distance: 0.0
+wheels_y_distance: 0.376
+wheel_diameter: 0.175
+max_motor_rpm: 220
+gear_ratio: 1.0
+total_wheels: 2.0  #currently support diff_drive control only
+
+publish_tf: False
+base_frame: "base_footprint"
+odom_frame: "odom"
+
+
+
+
+use_imu: False
+imu_topic: "/razor_imu/data"
+

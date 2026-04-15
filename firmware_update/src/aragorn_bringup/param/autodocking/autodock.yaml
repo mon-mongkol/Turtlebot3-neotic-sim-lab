@@ -1,0 +1,6 @@
+compare_voltage_percent: true
+full_charge_percentage: 100
+full_cell_voltage: 3.65
+full_charge_voltage: 28.3
+wait_battery_after_full: 300 #sec
+cool_down_battery: 600 #sec

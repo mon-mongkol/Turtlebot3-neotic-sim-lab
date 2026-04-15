@@ -1,0 +1,3 @@
+<launch>
+    <node name="matrix_map" pkg="matrix_map" type="current_map" output="screen"/>
+</launch>

@@ -1,0 +1,12 @@
+<launch>
+
+  <arg name="serial_no"             default="$(env camera_model)"/>
+  <arg name="camera"                default="depth_cam_front_right"/>
+
+  <include file="$(find matrix_amr_bringup)/launch/include/common_device/camera/$(arg camera_1_model).launch.xml">
+    <arg name="serial_no"         value="$(arg serial_no)"/>
+    <arg name="camera"                default=""/>
+  </include>
+  
+
+</launch>

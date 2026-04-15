@@ -1,0 +1,19 @@
+
+uint8 RECENT_PLACE = 1
+uint8 BOX_NO = 2
+
+uint8 func
+uint8 arg0 
+uint8 arg1
+
+# if func BOX_NO 
+# func = 1
+# arg0 = no. of tray 1~4
+# arg1 = box_no.
+
+# if func RECENT_PLACE
+# func = 2
+# arg0 = no. of tray 1~4
+# arg1 = state recent 0, 1
+---
+bool ok

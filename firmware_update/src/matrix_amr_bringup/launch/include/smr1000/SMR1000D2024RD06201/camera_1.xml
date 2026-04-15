@@ -1,0 +1,14 @@
+<launch>
+
+  <arg name="serial_no"             value="$(env camera_model)"/>
+  <arg name="camera"                value="depth_cam_front_left"/>
+  <arg name="port"                  value="$(env port)"/>
+
+  <include file="$(find matrix_amr_bringup)/launch/include/common_device/camera/$(arg camera_1_model).launch.xml">
+    <arg name="serial_no"         value="$(arg serial_no)"/>
+    <arg name="camera"            value="$(arg camera)"/>
+    <arg name="port"              value="$(arg port)"/>
+  </include>
+  
+
+</launch>

@@ -1,0 +1,26 @@
+# ===== Environment =====
+environment_type: XYThetaLattice
+
+# ===== Planner type =====
+# Options: ARAPlanner, ADPlanner, RSTARPlanner
+planner_type: DSTAR
+allocated_time: 10.0       # seconds allowed per planning cycle
+initial_epsilon: 3.0       # >1 = faster but suboptimal (anytime search)
+forward_search: false      # false = goal→start (usually faster)
+
+# ===== Cost parameters =====
+lethal_obstacle: 253
+inscribed_inflated_obstacle: 254
+cost_factor: 0.55          # multiplier applied to costmap costs
+
+# ===== Motion primitives =====
+# IMPORTANT: resolution must match the mprim file (pr2.mprim = 0.025m)
+# primitive_filename: /opt/ros/noetic/share/sbpl_lattice_planner/matlab/mprim/pr2.mprim
+
+
+# ===== Robot speed (used for heuristic) =====
+nominalvel_mpersecs: 0.22              # TurtleBot3 burger max ~0.22 m/s
+timetoturn45degsinplace_secs: 0.6      # time to turn 45° in place
+
+# ===== Unknown space =====
+allow_unknown: false

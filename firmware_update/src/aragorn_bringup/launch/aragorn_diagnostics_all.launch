@@ -1,0 +1,3 @@
+<launch>
+    <node name="aragorn_diag" pkg="aragorn_bringup" type="aragorn_diagnostics_all" output="screen" />
+</launch>

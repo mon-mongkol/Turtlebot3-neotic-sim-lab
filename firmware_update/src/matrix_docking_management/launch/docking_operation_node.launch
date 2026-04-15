@@ -1,0 +1,10 @@
+<launch>
+    <!--<node name="control_moving" pkg="ir_auto_docking" type="control_moving.py" output="log"/>-->
+    <node name="matrix_docking_operation" pkg="matrix_docking_operation" type="matrix_docking_operation_node" output="screen">
+        <!-- <rosparam file="$(find matrix_docking_track)/param/docking_track.yaml"/> -->
+        <!-- <param name="hw_ver" value="$(env hw_ver)"/> -->
+    </node>
+
+
+
+</launch>

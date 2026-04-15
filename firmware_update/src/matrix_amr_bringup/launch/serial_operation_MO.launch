@@ -1,0 +1,23 @@
+<launch>
+
+  <!-- Output: screen, log -->
+  <arg name="output" default="screen" />
+
+  <node pkg="matrix_serial_bridge" type="bridge_rs485" name="matrix_serial_bridge_rs485" output="log" respawn="false" respawn_delay="0">
+        <rosparam file="$(find matrix_serial_bridge)/param/rs485.yaml" />
+    </node>
+    
+
+  <group ns="matrix_xbee">
+    <node name="matrix_serial_operation" pkg="matrix_serial_operation" type="matrix_serial_operation_node" output="$(arg output)">
+      <rosparam file="$(find matrix_serial_operation)/param/serialXbeeRohm.yaml" />
+    </node>
+  </group>
+
+  <group ns="matrix_rs485">
+    <node name="matrix_serial_operation" pkg="matrix_serial_operation" type="matrix_serial_operation_node" output="$(arg output)">
+      <rosparam file="$(find matrix_serial_operation)/param/rs485.yaml" />
+    </node>
+  </group>
+  
+</launch>

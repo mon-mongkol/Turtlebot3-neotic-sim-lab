@@ -1,0 +1,14 @@
+<launch>
+
+    <node name="matrix_shelf_lift_operation" pkg="matrix_shelf_lift_operation" type="matrix_shelf_lift_operation_node" output="screen">
+       
+    </node>
+
+    <node name="matrix_shl100_driver" pkg="matrix_shelf_lift_operation" type="matrix_shl100_driver" output="screen">
+        <!-- <rosparam file="$(find matrix_docking_track)/param/docking_track.yaml"/> -->
+        <!-- <param name="skip_confirm_state" type="bool" value="false"/> -->
+    </node>
+
+
+
+</launch>

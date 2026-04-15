@@ -1,0 +1,11 @@
+<launch>
+    <arg name="pkg" default="matrix_amr_bringup"/> 
+
+    <include file="$(find matrix_amr_bringup)/launch/include/$(env sub_model)/common/$(env sub_model)_addon_loc.xml" />
+
+    <!-- Odom-IMU Extended Kalman Filter-->
+    <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization"> 
+        <remap from="odometry/filtered" to="odom" />
+        <rosparam command="load" file="$(find matrix_amr_bringup)/param/$(env sub_model)/$(env serial_no)/ekf/robot_localization_$(env serial_no).yaml" />
+    </node>
+</launch>

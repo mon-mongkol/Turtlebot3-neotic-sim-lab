@@ -1,0 +1,58 @@
+
+use_automatic_shutdown: true
+timeout_noaction_shutdown: 10800 #sec
+timeout_full_charge_shutdown: 600 #sec
+
+use_diagnostics: true
+timeout_error_device: 30 #sec
+timeout_error_system: 30
+
+debug: false
+
+# sensor_msgs::LaserScan
+check_ldsf: true
+ldsf_topic: "/scan_f_filtered"
+
+# sensor_msgs::LaserScan
+check_ldsr: true
+ldsr_topic: "/scan_r_filtered"
+
+# sensor_msgs::Imu
+check_imu: true
+imu_topic: "imu/data"
+
+# sensor_msgs::BatteryState
+check_bms_base: false
+bms_base_topic: "/matrix_bms_base/battery_state"
+
+# sensor_msgs::BatteryState
+check_bms_plugin: false
+bms__plugin_topic: ""
+
+# sensor_msgs::PointCloud2
+check_cam1: false
+cam1_topic: "/depth_cam_front/depth/color/points"
+
+# sensor_msgs::PointCloud2
+check_cam2: false
+cam2_topic: ""
+
+# sensor_msgs::PointCloud2
+check_cam_rear: false
+cam_rear_topic: ""
+
+# nav_msgs::Odometry
+check_motor: false
+motor_topic: ""
+
+# std_msgs::Int8
+check_mcu1: true
+mcu1_topic: "/matrix_controller/heart_beat"
+
+# std_msgs::Int8
+check_mcu2: true
+mcu2_topic: "/matrix_io/heart_beat"
+
+check_xbee: false
+
+check_wireless485: false

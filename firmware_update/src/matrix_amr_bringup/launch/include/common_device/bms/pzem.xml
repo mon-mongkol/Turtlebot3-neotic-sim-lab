@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="port" default="/dev/bms_pzem"/>
+  <arg name="name" default="matrix_bms_base_pzem"/>
+  
+  <node pkg="pzem_bms" type="pzem_bms" name="$(arg name)" output="screen">
+    <param name="serial_port" value="$(arg port)"/>
+  </node> 
+</launch>

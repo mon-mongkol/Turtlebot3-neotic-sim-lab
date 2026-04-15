@@ -1,0 +1,34 @@
+#goal
+# enum MOTION_VERSION
+# {
+#     NONE_VERSION,                     // 0
+#     CHECK_ONLY_BEFORE_START_VERSION,  // 1  (go traget and turn on uvc alongside)
+#     ALWAYS_CHECK_WHEN_UVC_ON_VERSION  // 2  (on uvc and check motion each point, off uvc when go traget)
+# };    
+int8 scan_version     
+int64 scan_time
+---
+#result
+# enum ScanResult
+# {
+#     SOMETHING_MOVE,           // 0
+#     SAFETY,                   // 1
+#     INTERLOCK_NOT_AVAILABLE,  // 2
+#     NONE_STATUS               // 3
+# };
+int64 result
+string result_message
+---
+#feedback
+# enum SequenceState
+# {
+#     INIT=0,           // 0
+#     START_SCAN,       // 1 
+#     WAIT_PIR_READY,   // 2
+#     PIR_READY,        // 3
+#     INIT_PIR,         // 4
+#     SCANING,          // 5
+#     SCAN_FINISH       // 6
+# };
+int64 current_time
+int64 sequence

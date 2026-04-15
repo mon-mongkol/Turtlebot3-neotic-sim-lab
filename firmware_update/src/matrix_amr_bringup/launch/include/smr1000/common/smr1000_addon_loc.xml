@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Publish Linorobot odometry -->
+    <!-- <node pkg="linorobot" name="lino_base_node" type="lino_base_node">
+        <remap from="/raw_vel" to="/matrix_controller/raw_vel"/>
+    </node>     -->
+</launch>

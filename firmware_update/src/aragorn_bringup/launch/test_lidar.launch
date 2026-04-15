@@ -1,0 +1,36 @@
+<launch>
+
+      <!-- RP lidar A3 /-->
+  <!--<node name="rplidarNode"          pkg="rplidar_ros"  type="rplidarNode" output="screen">
+    <param name="serial_port"         type="string" value="/dev/aragorn_lidar"/>  
+    <param name="serial_baudrate"     type="int"    value="256000"/>
+    <param name="frame_id"            type="string" value="laser"/>
+    <param name="inverted"            type="bool"   value="false"/>
+    <param name="angle_compensate"    type="bool"   value="true"/>
+    <param name="scan_mode"           type="string" value="Sensitivity"/>
+
+    <remap from="scan" to="base_scan" />
+  </node>-->
+
+  <include file="$(find aragorn_bringup)/launch/aragorn_remote_gazebo.launch"/>
+
+  <include file="$(find aragorn_bringup)/launch/aragorn_lidar_filter.launch"/>
+
+  <!--<include file="$(find aragorn_bringup)/launch/aragorn_localization.launch"/>-->
+
+  <node pkg="srf_laser_odometry" type="srf_laser_odometry_node" name="odometry" >
+  <param name="laser_scan_topic" value="/scan"/>        	# topic where the lidar scans are being published
+  <param name="odom_topic" value="/odom" />               # topic where tu publish the odometry estimations
+  <param name="publish_tf" value="true" />                   	# wheter or not to publish the tf::transform (base->odom)
+  <param name="base_frame_id" value="base_footprint"/>        # frame_id (tf) of the mobile robot base. A tf transform from the laser_frame to the base_frame is mandatory
+  <param name="odom_frame_id" value="odom" />                	# frame_id (tf) to publish the odometry estimations    
+  <param name="init_pose_from_topic" value="" />    		# Leave empty when no init pose desired
+  <param name="laser_decimation" value="1"/>                  # 1=use SRF on all lasers, 2= use each 2 lasers, etc.        
+  <param name="laser_min_range" value="-1"/>                  # [m] Truncate laser scans measurements (-1 to ignore)
+  <param name="laser_max_range" value="-1"/>                  # [m] Truncate laser scans measurements (-1 to ignore)
+  <param name="operation_mode" value="HYBRID"/>               # CS=consecutiveScans, KS=keyScans, HYBRID=threeScansWithKeyScan
+  <remap from="/tf" to="/tf"/>
+</node>
+
+
+</launch>

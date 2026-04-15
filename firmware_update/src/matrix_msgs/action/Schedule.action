@@ -1,0 +1,28 @@
+#Define the goal 
+
+# goal form --> time,y0000,m00,d00,h22,min22,sec20
+# goal form --> date,y2022,m09,d22,h22,min22,sec20
+string check_date =check_date
+string check_time =check_time
+
+
+Date date
+
+
+---
+#Define the result
+
+uint8 SUCCESS = 0
+uint8 TIMEOUT = 1
+uint8 CMD_NOTFOUND = 2
+uint8 GOAL_RUN_OUT = 3
+
+uint8 result
+string text 
+
+----
+# Define a feedback massage
+
+uint8 sequence
+
+

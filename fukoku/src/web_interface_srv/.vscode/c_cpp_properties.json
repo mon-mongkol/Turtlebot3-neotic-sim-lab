@@ -1,0 +1,31 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "/home/piya/robot_ws/turtlebot3/devel/include/**",
+                "/opt/ros/melodic/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/hls_lfcd_lds_driver/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/mission_operate/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/mission_run/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/missions/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/turtlebot3_simulations/turtlebot3_fake/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/turtlebot3_simulations/turtlebot3_gazebo/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/turtlebot3/turtlebot3_slam/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/web_interface/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/web_interface_msgs/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/web_interface_srv/include/**",
+                "/usr/include/**"
+            ],
+            "name": "ROS",
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "gnu11",
+            "cppStandard": "gnu++14"
+        }
+    ],
+    "version": 4
+}

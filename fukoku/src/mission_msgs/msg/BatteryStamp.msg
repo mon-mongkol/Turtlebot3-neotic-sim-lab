@@ -1,0 +1,5 @@
+float32 stamp_voltage
+float32 stamp_current
+float32 stamp_capacity
+float32 stamp_power
+float32 stamp_percent

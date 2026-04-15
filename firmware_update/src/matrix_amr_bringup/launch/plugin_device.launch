@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="plugin_device_port" default="$(env plugin_device_port)"/>
+    <arg name="plugin_device_tcp_ip" default="$(env plugin_device_tcp_ip)"/>
+    <arg name="plugin_device_tcp_port" default="$(env plugin_device_tcp_port)"/>
+
+    <include file="$(find matrix_amr_bringup)/launch/include/common_device/$(env plugin_type)/$(env plugin_device).xml" >
+        <arg name="port" default="/dev/$(arg plugin_device_port)"/>
+        <arg name="tcp_ip" default="$(arg plugin_device_tcp_ip)"/>
+        <arg name="tcp_port" default="$(arg plugin_device_tcp_port)"/>
+    </include>
+</launch>

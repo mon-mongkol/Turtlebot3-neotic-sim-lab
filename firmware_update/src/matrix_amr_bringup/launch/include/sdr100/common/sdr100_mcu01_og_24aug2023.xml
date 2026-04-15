@@ -1,0 +1,8 @@
+<launch>
+
+    <arg name="port" default="$(env mcu01_port)"/>
+    <include file="$(find matrix_amr_bringup)/launch/include/common_device/io/matrix_navgo_io.xml" >
+      <arg name="port" default="$(arg port)"/>
+    </include>
+
+</launch>

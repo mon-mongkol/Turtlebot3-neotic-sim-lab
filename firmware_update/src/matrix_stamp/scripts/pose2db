@@ -1,0 +1,233 @@
+#!/usr/bin/env python3
+
+import rospy
+# from rospy.node import Node
+# from rospy.qos import qos_profile_system_default
+# from rospy.time import Time
+
+import time
+import threading
+import argparse
+import sys
+import json
+import actionlib
+
+from move_base_msgs.msg import MoveBaseAction, MoveBaseActionGoal
+from geometry_msgs.msg import PoseWithCovarianceStamped, Pose
+from std_msgs.msg import Bool
+from matrix_msgs.msg import NodeRedStatus
+from matrix_msgs.srv import NodeRedStatus_srv, NodeRedStatus_srvResponse
+from flask import Flask
+from flask_mysqldb import MySQL
+# from flask_restful import Resource, Api, reqparse
+# from flask_cors import CORS
+
+app = Flask(__name__)
+# api = Api(app)
+# CORS(app)
+
+hostname = 'localhost'
+db_name = 'istuvd'
+db_user = 'istdbUser'
+db_password = 'interface2563'
+
+app.config['MYSQL_HOST'] = hostname
+app.config['MYSQL_USER'] = db_user
+app.config['MYSQL_PASSWORD'] = db_password
+app.config['MYSQL_DB'] = db_name
+
+mysql = MySQL(app)
+# parser = reqparse.RequestParser()
+
+
+class Pose2db:
+    def __init__(self):
+
+        self.current_pose = []
+
+        #  request state
+        self.restore_request = False
+        self.currentpose = ""
+        self.position_x = 0.0
+        self.position_y = 0.0
+        self.orientation_z = 0.0
+        self.orientation_w = 0.0
+        self.nodecurrent = None
+        self.nodestatus = 0
+        self.nodearg0 = None
+        self.nodearg1 = None
+        self.staterequest_initpose = False
+        # Initialize status
+        rospy.loginfo('Initializing Pose2db.')
+        with app.app_context():
+            try:
+                conn = mysql.connection
+                cur = conn.cursor()
+                cur.execute(
+                    "SELECT robot_pose_x,robot_pose_y,robot_pose_z,robot_pose_w, node_current, node_status  FROM `robot_pose` where id = 1")
+                response = cur.fetchone()
+                rospy.loginfo("Read form db:\n x : %s \n y : %s\n z : %s\n w : %s\n node : %s\n status: %s",
+                              response[0], response[1], response[2], response[3], response[4], response[5])
+                mysql.connection.commit()
+                cur.close()
+            except Exception as e:
+                rospy.loginfo(e)
+
+        self.position_x = response[0]
+        self.position_y = response[1]
+        self.orientation_z = response[2]
+        self.orientation_w = response[3]
+        self.nodecurrent = response[4]
+        self.nodestatus = response[5]
+        self.restore_request_pub = rospy.Publisher(
+            'initialpose',
+            PoseWithCovarianceStamped, queue_size=10
+        )
+        self.initialpose_request_pub = rospy.Publisher(
+            'initialpose_request',
+            Bool, queue_size=10
+        )
+        self.restore_request_sub = rospy.Subscriber(
+            'robot_pose',
+            Pose,
+            self.restore_request_callback)
+        self.initial_request_sub = rospy.Subscriber(
+            'initialpose_request',
+            Bool,
+            self.initial_request_sub_callback)
+        self.nodered_status_sub = rospy.Subscriber(
+            'nodered_status',
+            NodeRedStatus,
+            self.nodered_status_callback)
+        self.nodred_service_server = rospy.Service(
+            'nodered_service_server',
+            NodeRedStatus_srv,
+            self.nodred_service_server_callback)
+        self.client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
+
+        rospy.loginfo('Running Pose2db to get robotpose to database')
+
+    # --------------------------------------------------------------------------
+    # publish data to initpose after recieve true on topic /initpose_request
+    # --------------------------------------------------------------------------
+    def publish_state(self):
+        self.client.wait_for_server()
+        with app.app_context():
+            try:
+                conn = mysql.connection
+                cur = conn.cursor()
+                cur.execute(
+                    "SELECT robot_pose_x,robot_pose_y,robot_pose_z,robot_pose_w, node_current, node_status FROM `robot_pose` where id = 1")
+                response = cur.fetchone()
+                rospy.loginfo("Read form db:\n x : %s \n y : %s\n z : %s\n w : %s\n node : %s\n status: %s",
+                              response[0], response[1], response[2], response[3], response[4], response[5])
+                mysql.connection.commit()
+                cur.close()
+            except Exception as e:
+                rospy.loginfo(e)
+
+        data = PoseWithCovarianceStamped()
+        data.header.frame_id = 'map'
+        data.pose.pose.position.x = response[0]
+        data.pose.pose.position.y = response[1]
+        data.pose.pose.position.z = 0
+        data.pose.pose.orientation.x = 0
+        data.pose.pose.orientation.y = 0
+        data.pose.pose.orientation.z = response[2]
+        data.pose.pose.orientation.w = response[3]
+        self.nodecurrent = response[4]
+        self.nodestatus = response[5]
+        self.restore_request_pub.publish(data)
+
+        state = Bool()
+        state.data = False
+        self.initialpose_request_pub.publish(state)
+
+    # --------------------------------------------------------------------------
+    # read current robot pose to store database at id = 1
+    # --------------------------------------------------------------------------
+
+    def restore_request_callback(self, msg):
+        if ((abs(abs(self.position_x) - abs(msg.position.x)) > 0.02) or
+            (abs(abs(self.position_y) - abs(msg.position.y)) > 0.02) or
+            (abs(abs(self.orientation_z) - abs(msg.orientation.z)) > 0.02) or
+           (abs(abs(self.orientation_w) - abs(msg.orientation.w)) > 0.02)) and self.staterequest_initpose:
+            self.current_pose = msg
+            self.position_x = msg.position.x
+            self.position_y = msg.position.y
+            self.orientation_z = msg.orientation.z
+            self.orientation_w = msg.orientation.w
+            rospy.loginfo("\n %s", msg)
+
+            self.updatepose2db()
+
+            # with app.app_context():
+            #     try:
+            #         conn = mysql.connection
+            #         cur = conn.cursor()
+            #         sql = ('update robot_pose set `robot_pose_x` = %s ,`robot_pose_y` = %s ,`robot_pose_z` = %s ,`robot_pose_w` = %s,`robot_current_pose` = %s where id = 1');
+            #         cur.execute(sql,(self.position_x,self.position_y,self.orientation_z,self.orientation_w,self.current_pose));
+            #         mysql.connection.commit()
+            #         rospy.loginfo("Insert new pose success")
+            #         cur.close()
+            #     except Exception as e:
+            #         rospy.loginfo("Cannot insert : %s",e)
+
+            # self.publish_state()
+        return
+
+    def initial_request_sub_callback(self, msg):
+        if (msg.data):
+            self.staterequest_initpose = True
+            self.publish_state()
+        return
+
+    def nodered_status_callback(self, msg):
+        if (self.nodecurrent != msg.id):
+            self.nodecurrent = msg.id
+            self.nodestatus = msg.status
+            self.nodearg0 = msg.arg0
+            self.nodearg1 = msg.arg1
+
+            rospy.loginfo("Sub Nodered Status\n%s", msg)
+
+            self.updatepose2db()
+        return
+
+    def nodred_service_server_callback(self, msg):
+        self.nodecurrent = msg.data.id
+        self.nodestatus = msg.data.status
+        self.nodearg0 = msg.data.arg0
+        self.nodearg1 = msg.data.arg1
+        rospy.loginfo("Nodered Service Server\n%s", msg)
+
+        return NodeRedStatus_srvResponse(self.updatepose2db())
+
+    def updatepose2db(self):
+        with app.app_context():
+            try:
+                conn = mysql.connection
+                cur = conn.cursor()
+                sql = ('update robot_pose set `robot_pose_x` = %s ,`robot_pose_y` = %s ,`robot_pose_z` = %s ,`robot_pose_w` = %s,`node_current` = %s,`node_status` = %s where id = 1')
+                cur.execute(sql, (self.position_x, self.position_y, self.orientation_z,
+                            self.orientation_w, self.nodecurrent, self.nodestatus))
+                mysql.connection.commit()
+                rospy.loginfo("Insert new pose success")
+                cur.close()
+                return True
+            except Exception as e:
+                rospy.loginfo("Cannot insert : %s", e)
+                return False
+
+
+def main(argv=sys.argv):
+
+    rospy.init_node('pose2db', anonymous=True)
+    Pose2db()
+    rospy.spin()
+
+    # rospy.shutdown()
+
+
+if __name__ == '__main__':
+    main()

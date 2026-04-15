@@ -1,0 +1,8 @@
+
+use_automatic_shutdown: true
+
+mode_topic: "/matrix_mode_controller/mode"
+cmdvel_topic: "/cmd_vel"
+odom_topic: "/odom"
+systemready_topic: "/matrix_system/diagnostics/system_ready"
+pubstate_topic: "/matrix_system/movement_status"

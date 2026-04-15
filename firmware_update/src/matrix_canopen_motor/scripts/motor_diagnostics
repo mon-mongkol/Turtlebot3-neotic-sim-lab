@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+
+import can
+from can import *
+import time
+from struct import *
+
+bus = can.Bus(interface='socketcan',
+                channel="can0",
+                receive_own_messages=False,
+                bitrate=500000)
+
+def getTemp(sub_index, name_device):
+    message = can.Message(  arbitration_id=0x601, 
+                            is_extended_id=False, 
+                            data=[0x40, 0x32, 0x20, sub_index, 0x00, 0x00, 0x00, 0x00])
+    bus.send(message, timeout=1.0)
+
+def showTemp(sub_index, name_device):
+    message = bus.recv()
+    if message.arbitration_id == (0x580 + 1):
+        # print("found 582")
+        if((message.data[0] == 0x4b) and (message.data[1] == 0x32) and (message.data[2] == 0x20) and (message.data[3] == sub_index)):
+            temp1 = bytearray([message.data[4], message.data[5]])
+            temp1 = unpack('<h', temp1)
+            # print("self.m1 {}".format(self.m1[0]/20.00))
+            temp1 = (temp1[0]/1) * 0.1
+            # temp1read = True
+            # print(message)
+            print("temp of name device:{}, sub index {}: {}".format(name_device, sub_index, temp1))
+
+
+while(1):
+    getTemp(1, "Motor Left")
+    getTemp(2, "Motor Right")
+    getTemp(3, "Driver")
+
+    showTemp(1, "Motor Left")
+    showTemp(2, "Motor Right")
+    showTemp(3, "Driver")
+
+    # message = can.Message(  arbitration_id=0x601, 
+    #                         is_extended_id=False, 
+    #                         data=[0x40, 0x32, 0x20, 0x01, 0x00, 0x00, 0x00, 0x00])
+    # bus.send(message, timeout=1.0)
+    
+    # message = bus.recv()
+    # if message.arbitration_id == (0x580 + 1):
+    #     # print("found 582")
+    #     if((message.data[0] == 0x4b) and (message.data[1] == 0x32) and (message.data[2] == 0x20) and (message.data[3] == 0x01)):
+    #         temp1 = bytearray([message.data[4], message.data[5]])
+    #         temp1 = unpack('<h', temp1)
+    #         # print("self.m1 {}".format(self.m1[0]/20.00))
+    #         temp1 = (temp1[0]/1) * 0.1
+    #         # temp1read = True
+    #         print(message)
+    #         print(temp1)
+        
+    time.sleep(0.05)
+

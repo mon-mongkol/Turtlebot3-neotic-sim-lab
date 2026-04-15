@@ -1,0 +1,25 @@
+#goal definition mission count
+string uuid
+int32 type
+int32 repeat
+bool reverse
+---
+#result definition
+string uuid
+int32 repeat
+bool reverse
+int32 index
+int32 state
+geometry_msgs/Pose current
+geometry_msgs/Pose[] pose_list
+UILayout route
+---
+#feedback
+string uuid
+int32 repeat
+bool reverse
+int32 index
+int32 state
+geometry_msgs/Pose current
+geometry_msgs/Pose[] pose_list
+UILayout route

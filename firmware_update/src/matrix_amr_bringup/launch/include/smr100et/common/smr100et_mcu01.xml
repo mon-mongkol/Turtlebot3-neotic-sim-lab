@@ -1,0 +1,21 @@
+<launch>
+
+    <arg name="port" default="/dev/$(env mcu01_port)"/>
+    <arg name="sub_model" default="$(env hw_ver)"/>
+
+    <group if="$(eval sub_model == 'smr100et')">
+      
+      <!-- <include file="$(find matrix_amr_bringup)/launch/include/common_device/motor/matrix_navgo_controller.xml" >
+        <arg name="port" default="$(arg port)"/>
+        <arg name="bringup_matrix_controller" default="true" />
+      </include> -->
+
+      <include file="$(find matrix_amr_bringup)/launch/include/common_device/io/matrix_navgo_io.xml" >
+        <arg name="port" default="$(arg port)"/>
+      </include>
+
+      <include file="$(find matrix_amr_bringup)/launch/io_management.launch" />
+
+    </group>
+
+</launch>

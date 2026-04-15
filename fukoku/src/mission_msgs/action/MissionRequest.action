@@ -1,0 +1,13 @@
+#goal definition mission count
+int32 order
+RequestInfo info
+---
+#result definition
+RequestInfo info
+int32 state
+MissionInfo mission
+---
+#feedback
+RequestInfo info
+int32 state
+MissionInfo mission

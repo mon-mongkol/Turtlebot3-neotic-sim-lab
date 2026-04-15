@@ -1,0 +1,6 @@
+<launch>
+    <include file="$(find web_interface)/launch/my.launch"/>
+    <include file="$(find missions)/launch/mission.launch"/>
+    <include file="$(find mission_operate)/launch/operate.launch"/>
+    <include file="$(find mission_run)/launch/run.launch"/>
+</launch>

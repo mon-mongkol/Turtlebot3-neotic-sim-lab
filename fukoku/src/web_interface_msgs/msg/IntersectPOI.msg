@@ -1,0 +1,2 @@
+string last_poi
+string current_poi

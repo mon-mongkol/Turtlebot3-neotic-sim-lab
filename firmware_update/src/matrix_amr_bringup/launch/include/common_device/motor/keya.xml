@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="port" default="/dev/ttyUSB0" />
+    <!-- GoWith Keya Motor Wheel Controller Server With odom publisher. -->
+        <node pkg="matrix_keya_motor" type="keya_driver" name="keya_driver" output="log" >
+        </node>
+        
+        <node pkg="matrix_keya_motor" type="keya_odom" name="keya_odom" output="log" >
+            <rosparam command="load" file="$(find matrix_amr_bringup)/param/$(env sub_model)/$(env serial_no)/motor_driver/keya_motor_cfg_$(env serial_no).yaml"/>
+            <remap from="/keya_odom" to="/raw_odom"/>
+        </node>
+</launch>

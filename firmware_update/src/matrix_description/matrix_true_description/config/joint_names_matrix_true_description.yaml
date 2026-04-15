@@ -1,0 +1,1 @@
+controller_joint_names: ['', 'wheel_right_joint', 'wheel_left_right', 'caster_arm_fr_joint', 'caster_wheel_fr_joint', 'caster_arm_fl_joint', 'caster_wheel_fl_joint', 'caster_arm_rr_joint', 'caster_wheel_rr_joint', 'caster_arm_rl_joint', 'caster_wheel_rl_joint', ]

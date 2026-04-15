@@ -1,0 +1,13 @@
+#goal definition mission count
+int32 order
+MissionInfo info
+RequestInfo request
+---
+#result definition
+int32 index
+MissionInfo info
+RobotTask[] tasks
+---
+#feedback
+string room
+RobotTask task

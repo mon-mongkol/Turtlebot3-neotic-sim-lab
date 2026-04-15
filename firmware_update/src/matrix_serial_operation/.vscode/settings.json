@@ -1,0 +1,12 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/jarubank/catkin_ws/devel/lib/python3/dist-packages",
+        "/home/jarubank/matrix_pkg/matrix_ws/devel/lib/python3/dist-packages",
+        "/opt/ros/noetic/lib/python3/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/jarubank/catkin_ws/devel/lib/python3/dist-packages",
+        "/home/jarubank/matrix_pkg/matrix_ws/devel/lib/python3/dist-packages",
+        "/opt/ros/noetic/lib/python3/dist-packages"
+    ]
+}

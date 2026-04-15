@@ -1,0 +1,16 @@
+int32 id
+string name
+string path
+int32 width
+int32 height
+float32 resolution
+string description
+float32 origin_x
+float32 origin_y
+float32 yaw
+int32 negate
+float32 occupied_thresh
+float32 free_thresh
+bool is_default
+float32 move_speed
+float32 uvc_speed

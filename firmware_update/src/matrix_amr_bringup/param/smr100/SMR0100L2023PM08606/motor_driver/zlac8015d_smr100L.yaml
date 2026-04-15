@@ -1,0 +1,37 @@
+device_name: "OrientalmotorBLVD_KRD"
+dual_driver_motor: true
+use_matrix_navgo_bypass: false
+can_device: "can0"
+can_bitrate: 500000
+dual_motor_id: -1
+motor_1_id: 1
+motor_2_id: 2
+accel_time: 2500
+decel_time: 2500
+velocity_unit_rpm: 1.0
+
+# /*
+# ROBOT ORIENTATION
+#          FRONT
+#     MOTOR1  MOTOR2  (2WD/ACKERMANN)
+#     MOTOR3  MOTOR4  (4WD/MECANUM)  
+#          BACK
+# */
+
+
+wheels_x_distance: 0.0
+wheels_y_distance: 0.481
+wheel_diameter: 0.151
+max_motor_rpm: 3000
+gear_ratio: 20.00
+total_wheels: 2.0  #currently support diff_drive control only
+
+publish_tf: False
+base_frame: "base_footprint"
+odom_frame: "odom"
+
+
+
+
+use_imu: False
+imu_topic: "/razor_imu/data"

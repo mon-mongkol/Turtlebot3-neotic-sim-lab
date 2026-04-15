@@ -1,0 +1,54 @@
+
+#goal definition
+string recieve_string
+bool invert_dir
+bool allow_backward
+geometry_msgs/PoseStamped goal
+
+
+------------
+
+#result definition
+
+
+
+uint8 REACHED_TARGET_POS = 0
+string REACHED_TARGET_POS_s =RT
+
+uint8 ROBOT_MISS_MATCH = 1
+string ROBOT_MISS_MATCH_s =RM
+
+uint8 COMMAND_NOT_FOUND = 2
+string COMMAND_NOT_FOUND_s =NF
+
+uint8 POI_NAME_NOT_FOUND = 3
+string POI_NAME_NOT_FOUND_s =PN
+
+uint8 MOVE_TRAGET_FAIL = 4
+string MOVE_TRAGET_FAIL_s =NP
+
+uint8 GOT_PREEMPTED = 5
+string GOT_PREEMPTED_s =GP
+
+uint8 PENDING=6
+string PENDING_s=PENDING
+
+uint8 ACTIVE=7
+string ACTIVE_s=ACTIVE
+
+uint8 CANNOT_GET_POSE_SRV=8
+string CANNOT_GET_POSE_SRV_s=CANNOT_GET_POSE_SRV
+
+XbeeCommuROHM info
+int8 result
+string text
+
+------------
+
+#feedback
+
+
+XbeeCommuROHM info
+int8 sequence
+string text
+uint64 timeout

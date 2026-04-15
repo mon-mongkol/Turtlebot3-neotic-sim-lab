@@ -1,0 +1,18 @@
+string map_list=map_list
+string pose_from_poi=pose_from_poi
+string pose_from_poi_invert=pose_from_poi_invert
+string default_map=default_map
+string default_layout=default_layout
+string poi_list=poi_list
+string layout_info=layout_info
+
+string cmd
+string arg
+---
+bool success 
+string text
+string cmd
+string arg
+matrix_msgs/LayoutInfo[] layouts
+matrix_msgs/MapsInfo[] maps
+geometry_msgs/Pose pose

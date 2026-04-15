@@ -1,0 +1,436 @@
+#!/usr/bin/env python3
+
+import math
+from math import sin, cos, pi
+
+import rospy
+import tf
+from nav_msgs.msg import Odometry
+from geometry_msgs.msg import *
+from std_srvs.srv import *
+from sensor_msgs.msg import *
+
+from struct import *
+import can
+from can import *
+from can_msgs.msg import *
+import time
+import sys
+import os
+
+# from dataclasses import dataclass
+
+
+
+class UpdateOdom:
+    def __init__(self):
+        
+        self.node_name = "keya_odometry"
+        rospy.init_node(self.node_name)
+
+        # canbus read param
+        if not rospy.has_param("~device_name"):
+            rospy.set_param("~device_name", "OrientalmotorBLVD_KRD") 
+        if not rospy.has_param("~dual_driver_motor"):
+            rospy.set_param("~dual_driver_motor", False) 
+        if not rospy.has_param("~use_matrix_navgo_bypass"):
+            rospy.set_param("~use_matrix_navgo_bypass", False)
+        if not rospy.has_param("~can_device"):
+            rospy.set_param("~can_device", "can0")
+        if not rospy.has_param("~canbus_bitrate"):
+            rospy.set_param("~canbus_bitrate", 500000)
+        if not rospy.has_param("~dual_motor_id"):
+            rospy.set_param("~dual_motor_id", 1)
+        if not rospy.has_param("~motor_1_id"):
+            rospy.set_param("~motor_1_id", 1)
+        if not rospy.has_param("~motor_2_id"):
+            rospy.set_param("~motor_2_id", 2)
+        if not rospy.has_param("~accel_time"):
+            rospy.set_param("~accel_time", 100)
+        if not rospy.has_param("~decel_time"):
+            rospy.set_param("~decel_time", 100)
+        if not rospy.has_param("~velocity_unit_rpm"):
+            rospy.set_param("~velocity_unit_rpm", 1)
+        self.device_name = rospy.get_param("~device_name")
+        self.dual_driver_motor = rospy.get_param("~dual_driver_motor")
+        self.use_matrix_navgo_bypass = rospy.get_param("~use_matrix_navgo_bypass")
+        self.can_device = rospy.get_param("~can_device")
+        self.can_bitrate = rospy.get_param("~canbus_bitrate")
+        self.dual_motor_id = rospy.get_param("~dual_motor_id")
+        self.motor_1_id = rospy.get_param("~motor_1_id")
+        self.motor_2_id = rospy.get_param("~motor_2_id")
+        self.accel_time = rospy.get_param("~accel_time")
+        self.decel_time = rospy.get_param("~decel_time")
+        self.velocity_unit_rpm = rospy.get_param("~velocity_unit_rpm")
+
+        
+        # odometry calculation param 
+        if not rospy.has_param("~wheels_x_distance"):
+            rospy.set_param("~wheels_x_distance", 0.0)
+        if not rospy.has_param("~wheels_y_distance"):
+            rospy.set_param("~wheels_y_distance", 0.481)
+        if not rospy.has_param("~wheel_diameter"):
+            rospy.set_param("~wheel_diameter", 0.151)
+        if not rospy.has_param("~max_motor_rpm"):
+            rospy.set_param("~max_motor_rpm", 3000.0)
+        if not rospy.has_param("~gear_ratio"):
+            rospy.set_param("~gear_ratio", 20.00)
+        if not rospy.has_param("~total_wheels"):
+            rospy.set_param("~total_wheels", 2.0)
+        self.wheels_x_distance_ = rospy.get_param("~wheels_x_distance")
+        self.wheels_y_distance_ = rospy.get_param("~wheels_y_distance")
+        self.wheel_diameter = rospy.get_param("~wheel_diameter")
+        self.max_motor_rpm = rospy.get_param("~max_motor_rpm")
+        self.gear_ratio = rospy.get_param("~gear_ratio")
+        self.total_wheels_ = rospy.get_param("~total_wheels")
+        
+
+
+        # odometry publisher param  
+        if not rospy.has_param("~publish_tf"):
+            rospy.set_param("~publish_tf", True)
+        if not rospy.has_param("~base_frame"):
+            rospy.set_param("~base_frame", "base_footprint") 
+        if not rospy.has_param("~odom_frame"):
+            rospy.set_param("~odom_frame", "odom")
+        self.odom_frame = rospy.get_param("~odom_frame")
+        self.base_frame = rospy.get_param("~base_frame")
+        self.publish_tf = rospy.get_param("~publish_tf")
+
+
+
+        # use IMU 
+        if not rospy.has_param("~use_imu"):
+            rospy.set_param("~use_imu", True) 
+        if not rospy.has_param("~imu_topic"):
+            rospy.set_param("~imu_topic", "/razor_imu/data") 
+        self.use_imu = rospy.get_param("~use_imu")
+        self.imu_topic = rospy.get_param("~imu_topic")
+
+        
+        self.wheel_circumference_ = math.pi * self.wheel_diameter
+
+        self.x = 0.0
+        self.y = 0.0
+        self.th = 0.0
+
+        self.vx = 0.00
+        self.vy = 0.00
+        self.vth = 0.00
+
+        self.current_time = rospy.Time.now()
+        self.last_time = rospy.Time.now()
+        self.message = Frame()
+
+
+        self.m1read = False
+        self.m2read = False
+        self.m1 = 0.00
+        self.m2 = 0.00
+        self.m1_actual_speed = 0.0
+        self.m2_actual_speed = 0.0
+
+        self.current_theta = 0.0
+        self.last_theta = 0.0
+        
+
+        # can setup parameter
+        # time.sleep(5)
+        
+        if not self.use_matrix_navgo_bypass:
+            self.pub_can_sent = rospy.Publisher("/sent_messages", Frame, queue_size=10)
+            self.sub_can_receive = rospy.Subscriber("/received_messages", Frame, self.can_recv_callback)
+            # self.init_canbus(self.can_device, str(self.can_bitrate))
+            try:
+                self.bus = can.Bus(interface='socketcan',
+                                    channel=self.can_device,
+                                    receive_own_messages=False,
+                                    bitrate=self.can_bitrate)
+            except:
+                print("[matrix_CanOpenMotor_orientalBLVD-KRD]: cansocket name {} not found.please check list network interfaces".format(self.can_device))
+                os.system('ifconfig')
+                sys.exit(0)
+        else:
+            # self.sub_can_receive = rospy.Subscriber("/matrix_io/canbus_send", Frame, queue_size=10)
+            self.sub_can_receive = rospy.Subscriber("/matrix_io/canbus_receive", Frame, self.can_recv_callback)
+
+        
+        self.odom_pub = rospy.Publisher("matrix_canopen_motor/" + self.device_name + "/odom", Odometry, queue_size=1)
+        self.odom_broadcaster = tf.TransformBroadcaster()
+        # self.sub_imu = rospy.Subscriber(self.imu_topic, Imu, self.callback_imu)
+        self.reset_service = rospy.Service("matrix_canopen_motor/" + self.device_name + "/reset_odom", SetBool, self.callback_reset_odom)
+
+        rate = rospy.Rate(100)
+        
+        while not rospy.is_shutdown():
+            # print("cal odom!!")
+            self.calculateOdom()
+
+            # print("spped m1 {},  m2 {}".format(self.m1_actual_speed, self.m2_actual_speed))
+            rate.sleep()
+    
+    def callback_imu(self, imu_msg):
+        global roll, pitch, yaw
+        orientation_q = imu_msg.orientation
+        orientation_list = [orientation_q.x, orientation_q.y, orientation_q.z, orientation_q.w]
+        (roll, pitch, yaw) = tf.transformations.euler_from_quaternion (orientation_list)
+        self.current_theta = yaw
+        # print(self.current_theta)
+    
+    def can_recv_callback(self, msg):
+        # message = msg.data
+        # print(type(message.data))
+        # message.data.replace('\x00','')
+        # arr = message.data.decode('utf-8')
+        # print(message)
+        # print(str(self.message.data.split(",", 1)))
+        if msg.id == 0x581 or msg.id == 0x582:
+            if((msg.data[0] == 0x43) and (msg.data[1] == 0x6c) and (msg.data[2] == 0x60) and (msg.data[3] == 0x00)):
+                pass
+                # print(msg.data[7])
+            else:
+                # print(msg.data[5])
+                pass
+        # # print("{} {} {}".format(self.message.data[0], self.message.data[1], self.message.data[2]))
+        # if self.message.id == 0x581:
+        #     if((self.message.data[0] == 0x43) and (self.message.data[1] == 0x6c) and (self.message.data[2] == 0x60) and (self.message.data[3] == 0x00)):
+        #         print("found 581")
+        #         self.m1 = bytearray([self.message.data[4], self.message.data[5]])
+        #         self.m1 = unpack('<h', self.m1)
+        #         self.m1_actual_speed = self.m1[0] / self.gear_ratio
+        #         self.m1read = True
+                
+                
+        # else:
+        #     pass
+
+        # if self.message.id == 0x582:
+            
+        #     if((self.message.data[0] == 0x43) and (self.message.data[1] == 0x6c) and (self.message.data[2] == 0x60) and (self.message.data[3] == 0x00)):
+        #         print("found 582")
+        #         self.m2 = bytearray([self.message.data[4], self.message.data[5]])
+        #         self.m2 = unpack('<h', self.m2)
+        #         self.m2_actual_speed = self.m2[0] / self.gear_ratio
+        #         self.m2read = True
+        # else:
+        #     pass
+
+    
+    def callback_reset_odom(self, req):
+        if req.data:
+            self.x = 0.0
+            self.y = 0.0
+            self.th = 0.0
+
+            self.vx = 0.00
+            self.vy = 0.00
+            self.vth = 0.00
+
+            self.current_time = rospy.Time.now()
+            self.last_time = rospy.Time.now()
+
+
+            self.m1read = False
+            self.m2read = False
+            self.m1 = 0.00
+            self.m2 = 0.00
+        return True, "odom reset success!!!"
+    
+    def get_rpm(self):
+        counter_timeout = 0
+        while True:
+            
+            try:
+                # print("check bus receive")
+                message = self.bus.recv()
+                # message = rospy.wait_for_message('/received_messages', Frame, timeout=1)
+                # print(message)
+
+                self.motor_1_id_cfg = 0
+                self.motor_2_id_cfg = 0
+                self.motor_1_sub_index = 0
+                self.motor_1_sub_index = 0
+                self.actual_speed_index = [0x00, 0x00]
+                self.motor_1_data_index = [0x00, 0x00]
+                self.motor_2_data_index = [0x00, 0x00]
+
+
+                if self.device_name == "ZLAC8015D":
+                    self.motor_1_id_cfg = self.dual_driver_motor
+                    self.motor_2_id_cfg = self.dual_driver_motor
+                    self.motor_1_sub_index = self.motor_1_id
+                    self.motor_2_sub_index = self.motor_2_id
+                    self.actual_speed_index[0] = 0x6c
+                    self.actual_speed_index[1] = 0x60
+                    self.motor_1_data_index[0] = 4 
+                    self.motor_1_data_index[1] = 5
+                    self.motor_2_data_index[0] = 4 
+                    self.motor_2_data_index[1] = 5
+                else:
+                    self.motor_1_id_cfg = self.motor_1_id
+                    self.motor_2_id_cfg = self.motor_2_id
+                    self.motor_1_sub_index = 0x00
+                    self.motor_2_sub_index = 0x00
+                    self.actual_speed_index[0] = 0x6c
+                    self.actual_speed_index[1] = 0x60
+                    self.motor_1_data_index[0] = 4 
+                    self.motor_1_data_index[1] = 5
+                    self.motor_2_data_index[0] = 4 
+                    self.motor_2_data_index[1] = 5
+
+
+                if not self.m1read:
+                    if message.arbitration_id == (0x580 + self.motor_1_id_cfg):
+                        # print("found 582")
+                        if((message.data[0] == 0x43) and (message.data[1] == 0x6c) and (message.data[2] == 0x60) and (message.data[3] ==  self.motor_1_sub_index)):
+                            self.m1 = bytearray([message.data[4], message.data[5]])
+                            self.m1 = unpack('<h', self.m1)
+                            # print("self.m1 {}".format(self.m1[0]/20.00))
+                            self.m1 = (self.m1[0]/self.gear_ratio) * self.velocity_unit_rpm
+                            self.m1read = True
+                           
+                    else:
+                        pass
+                else:
+                    pass
+                
+                if not self.m2read:
+                    if message.arbitration_id == (0x580 + self.motor_2_id_cfg):
+                        # print("found 582")
+                        if((message.data[0] == 0x43) and (message.data[1] == 0x6c) and (message.data[2] == 0x60) and (message.data[3] == self.motor_2_sub_index)):
+                            self.m2 = bytearray([message.data[4], message.data[5]])
+                            self.m2 = unpack('<h', self.m2)
+                            # print("self.m1 {}".format(self.m1[0]/20.00))
+                            self.m2 = (self.m2[0]/self.gear_ratio) * self.velocity_unit_rpm
+                            self.m2read = True
+                    
+                    else:
+                        pass
+                else:
+                    pass
+
+                # print("check timeout get rpm")
+            except:
+                rospy.logerr("please check keya odom")
+                # close program
+                # sys.exit(1)     
+                self.m1 = 0.00
+                self.m2 = 0.00  
+                self.m1read = True
+                self.m2read = True
+                # break
+            
+            # print(int(self.m1), int(self.m2))
+            
+            if self.m1read and self.m2read:
+                self.m1read = False
+                self.m2read = False
+                # print(int(self.m1), int(self.m2))
+                # print("111111111")
+                return self.m1, self.m2
+                self.m1 = 0.00
+                self.m2 = 0.00
+                break
+            else:
+                counter_timeout +=1
+                if counter_timeout >= 6:
+                    return self.m1, self.m2
+                    break
+    
+    def getVelocities(self, rpm1, rpm2):
+        avg_rps_x = ((float)(rpm1-rpm2) / self.total_wheels_) / 60.000 
+        vel_x = avg_rps_x * self.wheel_circumference_
+
+        vel_y = 0.0
+
+        avg_rps_a = ((float)(rpm1 + rpm2) / self.total_wheels_) / 60.000 
+        # print("{}".format(avg_rps_a))
+        ang_z = (avg_rps_a * self.wheel_circumference_) / ((self.wheels_x_distance_ / 2) + (self.wheels_y_distance_ /2 ))
+        ang_z = -ang_z
+
+        # print(-vel_x, vel_y, ang_z)
+        return vel_x, vel_y, ang_z
+
+    def calculateOdom(self):
+        rpm_1 = 0.00
+        rpm_2 = 0.00
+        rpm_m1, rpm_m2 = self.get_rpm()
+             
+        self.vx, self.vy, self.vth = self.getVelocities(rpm_m1, rpm_m2)
+        # print("finish get robot vel {} {} {}".format(self.vx, self.vth, (rospy.Time.now()-self.current_time)/100000000.000))
+
+        
+
+        self.current_time = rospy.Time.now()
+
+        # compute odometry in a typical way given the velocities of the robot
+        dt = (self.current_time - self.last_time).to_sec()
+        delta_x = (self.vx * cos(self.th) - self.vy * sin(self.th)) * dt
+        delta_y = (self.vx * sin(self.th) + self.vy * cos(self.th)) * dt
+
+        self.use_imu = False
+
+        if self.use_imu:
+            delta_th = self.current_theta - self.last_theta
+            self.last_theta = self.current_theta
+            self.vth = delta_th / dt
+            
+        else:
+            delta_th = self.vth * dt
+
+        self.x += delta_x
+        self.y += delta_y
+        self.th += delta_th
+
+        # print(self.th)
+
+        
+
+        # since all odometry is 6DOF we'll need a quaternion created from yaw
+        odom_quat = tf.transformations.quaternion_from_euler(0, 0, self.th)
+
+
+        self.publish_tf = False
+        # first, we'll publish the transform over tf
+        if(self.publish_tf):
+            self.odom_broadcaster.sendTransform(
+                (self.x, self.y, 0.),
+                odom_quat,
+                self.current_time,
+                self.base_frame,
+                self.odom_frame
+            )
+        else:
+            pass
+
+        # next, we'll publish the odometry message over ROS
+        odom = Odometry()
+        odom.header.stamp = self.current_time
+        odom.header.frame_id = self.odom_frame
+
+        # set the position
+        odom.pose.pose = Pose(Point(self.x, self.y, 0.), Quaternion(*odom_quat))
+
+        # set the velocity
+        odom.child_frame_id = self.base_frame
+        odom.twist.twist = Twist(Vector3(self.vx, self.vy, 0), Vector3(0, 0, self.vth))
+
+        # if(odom.twist.twist.linear.x < 0.05):
+        #     rospy.logerr("errorrrrr")
+
+    
+
+        # publish the message
+        self.odom_pub.publish(odom)
+
+        pose2d = Pose2D()
+        pose2d.x = self.x
+        pose2d.y = self.y
+        pose2d.theta = self.vth
+
+        self.last_time = self.current_time
+        
+   
+if __name__ == '__main__':
+    UpdateOdom()
+    rospy.spin()

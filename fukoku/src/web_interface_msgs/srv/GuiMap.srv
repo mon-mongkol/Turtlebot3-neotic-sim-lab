@@ -1,0 +1,5 @@
+string cmd
+UIMap[] gui_maps
+---
+string result
+UIMap[] gui_maps

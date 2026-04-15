@@ -1,0 +1,3 @@
+docking_id: "DCVARS48501BR074"
+commu_device: "rs485"
+tracking_timeout: 30

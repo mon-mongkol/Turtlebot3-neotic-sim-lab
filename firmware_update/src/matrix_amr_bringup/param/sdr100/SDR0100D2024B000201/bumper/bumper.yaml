@@ -1,0 +1,3 @@
+use_bumper_action: true
+bumper_active_signal: 0
+bumper_topic: "/matrix_io/bumper"

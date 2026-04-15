@@ -1,0 +1,10 @@
+<launch>  
+  
+  <!-- Output: screen, log -->
+  <arg name="output" default="screen" />
+  <node name="ist_layout_auto_load" pkg="ist_layouts_srv" type="ist_layout_auto_load" output="$(arg output)">
+    <param name="global_costmap_ist_check" value="move_base/global_costmap/ist_costmap_prohibition_layer/set_parameters"/>
+    <param name="local_costmap_ist_check" value="move_base/local_costmap/ist_costmap_prohibition_layer/set_parameters"/>
+  </node>
+
+</launch>

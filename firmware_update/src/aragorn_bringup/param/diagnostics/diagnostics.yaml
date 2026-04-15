@@ -1,0 +1,9 @@
+use_acc_teblet_sense: true
+use_automatic_shutdown: true
+
+timeout_acc_tablet: 40
+timeout_error_device: 10
+timeout_rate_current_heat: 60
+timeout_uvc_on_a: 900
+timeout_uvc_on_b: 1800
+motor_heat_current: 8.0

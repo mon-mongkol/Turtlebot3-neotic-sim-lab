@@ -1,0 +1,5 @@
+
+int64 mode
+---
+int64 current_mode
+int64 result

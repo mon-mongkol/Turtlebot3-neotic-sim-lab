@@ -1,0 +1,62 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "/home/piya/robot_ws/turtlebot3/devel/include/**",
+                "/opt/ros/melodic/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/navigation/amcl/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/navigation/base_local_planner/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/navigation/carrot_planner/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/navigation/clear_costmap_recovery/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/navigation/costmap_2d/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/navigation/dwa_local_planner/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/people/face_detector/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/navigation/global_planner/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/hls_lfcd_lds_driver/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/ist_costmap_prohibition_layer/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/ist_layouts_srv/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/ist_map_server/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/people/leg_detector/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/navigation/map_server/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/mission_operate/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/mission_run/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/missions/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/navigation/move_base/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/navigation/move_slow_and_clear/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/navigation/nav_core/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/navigation/navfn/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/people/people_tracking_filter/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/navigation_layers/range_sensor_layer/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/navigation/rotate_recovery/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/navigation_layers/social_navigation_layers/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/geometry2/tf2/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/geometry2/tf2_bullet/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/geometry2/tf2_eigen/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/geometry2/tf2_geometry_msgs/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/geometry2/tf2_kdl/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/geometry2/tf2_msgs/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/geometry2/tf2_ros/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/geometry2/tf2_sensor_msgs/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/turtlebot3_simulations/turtlebot3_fake/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/turtlebot3_simulations/turtlebot3_gazebo/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/turtlebot3/turtlebot3_slam/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/navigation/voxel_grid/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/web_interface_move_plan/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/web_interface_msgs/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/web_interface_srv/include/**",
+                "/home/piya/robot_ws/turtlebot3/src/web_launch_srv/include/**",
+                "/usr/include/**"
+            ],
+            "name": "ROS",
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "gnu11",
+            "cppStandard": "gnu++14"
+        }
+    ],
+    "version": 4
+}

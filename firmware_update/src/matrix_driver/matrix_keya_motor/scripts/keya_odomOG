@@ -1,0 +1,236 @@
+#!/usr/bin/env python
+
+import math
+from math import sin, cos, pi
+
+import rospy
+import tf
+from nav_msgs.msg import Odometry
+from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3, Pose2D
+from std_srvs.srv import *
+
+from struct import *
+import can
+import time
+import sys
+# from dataclasses import dataclass
+
+
+
+class UpdateOdom:
+    def __init__(self):
+        
+        self.node_name = "keya_odometry"
+        rospy.init_node(self.node_name)
+        
+        # odometry calculation param 
+        if not rospy.has_param("~wheels_x_distance"):
+            rospy.set_param("~wheels_x_distance", 0.0)
+        if not rospy.has_param("~wheels_y_distance"):
+            rospy.set_param("~wheels_y_distance", 0.494)
+        if not rospy.has_param("~wheel_diameter"):
+            rospy.set_param("~wheel_diameter", 0.151)
+        if not rospy.has_param("~gear_ratio"):
+            rospy.set_param("~gear_ratio", 10)
+        if not rospy.has_param("~total_wheels"):
+            rospy.set_param("~total_wheels", 2)
+
+        # odometry publisher param  
+        if not rospy.has_param("~publish_tf"):
+            rospy.set_param("~publish_tf", True)
+        if not rospy.has_param("~base_frame"):
+            rospy.set_param("~base_frame", "base_footprint") 
+        if not rospy.has_param("~odom_frame"):
+            rospy.set_param("~odom_frame", "odom") 
+        if not rospy.has_param("~odom_topic"):
+            rospy.set_param("~odom_topic", "odom")
+        
+        # canbus read param 
+        if not rospy.has_param("~canbus_chanel"):
+            rospy.set_param("~canbus_chanel", "can0")
+        if not rospy.has_param("~canbus_bitrate"):
+            rospy.set_param("~canbus_bitrate", 250000)    
+
+        self.wheels_x_distance_ = rospy.get_param("~wheels_x_distance")
+        self.wheels_y_distance_ = rospy.get_param("~wheels_y_distance")
+        self.wheel_diameter = rospy.get_param("~wheel_diameter")
+        self.gear_ratio = rospy.get_param("~gear_ratio")
+        self.total_wheels_ = rospy.get_param("~total_wheels")
+
+        self.odom_frame = rospy.get_param("~odom_frame")
+        self.base_frame = rospy.get_param("~base_frame")
+        self.publish_tf = rospy.get_param("~publish_tf")
+        self.odom_topic = rospy.get_param("~odom_topic")
+        
+        self.canbus_chanel = rospy.get_param("~canbus_chanel")
+        self.can_bitrate = rospy.get_param("~canbus_bitrate")
+
+
+        
+        self.wheel_circumference_ = math.pi * self.wheel_diameter
+
+        self.x = 0.0
+        self.y = 0.0
+        self.th = 0.0
+
+        self.vx = 0.00
+        self.vy = 0.00
+        self.vth = 0.00
+
+        self.current_time = rospy.Time.now()
+        self.last_time = rospy.Time.now()
+
+
+        self.m1read = False
+        self.m2read = False
+        self.m1 = 0.00
+        self.m2 = 0.00
+
+        # can setup parameter
+        time.sleep(5)
+        try:
+            self.bus = can.Bus(interface='socketcan',
+                                channel=self.canbus_chanel,
+                                receive_own_messages=False,
+                                bitrate=self.can_bitrate)
+        except Exception, e:
+                print("good bye cann!!")
+                sys.exit(1)  
+        
+        self.odom_pub = rospy.Publisher(self.odom_topic, Odometry, queue_size=1)
+        self.odom_broadcaster = tf.TransformBroadcaster()
+
+        self.reset_service = rospy.Service("/reset_odom", SetBool, self.callback_reset_odom)
+
+        rate = rospy.Rate(40)
+        
+        while not rospy.is_shutdown():
+            self.calculateOdom()
+            
+            rate.sleep()
+    
+    def callback_reset_odom(self, req):
+        if req.data:
+            self.x = 0.0
+            self.y = 0.0
+            self.th = 0.0
+
+            self.vx = 0.00
+            self.vy = 0.00
+            self.vth = 0.00
+
+            self.current_time = rospy.Time.now()
+            self.last_time = rospy.Time.now()
+
+
+            self.m1read = False
+            self.m2read = False
+            self.m1 = 0.00
+            self.m2 = 0.00
+        return True, "odom reset success!!!"
+    
+    def get_rpm(self):
+        while True:
+            try:
+                message = self.bus.recv()
+                #  print(message)
+                if message.arbitration_id == 0x581:
+                    
+                    if((message.data[0] == 0x4b) and (message.data[1] == 0x03) and (message.data[2] == 0x21) and (message.data[3] == 0x01)):
+                        self.m1 = bytearray([message.data[4], message.data[5]])
+                        self.m1 = unpack('<h', self.m1)
+                        self.m1 = self.m1[0] / 10.0000
+                        self.m1read = True
+                        
+                    if((message.data[0] == 0x4b) and (message.data[1] == 0x03) and (message.data[2] == 0x21) and (message.data[3] == 0x02)):
+                        self.m2 = bytearray([message.data[4], message.data[5]])
+                        self.m2 = unpack('<h', self.m2)
+                        self.m2 = self.m2[0] / 10.0000
+                        self.m2read = True
+                else:
+                    pass
+            except Exception, e:
+                print("good bye Odom")
+                sys.exit(1)       
+            
+            if self.m1read and self.m2read:
+                self.m1read = False
+                self.m2read = False
+                # print(int(self.m1), int(self.m2))
+                return self.m1, self.m2
+                self.m1 = 0.00
+                self.m2 = 0.00
+                break
+            else:
+                pass
+    
+    def getVelocities(self, rpm1, rpm2):
+        avg_rps_x = -((float)(rpm1+rpm2) / self.total_wheels_) / 60.000 
+        vel_x = avg_rps_x * self.wheel_circumference_
+
+        vel_y = 0.0
+
+        avg_rps_a = ((float)(-rpm1 + rpm2) / self.total_wheels_) / 60.000 
+        ang_z = (avg_rps_a * self.wheel_circumference_) / ((self.wheels_x_distance_ / 2) + (self.wheels_y_distance_ /2 ))
+        ang_z = -ang_z
+
+        # print(-vel_x, vel_y, ang_z)
+        return -vel_x, vel_y, ang_z
+
+    def calculateOdom(self):
+        rpm_m1, rpm_m2 = self.get_rpm()
+        self.vx, self.vy, self.vth = self.getVelocities(rpm_m1, rpm_m2)
+
+        self.current_time = rospy.Time.now()
+
+        # compute odometry in a typical way given the velocities of the robot
+        dt = (self.current_time - self.last_time).to_sec()
+        delta_x = (self.vx * cos(self.th) - self.vy * sin(self.th)) * dt
+        delta_y = (self.vx * sin(self.th) + self.vy * cos(self.th)) * dt
+        delta_th = self.vth * dt
+
+        self.x += delta_x
+        self.y += delta_y
+        self.th += delta_th
+
+        # since all odometry is 6DOF we'll need a quaternion created from yaw
+        odom_quat = tf.transformations.quaternion_from_euler(0, 0, self.th)
+
+        # first, we'll publish the transform over tf
+        if(self.publish_tf):
+            self.odom_broadcaster.sendTransform(
+                (self.x, self.y, 0.),
+                odom_quat,
+                self.current_time,
+                self.base_frame,
+                self.odom_frame
+            )
+        else:
+            pass
+
+        # next, we'll publish the odometry message over ROS
+        odom = Odometry()
+        odom.header.stamp = self.current_time
+        odom.header.frame_id = self.odom_frame
+
+        # set the position
+        odom.pose.pose = Pose(Point(self.x, self.y, 0.), Quaternion(*odom_quat))
+
+        # set the velocity
+        odom.child_frame_id = self.base_frame
+        odom.twist.twist = Twist(Vector3(self.vx, self.vy, 0), Vector3(0, 0, self.vth))
+
+        # publish the message
+        self.odom_pub.publish(odom)
+
+        pose2d = Pose2D()
+        pose2d.x = self.x
+        pose2d.y = self.y
+        pose2d.theta = self.vth
+
+        self.last_time = self.current_time
+        
+   
+if __name__ == '__main__':
+    UpdateOdom()
+    rospy.spin()

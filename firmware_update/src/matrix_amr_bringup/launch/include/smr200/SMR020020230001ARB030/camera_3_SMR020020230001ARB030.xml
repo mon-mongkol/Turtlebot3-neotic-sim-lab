@@ -1,0 +1,6 @@
+<launch>
+
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="depthcam_front_top_to_depthcam_front_top_invert" args="0.0 0.0 0.0 0.0 0.0 3.141 /depthcam_front_top_link /depthcam_front_top_invert_link"/>
+
+</launch>

@@ -1,0 +1,160 @@
+#!/usr/bin/env python
+
+import rospy
+from std_msgs.msg import Int64
+from std_srvs.srv import SetBool
+from geometry_msgs.msg import *
+import math
+import time 
+
+import can
+import struct 
+
+import threading
+import time
+try:
+    import _thread
+except:
+    import thread as _thread
+
+mutex = threading.Lock()
+
+# from dataclasses import dataclass
+
+
+class NumberCounter:
+    def __init__(self):
+        self.counter = 0
+        # self.pub = rospy.Publisher("/number_count", Int64, queue_size=10)
+        self.number_subscriber = rospy.Subscriber("/cmd_vel", Twist, self.callback_vel)
+        # self.reset_service = rospy.Service("/reset_counter", SetBool, self.callback_reset_counter)
+
+        # can setup parameter
+        self.bus = can.Bus(interface='socketcan',
+                            channel='can0',
+                            receive_own_messages=False,
+                            bitrate=1000000)
+        
+        self.g_req_vel = Twist()
+        self.g_prev_command_time = 0
+        self.prev_control_time = 0
+
+        self.wheels_x_distance_ = 0.0
+        self.wheels_y_distance_ = 0.82
+        self.wheel_diameter = 0.22
+        self.wheel_circumference_ = math.pi * self.wheel_diameter
+        self.gear_ratio = 25
+        # self.wheel_circumference_ = 1.38
+
+        self.max_vel = 900 
+
+        self.prev_rpm = 0
+
+        self.COMMAND_RATE = 20
+
+        rate = rospy.Rate(20)
+
+        while not rospy.is_shutdown():
+            # self.update_velocity()
+            self.main_control()
+            rate.sleep()
+    
+    def callback_vel(self, msg):
+        self.g_req_vel = msg
+        self.g_prev_command_time = rospy.Time.from_sec(time.time()).to_nsec()
+        
+    def main_control(self):
+        
+        # this block drives the robot based on defined rate
+        if ((rospy.Time.from_sec(time.time()).to_nsec() - self.prev_control_time) >= (1000000000 / self.COMMAND_RATE)):
+            self.moveBase()
+            self.prev_control_time = rospy.Time.from_sec(time.time()).to_nsec()
+        else:
+            pass
+        
+        # this block stops the motor when no command is received
+        if ((rospy.Time.from_sec(time.time()).to_nsec() - self.g_prev_command_time) >= 400000000):
+            self.stopBase()
+        else:
+            pass
+
+    
+
+    def moveBase(self):
+        # get the required rpm for each motor based on required velocities, and base used
+        req_rpm_left, req_rpm_right = self.calculateRPM(self.g_req_vel.linear.x, self.g_req_vel.angular.z)
+        req_rpm_left = req_rpm_left * self.gear_ratio
+        req_rpm_right = req_rpm_right * self.gear_ratio
+
+        data_frame = struct.pack('<i', req_rpm_left)
+        message = can.Message(  arbitration_id=0x601, 
+                                is_extended_id=False, 
+                                data=[0x23, 0xff, 0x60, 0x00, data_frame[0], data_frame[1], data_frame[2], data_frame[3]])
+        self.bus.send(message, timeout=1.0)
+
+        data_frame = struct.pack('<i', req_rpm_right)
+        message = can.Message(  arbitration_id=0x602, 
+                                is_extended_id=False, 
+                                data=[0x23, 0xff, 0x60, 0x00, data_frame[0], data_frame[1], data_frame[2], data_frame[3]])
+        self.bus.send(message, timeout=1.0)
+
+        # if self.prev_rpm != req_rpm_left:
+        #     data_frame = struct.pack('<i', req_rpm_left)
+        #     message = can.Message(  arbitration_id=0x601, 
+        #                             is_extended_id=False, 
+        #                             data=[0x23, 0xff, 0x60, 0x00, data_frame[0], data_frame[1], data_frame[2], data_frame[3]])
+        #     self.bus.send(message, timeout=1.0)
+        #     self.prev_rpm = req_rpm_left
+        # else:
+        #     pass
+
+        print(req_rpm_left, req_rpm_right)
+    
+    def calculateRPM(self, linear_x, angular_z):
+    
+        # convert m/s to m/min
+        linear_vel_x_mins = linear_x * 60
+        linear_vel_y_mins = 0
+
+        # convert rad/s to rad/min
+        angular_vel_z_mins = angular_z * 60
+        
+        tangential_vel = angular_vel_z_mins * ((self.wheels_x_distance_ / 2) + (self.wheels_y_distance_ / 2))
+
+        x_rpm = linear_vel_x_mins / self.wheel_circumference_
+        y_rpm = linear_vel_y_mins / self.wheel_circumference_
+        tan_rpm = tangential_vel / self.wheel_circumference_
+
+        # calculate for the target motor RPM and direction
+        # left motor
+        rpm_motor_left = x_rpm - y_rpm - tan_rpm
+        rpm_motor_left = min(self.max_vel, max(-self.max_vel, rpm_motor_left))
+        rpm_motor_left = round(rpm_motor_left)
+
+        # right motor
+        rpm_motor_right = -(x_rpm + y_rpm + tan_rpm)
+        rpm_motor_right = min(self.max_vel, max(-self.max_vel, rpm_motor_right))
+        rpm_motor_right = round(rpm_motor_right)
+        
+        return [rpm_motor_left, rpm_motor_right]
+
+
+    
+    def stopBase(self):
+        self.g_req_vel.linear.x = 0.0
+        self.g_req_vel.angular.z = 0.0
+
+
+        print("stop")
+
+
+
+    # def callback_reset_counter(self, req):
+    #     if req.data:
+    #         self.counter = 0
+    #         return True, "Counter has been successfully reset"
+    #     return False, "Counter has not been reset"
+if __name__ == '__main__':
+    rospy.init_node('number_counter')
+    NumberCounter()
+    rospy.spin()

@@ -1,0 +1,961 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="matrix_true_description">
+  <link name="base_footprint"/>
+  <joint name="base_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+  </joint>
+  
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.019333 0.00035736 0.30222"
+        rpy="0 0 0" />
+      <mass
+        value="95.483" />
+      <inertia
+        ixx="0.83617"
+        ixy="-0.00018256"
+        ixz="0.0013293"
+        iyy="0.7203"
+        iyz="-0.00025871"
+        izz="0.72287" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="wheel_right_link">
+    <inertial>
+      <origin
+        xyz="-1.3878E-17 0.00082541 2.7905E-10"
+        rpy="0 0 0" />
+      <mass
+        value="1.2499" />
+      <inertia
+        ixx="0.0023164"
+        ixy="-7.259E-19"
+        ixz="-9.0858E-26"
+        iyy="0.0038673"
+        iyz="3.5318E-10"
+        izz="0.0023164" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/wheel_right_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/wheel_right_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="wheel_right_joint"
+    type="continuous">
+    <origin
+      xyz="0.00370810119881812 -0.2171 0.0850001069853645"
+      rpy="0 1.5707963267949 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="wheel_right_link" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      effort="8"
+      velocity="20.944" />
+  </joint>
+  <link
+    name="wheel_left_link">
+    <inertial>
+      <origin
+        xyz="2.57901044270481E-10 -0.000825408424269397 -1.06553723309977E-10"
+        rpy="0 0 0" />
+      <mass
+        value="1.24985940735749" />
+      <inertia
+        ixx="0.00231643096193606"
+        ixy="-3.2641346835973E-10"
+        ixz="7.64444726106607E-20"
+        iyy="0.00386734557091003"
+        iyz="1.34859817948389E-10"
+        izz="0.00231643096193606" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/wheel_left_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/wheel_left_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="wheel_left_right"
+    type="continuous">
+    <origin
+      xyz="0.0037081011988188 0.2171 0.0850001069853643"
+      rpy="0 1.5707963267949 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="wheel_left_link" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      effort="8"
+      velocity="20.944" />
+  </joint>
+  <link
+    name="caster_arm_fr_link">
+    <inertial>
+      <origin
+        xyz="-0.00494847238282775 9.07365753419487E-05 -0.0111326023738858"
+        rpy="0 0 0" />
+      <mass
+        value="0.0228689686598222" />
+      <inertia
+        ixx="5.46701773578951E-06"
+        ixy="1.01849635596166E-09"
+        ixz="-1.27604972629729E-06"
+        iyy="5.683274105826E-06"
+        iyz="9.15384060118732E-10"
+        izz="5.72207125801827E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/caster_arm_fr_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/caster_arm_fr_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="caster_arm_fr_joint"
+    type="continuous">
+    <origin
+      xyz="0.175000000000001 -0.0999999999999988 0.069116"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="caster_arm_fr_link" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="caster_wheel_fr_link">
+    <inertial>
+      <origin
+        xyz="2.45965642159396E-08 -1.09211185927993E-09 -7.56747059460494E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.0372150073615411" />
+      <inertia
+        ixx="6.83775386210628E-06"
+        ixy="7.89881207654632E-12"
+        ixz="-5.31617220528368E-11"
+        iyy="1.13150193462786E-05"
+        iyz="-2.08401338263005E-12"
+        izz="6.83739570177949E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/caster_wheel_fr_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/caster_wheel_fr_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="caster_wheel_fr_joint"
+    type="continuous">
+    <origin
+      xyz="-0.0250000000000008 0 -0.044"
+      rpy="0 1.5707963267949 0" />
+    <parent
+      link="caster_arm_fr_link" />
+    <child
+      link="caster_wheel_fr_link" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="caster_arm_fl_link">
+    <inertial>
+      <origin
+        xyz="-0.0049484723828338 9.07365753418793E-05 -0.011132602373886"
+        rpy="0 0 0" />
+      <mass
+        value="0.0228689686598223" />
+      <inertia
+        ixx="5.46701773578953E-06"
+        ixy="1.01849635599667E-09"
+        ixz="-1.27604972629728E-06"
+        iyy="5.68327410582606E-06"
+        iyz="9.15384060100716E-10"
+        izz="5.72207125801832E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/caster_arm_fl_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/caster_arm_fl_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="caster_arm_fl_joint"
+    type="continuous">
+    <origin
+      xyz="0.174999999999999 0.100000000000001 0.069116"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="caster_arm_fl_link" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="caster_wheel_fl_link">
+    <inertial>
+      <origin
+        xyz="2.45965642228785E-08 -1.09211185927993E-09 -7.56747056684937E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.0372150073615411" />
+      <inertia
+        ixx="6.83775386210629E-06"
+        ixy="7.8988120721091E-12"
+        ixz="-5.31617220532634E-11"
+        iyy="1.13150193462786E-05"
+        iyz="-2.08401338252725E-12"
+        izz="6.8373957017795E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/caster_wheel_fl_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/caster_wheel_fl_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="caster_wheel_fl_joint"
+    type="continuous">
+    <origin
+      xyz="-0.0249999999999994 0 -0.0439999999999999"
+      rpy="0 1.5707963267949 0" />
+    <parent
+      link="caster_arm_fl_link" />
+    <child
+      link="caster_wheel_fl_link" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="caster_arm_rr_link">
+    <inertial>
+      <origin
+        xyz="-0.00494847238282756 9.07365753417821E-05 -0.0111326023738859"
+        rpy="0 0 0" />
+      <mass
+        value="0.0228689686598225" />
+      <inertia
+        ixx="5.46701773578956E-06"
+        ixy="1.01849635600047E-09"
+        ixz="-1.27604972629728E-06"
+        iyy="5.68327410582608E-06"
+        iyz="9.15384060081404E-10"
+        izz="5.72207125801836E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/caster_arm_rr_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/caster_arm_rr_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="caster_arm_rr_joint"
+    type="continuous">
+    <origin
+      xyz="-0.174999999999999 -0.100000000000001 0.069116"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="caster_arm_rr_link" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="caster_wheel_rr_link">
+    <inertial>
+      <origin
+        xyz="2.4597E-08 -1.0921E-09 -7.5675E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.037215" />
+      <inertia
+        ixx="6.8378E-06"
+        ixy="7.8988E-12"
+        ixz="-5.3162E-11"
+        iyy="1.1315E-05"
+        iyz="-2.084E-12"
+        izz="6.8374E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/caster_wheel_rr_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/caster_wheel_rr_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="caster_wheel_rr_joint"
+    type="continuous">
+    <origin
+      xyz="-0.0250000000000008 0 -0.044"
+      rpy="0 1.5707963267949 0" />
+    <parent
+      link="caster_arm_rr_link" />
+    <child
+      link="caster_wheel_rr_link" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="caster_arm_rl_link">
+    <inertial>
+      <origin
+        xyz="-0.00494847238283336 9.07365753420319E-05 -0.0111326023738858"
+        rpy="0 0 0" />
+      <mass
+        value="0.0228689686598218" />
+      <inertia
+        ixx="5.46701773578946E-06"
+        ixy="1.01849635593971E-09"
+        ixz="-1.27604972629732E-06"
+        iyy="5.68327410582594E-06"
+        iyz="9.15384060130709E-10"
+        izz="5.72207125801818E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/caster_arm_rl_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/caster_arm_rl_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="caster_arm_rl_joint"
+    type="continuous">
+    <origin
+      xyz="-0.175000000000001 0.0999999999999989 0.069116"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="caster_arm_rl_link" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="caster_wheel_rl_link">
+    <inertial>
+      <origin
+        xyz="2.45965641465506E-08 -1.09211185927993E-09 -7.56747059460494E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.0372150073615412" />
+      <inertia
+        ixx="6.83775386210631E-06"
+        ixy="7.89881208046977E-12"
+        ixz="-5.31617220532634E-11"
+        iyy="1.13150193462787E-05"
+        iyz="-2.08401338252726E-12"
+        izz="6.83739570177952E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/caster_wheel_rl_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/caster_wheel_rl_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="caster_wheel_rl_joint"
+    type="continuous">
+    <origin
+      xyz="-0.0249999999999994 0 -0.0439999999999999"
+      rpy="0 1.5707963267949 0" />
+    <parent
+      link="caster_arm_rl_link" />
+    <child
+      link="caster_wheel_rl_link" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="imu_link">
+    <inertial>
+      <origin
+        xyz="0.000441875229320671 -0.000105430027601698 -0.00158675124558327"
+        rpy="0 0 0" />
+      <mass
+        value="0.000983130183652039" />
+      <inertia
+        ixx="2.72780814792229E-08"
+        ixy="1.86463715352535E-11"
+        ixz="1.83135757568998E-11"
+        iyy="4.80453464098759E-08"
+        iyz="1.81575171892114E-12"
+        izz="7.48563776021965E-08" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/imu_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/imu_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="imu_joint"
+    type="fixed">
+    <origin
+      xyz="-0.020000000000002 0 0.347116"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="imu_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="lidar_front_link">
+    <inertial>
+      <origin
+        xyz="0.00299039260663553 1.4355167320976E-05 -0.0139839903738145"
+        rpy="0 0 0" />
+      <mass
+        value="0.0479836298060696" />
+      <inertia
+        ixx="2.50495255084658E-05"
+        ixy="5.78025332291169E-09"
+        ixz="1.44587790587416E-08"
+        iyy="2.67712556764449E-05"
+        iyz="9.23528839341085E-10"
+        izz="4.88989812212992E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/lidar_merged_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.498039215686275 0.498039215686275 0.498039215686275 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/lidar_merged_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="lidar_front_joint"
+    type="fixed">
+    <origin
+      xyz="0.155000000000003 0 0.295715793055286"
+      rpy="0 0 3.14159265358979" />
+    <parent
+      link="base_link" />
+    <child
+      link="lidar_front_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="lidar_merged_link">
+    <inertial>
+      <origin
+        xyz="0.00299039260663553 1.4355167320976E-05 -0.0139839903738145"
+        rpy="0 0 0" />
+      <mass
+        value="0.0479836298060696" />
+      <inertia
+        ixx="2.50495255084658E-05"
+        ixy="5.78025332291169E-09"
+        ixz="1.44587790587416E-08"
+        iyy="2.67712556764449E-05"
+        iyz="9.23528839341085E-10"
+        izz="4.88989812212992E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/lidar_merged_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.498039215686275 0.498039215686275 0.498039215686275 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/lidar_merged_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="lidar_merged_joint"
+    type="fixed">
+    <origin
+      xyz="0.155000000000003 0 0.295715793055286"
+      rpy="0 0 3.14159265358979" />
+    <parent
+      link="base_link" />
+    <child
+      link="lidar_merged_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="depth_cam_mount_point_link">
+    <inertial>
+      <origin
+        xyz="0.0015077477139305 0.00140603192236629 0.0124765885193783"
+        rpy="0 0 0" />
+      <mass
+        value="0.0364722860415582" />
+      <inertia
+        ixx="2.3403025638055E-05"
+        ixy="2.10291990990204E-07"
+        ixz="1.01539830469578E-08"
+        iyy="3.50608918373381E-06"
+        iyz="1.72626760018302E-09"
+        izz="2.36116328630525E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/depth_cam_mount_point_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/depth_cam_mount_point_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="depth_cam_mount_point_joint"
+    type="fixed">
+    <origin
+      xyz="0.145649999999998 0 0.480116"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="depth_cam_mount_point_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="ultrasonic_fr_link">
+    <inertial>
+      <origin
+        xyz="-0.0166625075197745 0.000133862660593037 -0.000133374283427967"
+        rpy="0 0 0" />
+      <mass
+        value="0.00277452811002927" />
+      <inertia
+        ixx="2.74219875868267E-07"
+        ixy="-1.39284330313773E-08"
+        ixz="-2.1172632007789E-09"
+        iyy="7.00788316158804E-08"
+        iyz="-1.22938238658069E-11"
+        izz="2.59571691855633E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/ultrasonic_fr_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/ultrasonic_fr_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ultrasonic_fr_joint"
+    type="fixed">
+    <origin
+      xyz="0.169517824893003 -0.168095327438868 0.234077654834356"
+      rpy="0 0.00199498585800991 -0.717281737993582" />
+    <parent
+      link="base_link" />
+    <child
+      link="ultrasonic_fr_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="ultrasonic_fc_link">
+    <inertial>
+      <origin
+        xyz="-0.0145491121704325 5.62235358884438E-06 -0.000136700758251673"
+        rpy="0 0 0" />
+      <mass
+        value="0.00277452812571776" />
+      <inertia
+        ixx="2.75230866435744E-07"
+        ixy="6.48221356846607E-11"
+        ixz="-1.85464247129119E-09"
+        iyy="6.91328659652768E-08"
+        iyz="-1.29469635871372E-10"
+        izz="2.59506667402335E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/ultrasonic_fc_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/ultrasonic_fc_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ultrasonic_fc_joint"
+    type="fixed">
+    <origin
+      xyz="0.212644504488986 0 0.2338466055562"
+      rpy="0 0.0183935250864792 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="ultrasonic_fc_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="ultrasonic_fl_link">
+    <inertial>
+      <origin
+        xyz="-0.0166619661641656 -0.000140642465131888 -0.000134128326518768"
+        rpy="0 0 0" />
+      <mass
+        value="0.00277452811002928" />
+      <inertia
+        ixx="2.74196154693402E-07"
+        ixy="1.40921429923366E-08"
+        ixz="-2.10377620939112E-09"
+        iyy="7.01012442933592E-08"
+        iyz="-2.52614294812795E-10"
+        izz="2.59573000353014E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/ultrasonic_fl_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://matrix_true_description/meshes/ultrasonic_fl_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ultrasonic_fl_joint"
+    type="fixed">
+    <origin
+      xyz="0.169519435902909 0.168093291552763 0.234083315247261"
+      rpy="0 0.00170059039625006 0.717087904309002" />
+    <parent
+      link="base_link" />
+    <child
+      link="ultrasonic_fl_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>

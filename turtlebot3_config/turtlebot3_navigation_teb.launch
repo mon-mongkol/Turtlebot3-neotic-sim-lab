@@ -1,0 +1,79 @@
+<!-- ============================================================
+     turtlebot3_navigation_teb.launch
+     Full TurtleBot3 Navigation with TEB Local Planner
+     Replaces turtlebot3_navigation.launch but uses TEB instead of DWA
+     ============================================================ -->
+<launch>
+
+  <!-- Arguments -->
+  <arg name="model"    default="$(env TURTLEBOT3_MODEL)" doc="burger / waffle / waffle_pi"/>
+  <arg name="map_file" default="/root/map/my_map.yaml"/>
+  <arg name="open_rviz"    default="true"/>
+  <arg name="open_rosbridge" default="true"/>
+
+  <!-- ── 0. Gazebo simulation ── -->
+  <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_world.launch"/>
+
+  <!-- ── 0.5 TurtleBot3 remote (robot_state_publisher, etc.) ── -->
+  <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
+    <arg name="model" value="$(arg model)"/>
+  </include>
+
+  <!-- ── 1. Map server ── -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+
+  <!-- ── 2. AMCL (localization) ── -->
+  <include file="$(env HOME)/turtlebot3_config/amcl.launch"/>
+
+  <!-- ── 3. move_base with TEB ── -->
+  <include file="$(env HOME)/turtlebot3_config/move_base_teb.launch">
+    <arg name="model" value="$(arg model)"/>
+  </include>
+
+
+
+  <!-- ── 5. rosbridge + tf2_web_republisher (optional) ── -->
+  <group if="$(arg open_rosbridge)">
+    <!-- rosbridge websocket server on port 9090 -->
+    <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
+
+    <!-- tf2_web_republisher -->
+    <node pkg="tf2_web_republisher" type="tf2_web_republisher" name="tf2_web_republisher"/>
+  </group>
+
+
+
+  <!-- <include file="$(find missions)/launch/mission.launch"/> -->
+  <!-- <include file="$(find mission_run)/launch/matrix_delivery.launch"/> -->
+  <!-- <include file="$(find mission_run)/launch/delivery.launch"/> -->
+  <include file="$(find web_interface_srv)/launch/cmd_srv.launch"/>
+  <!-- <include file="$(find web_interface_move_plan)/launch/web.launch"/> -->
+  <include file="$(find web_launch_srv)/launch/srv.launch"/>
+  <include file="$(find ist_layouts_srv)/launch/layout.launch"/>
+  <include file="$(find ist_layout_zones)/launch/zone.launch"/>
+  <!-- <include file="$(find ist_docking)/launch/docking.launch"/> -->
+  <!-- <include file="$(find web_map_server)/launch/web.launch"/> -->
+  <!-- <include file="$(find ist_robot_status)/launch/status.launch"/> -->
+  <!-- <include file="$(find mission_request)/launch/request.launch"/> -->
+  <!-- <include file="$(find ist_gui_map_server)/launch/gui_map_server.launch"/> -->
+
+  <!-- <include file="$(find ist_map_server)/launch/auto_load.launch"/> -->
+  <!-- <include file="$(find ist_gui_map_server)/launch/auto_load.launch"/> -->
+
+  <include file="$(find ist_layouts_srv)/launch/auto_load.launch"/>
+
+  <!-- <include file="$(find ist_route_follow)/launch/route.launch"/> -->
+  <!-- <include file="$(find laser_pose_publisher)/launch/laser.launch"/> -->
+  <!-- <include file="$(find tablet_sensors)/launch/tablet.launch"/> -->
+  <!-- <include file="$(find battery_monitoring)/launch/batt.launch"/> -->
+  <!-- <include file="$(find media_player)/launch/player.launch"/> -->
+  <!-- <include file="$(find media_player)/launch/volume.launch"/> -->
+  <!-- <include file="$(find ist_roads_srv)/launch/roads.launch"/> -->
+
+      <!-- ── 4. RViz (optional) ── -->
+  <group if="$(arg open_rviz)">
+    <node pkg="rviz" type="rviz" name="rviz" required="true"
+          args="-d $(env HOME)/turtlebot3_config/turtlebot3_navigation.rviz"/>
+  </group>
+
+</launch>

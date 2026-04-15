@@ -1,0 +1,12 @@
+#goal definition mission count
+int32 order
+SMRDeliveryRequest request
+---
+#result definition
+int32 index
+SMRDeliveryInfo info
+RobotTask[] tasks
+---
+#feedback
+string name
+RobotTask task

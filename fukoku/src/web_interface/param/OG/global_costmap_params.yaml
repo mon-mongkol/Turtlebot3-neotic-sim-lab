@@ -1,0 +1,40 @@
+global_costmap:
+  global_frame: map
+  robot_base_frame: base_footprint
+
+  update_frequency: 5.0
+  publish_frequency: 2.0
+  transform_tolerance: 0.5
+
+  robot_radius: 0.42
+  
+  width: 20.0
+  height: 20.0
+
+  static_map: true
+
+  plugins:
+    - {name: static, type: "costmap_2d::StaticLayer"}
+    - {name: costmap_prohibition_layer, type: "costmap_prohibition_layer_namespace::CostmapProhibitionLayer"}
+    - {name: voxel_layer, type: "costmap_2d::VoxelLayer"}
+    - {name: obstacle_layer,  type: "costmap_2d::ObstacleLayer"}
+    # - {name: ir_obstacle_layer,   type: "range_sensor_layer::RangeSensorLayer"}
+    # - {name: cliff_layer,   type: "range_sensor_layer::RangeSensorLayer"}
+    - {name: inflation_layer,   type: "costmap_2d::InflationLayer"}
+
+  obstacles_layer:
+    observation_sources: scan
+    scan: {data_type: LaserScan, sensor_frame: laser, clearing: true, marking: true, topic: /scan}
+  
+  ir_obstacle_layer:
+    clear_threshold:    0.46
+    mark_threshold:     0.8
+    clear_on_max_reading: true
+    topics: ['/sensor/ir_left', '/sensor/ir_left_front', '/sensor/ir_middle_left_front', '/sensor/ir_middle_right_front', '/sensor/ir_right', '/sensor/ir_right_front']
+  
+  cliff_layer:
+    clear_threshold:    0.03
+    mark_threshold:     0.18
+    clear_on_max_reading: true
+    topics: ['/sensor/cliff_front', '/sensor/cliff_left', '/sensor/cliff_right']
+ 

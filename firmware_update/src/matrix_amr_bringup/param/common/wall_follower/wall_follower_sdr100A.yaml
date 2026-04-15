@@ -1,0 +1,7 @@
+right_angle: 3000
+stop_zone_right_fst: 0
+stop_zone_right_end: 300
+
+left_angle: 600
+stop_zone_left_fst: 3300
+stop_zone_left_end: 3600

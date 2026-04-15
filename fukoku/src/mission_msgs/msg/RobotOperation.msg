@@ -1,0 +1,17 @@
+int32 id
+int32 robot_task_id
+string text
+string name
+string start_time
+string end_time
+float32 operate_time
+float32 estimate_current
+float32 real_current
+int32 state
+int32 result
+string result_msg
+string error_msg
+mission_msgs/UserConfirm confirm
+mission_msgs/BatteryStamp battery
+mission_msgs/BatteryStamp start_batt
+mission_msgs/BatteryStamp end_batt

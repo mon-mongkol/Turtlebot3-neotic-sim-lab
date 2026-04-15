@@ -1,0 +1,15 @@
+string FUN_SET_OUTPUT = FUN_SET_OUTPUT
+string FUN_WAIT_INPUT = FUN_WAIT_INPUT
+
+# valid values for 'state' when setting digital IO or flags
+int8 STATE_OFF = 0
+int8 STATE_ON = 1
+int8 STATE_IGNORE = 2
+
+# request fields
+string fun
+PinStateDigital[] pin_details
+
+--------
+bool success
+PinStateDigital[] pin_details

@@ -1,0 +1,9 @@
+<launch>  
+  
+  <!-- Output: screen, log -->
+  <arg name="output" default="screen" />
+  <node name="web_interface_server" pkg="web_interface_srv" type="web_interface_srv_node" output="$(arg output)">
+  
+  </node>
+
+</launch>

@@ -1,0 +1,1 @@
+bool enabled_zone_mode

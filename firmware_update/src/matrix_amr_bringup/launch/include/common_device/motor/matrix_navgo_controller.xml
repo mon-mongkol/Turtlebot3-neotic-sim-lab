@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="port" default="/dev/ttyUSB0" />
+    <!-- Start ROS communication between the robot's computer and Matrix-Delivery, Matrix-Advertise, Matrix-ROHM base -->
+    <node pkg="rosserial_python" name="matrix_navgo_controller" type="serial_node.py" output="screen">
+        <param name="port" value="$(arg port)" />
+        <param name="baud" value="57600" />
+    </node>
+
+    <!-- <node name="pid_configure" pkg="lino_pid" type="pid_configure" output="screen"> -->
+    <node name="pid_configure" pkg="lino_pid" type="pid_configure" output="screen">
+        <!-- <param name="p" value="0.5"/>
+        <param name="i" value="0.4"/>
+        <param name="d" value="0.0"/> -->
+        <rosparam command="load" file="$(find matrix_amr_bringup)/param/$(env sub_model)/$(env serial_no)/motor_driver/matrix_navgo_controller_$(env hw_ver).yaml" />
+    </node>
+</launch>

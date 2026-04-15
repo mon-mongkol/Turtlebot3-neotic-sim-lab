@@ -1,0 +1,45 @@
+
+use_automatic_shutdown: true
+timeout_noaction_shutdown: 10800 #sec
+timeout_full_charge_shutdown: 600 #sec
+
+use_diagnostics: true
+timeout_error_device: 10 #sec
+
+debug: true
+
+# sensor_msgs::LaserScan
+check_ldsf: true
+ldsf_topic: "/scan"
+
+# sensor_msgs::LaserScan
+check_ldsr: false
+ldsr_topic: ""
+
+# sensor_msgs::Imu
+check_imu: false
+imu_topic: "/imu"
+
+# sensor_msgs::BatteryState
+check_bms: false
+bms_topic: "/battery_state"
+
+# sensor_msgs::PointCloud2
+check_cam1: true
+cam1_topic: "/camera/depth/color/points"
+
+# sensor_msgs::PointCloud2
+check_cam2: false
+cam2_topic: ""
+
+# nav_msgs::Odometry
+check_motor: false
+motor_topic: ""
+
+# std_msgs::Int8
+check_mcu1: true
+mcu1_topic: "/matrix_io/robot_mode"
+
+# std_msgs::Int8
+check_mcu2: false
+mcu2_topic: ""

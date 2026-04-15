@@ -1,0 +1,48 @@
+
+
+#goal definition
+
+string lift_req                         #request command use lift
+string lift_ready                       #respond command when lift ready to move in
+uint64 timeout_lift_ready 
+string lift_poi                         #POI name in lift use for target robot move to lift(when lift ready)
+matrix_msgs/MapLayoutSwap envi_swap     #swap map and layout
+string lift_finish                      #lift respond when arrive level destination
+uint64 timeout_lift_finish 
+string left_poi                         #poi for left lift
+string move_success                     #cmd when left lift success
+---
+
+#result definition
+
+uint8 SUCCESS                  = 0
+uint8 LIFT_POI_NOTFOUND        = 1
+uint8 TIMEOUT_LIFT_READY       = 2
+uint8 TIMEOUT_LIFT_FINISH      = 3
+uint8 ENVI_SWAP_ERROR          = 4
+
+uint8 result
+string result_s
+string res_cmd
+---
+
+#feedback definition
+
+uint8 INITPARAM         = 0
+uint8 SEND_LIFT_REQ     = 1
+uint8 WAIT_LIFT_READY   = 2
+uint8 LIFT_READY        = 3
+uint8 MOVE_IN_LIFT      = 4
+uint8 WAIT_MOVE_FINISH  = 5
+uint8 REACH_TARGET      = 6
+uint8 MOVE_TARGET_FAIL  = 7
+uint8 ENVI_SWAP         = 8
+uint8 WAIT_LIFT_FINISH  = 9
+uint8 LIFT_FINISH       = 10
+uint8 LEFT              = 11
+uint8 WAIT_LEFT_FINISH  = 12
+
+uint8 FINISH       = 15
+
+uint8 ERROR        = 20
+uint8 sequence

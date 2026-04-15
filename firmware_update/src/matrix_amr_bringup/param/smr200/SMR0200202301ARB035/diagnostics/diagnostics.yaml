@@ -1,0 +1,64 @@
+
+use_automatic_shutdown: true
+timeout_noaction_shutdown: 10800 #sec
+timeout_full_charge_shutdown: 600 #sec
+
+use_diagnostics: true
+timeout_error_device: 5 #sec
+timeout_error_system: 15
+
+debug: false
+
+# sensor_msgs::LaserScan
+check_ldsf: true
+ldsf_topic: "/scan_f_filtered"
+
+# sensor_msgs::LaserScan
+check_ldsr: true
+ldsr_topic: "/scan_r_filtered"
+
+# sensor_msgs::Imu
+check_imu: true
+imu_topic: "/razor_imu/data"
+
+# sensor_msgs::BatteryState
+check_bms_base: true
+bms_base_topic: "/battery_state"
+
+# sensor_msgs::BatteryState
+check_bms_plugin: false
+bms_plugin_topic: ""
+
+# sensor_msgs::PointCloud2
+check_cam1: true
+cam1_topic: "/depthcam_front_left/depth/color/points"
+
+# sensor_msgs::PointCloud2
+check_cam2: true
+cam2_topic: "/depthcam_front_right/depth/color/points"
+
+# sensor_msgs::PointCloud2
+check_cam3: true
+cam3_topic: "/depthcam_front_top_invert/depth/color/points"
+
+# sensor_msgs::PointCloud2
+check_cam_rear: false
+cam_rear_topic: ""
+
+# std_msgs::Int8
+check_motor: false
+motor_topic: "/matrix_controller/heart_beat"
+
+# std_msgs::Int8
+check_mcu1: true
+mcu1_topic: "/matrix_io/heart_beat"
+
+# std_msgs::Int8
+check_mcu2: false
+mcu2_topic: "/matrix_io/heart_beat"
+
+check_xbee: false
+xbee_topic: "/matrix_communiation_xbee/heart_beat"
+
+check_wireless485: false
+wireless485_topic: "/matrix_io/heart_beat"

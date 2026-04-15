@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="port" default="/dev/matrix_bms_daly"/>
+  <arg name="name" default="matrix_bms_base_daly"/>
+
+  <arg name="node_name" default=""/>
+  <node pkg="daly_mobile_bms" type="daly_bms_node.py" name="$(arg node_name)" output="screen">
+	  <param name="serial_port" value="$(arg port)"/>
+  </node> 
+
+
+
+</launch>

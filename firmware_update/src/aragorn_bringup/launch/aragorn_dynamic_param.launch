@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="dynamic_parameter" name="dynamic_navigation" type="dynamic_navigation" output="log"/>
+    <!--<node pkg="dynamic_parameter" name="dynamic_system" type="dynamic_system" output="log"/>-->
+</launch>

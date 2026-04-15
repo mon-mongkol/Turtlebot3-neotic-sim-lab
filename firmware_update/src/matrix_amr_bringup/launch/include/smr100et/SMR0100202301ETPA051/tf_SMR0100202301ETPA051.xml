@@ -1,0 +1,18 @@
+<launch>
+  <param
+    name="robot_description"
+    textfile="$(find matrix_amr_bringup)/launch/include/$(env sub_model)/$(env serial_no)/$(env sub_model)_description.urdf" />
+  <node
+    name="joint_state_publisher"
+    pkg="joint_state_publisher"
+    type="joint_state_publisher" />
+  <node
+    name="robot_state_publisher"
+    pkg="robot_state_publisher"
+    type="robot_state_publisher" />
+
+    <node pkg="tf2_ros" type="static_transform_publisher" name="BaseFootprint_to_BaseLink" args="0.0 0.0 0.0 0.0 0.0 0.0 /base_footprint /base_link"/>
+    <node pkg="tf2_ros" type="static_transform_publisher" name="LidarMergeLink_to_LidarMergeInvertLink" args="0.0 0.0 0.0 3.14159 0.0 0 /lidar_link /lidar_merged_link"/>
+
+    <!-- 0.20485 -->
+</launch>

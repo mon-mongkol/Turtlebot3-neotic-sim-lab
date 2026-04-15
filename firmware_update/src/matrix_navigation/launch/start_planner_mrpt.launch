@@ -1,0 +1,39 @@
+<launch>
+  <arg name="local_planner"          default="dwb"             doc="Local planner can be either dwa, eband, base, teb or pose" />
+  <arg name="map_file" default="$(find matrix_navigation)/maps/27test.yaml" doc="Path to a map .yaml file (required)." />
+  <arg name="virtual_walls_map_file" default="$(arg map_file)" doc="Path to a virtual walls map .yaml file (optional)." />
+  <arg name="with_virtual_walls" default="true" />
+  <arg name="prefix" default="" />
+  <arg name="namespace" default="$(arg prefix)" doc="Namespace to push all topics into."/>
+
+
+   <!--mrpt_localization-->
+  <node pkg="mrpt_localization" type="mrpt_localization_node" name="mrpt_localization_node" output="screen">
+    <param name="ini_file" value="$(find mrpt_localization)/tutorial/pf-localization.ini"/> 
+    <param name="map_file" value="$(find matrix_navigation)/maps/hospital_new.gridmap.gz"/> 
+    <param name="odom_frame_id" value="/odom"/> 
+    <param name="global_frame_id" value="/map"/> 
+    <param name="base_frame_id" value="base_footprint"/> 
+    <param name="map_update_skip" value="20"/> 
+    <param name="particlecloud_update_skip" value="1"/> 
+    <param name="tf_prefix" value=""/> 
+    <param name="debug" value="true"/>
+    <param name="gui_mrpt" value="true"/> 
+    <param name="sensor_sources" value="/scan"/>
+    <remap from="particlecloud" to="r1/particlecloud"/>
+  </node>
+
+  <group if="$(eval namespace != '')" ns="$(arg namespace)">
+    <include file="$(find matrix_navigation)/launch/start_maps.launch">
+      <arg name="map_file" value="$(arg map_file)" />
+      <arg name="virtual_walls_map_file" value="$(arg virtual_walls_map_file)" />
+      <arg name="with_virtual_walls" value="$(arg with_virtual_walls)" />
+    </include>
+  </group>
+
+  <include file="$(find matrix_navigation)/launch/move_base.launch"/>
+
+  <node pkg="rviz" type="rviz" name="rviz" required="true"
+          args="-d $(find matrix_navigation)/rviz/navigation.rviz"/>
+  
+</launch>

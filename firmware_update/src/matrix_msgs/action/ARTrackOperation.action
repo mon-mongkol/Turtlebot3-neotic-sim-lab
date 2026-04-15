@@ -1,0 +1,39 @@
+
+
+#goal definition
+uint8 MODE_FRONT_ARTRACK    = 1
+uint8 MODE_REAR_ARTRACK     = 2
+
+uint8 TRACK_NO_IGNORE = 0 
+
+uint8 docking_mode 
+matrix_msgs/ARTrack ar
+---
+
+#result definition
+
+uint8 NOT_FOUND_TRACK          = 0
+uint8 TRCK_CONTROL_TIME_OUT    = 1
+uint8 TRACK_LOSE_WHILE_CONTROL = 2
+uint8 TRACK_SUCCESS            = 3
+
+uint8 result
+float64 distance_from_track
+uint8 sequence_state
+---
+
+#feedback definition
+
+uint8 INITPARAM    = 0
+uint8 SEARCH_AR    = 1
+uint8 FOUND_AR     = 2
+uint8 TRACK_PARAM  = 3
+uint8 TRACK_AR     = 4
+uint8 FINISH       = 5
+
+uint8 ERROR        = 10
+
+uint8 docking_mode 
+uint8 mark_no
+uint8 sequence_state  
+float64 distance_from_mark

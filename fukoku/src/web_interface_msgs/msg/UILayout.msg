@@ -1,0 +1,12 @@
+string uuid
+string name
+string text
+int32 type
+int32 startHandle
+int32 rotateHandle
+float32 rot
+float32 scale
+geometry_msgs/Point pos
+geometry_msgs/Point[] points
+geometry_msgs/Point[] handles
+string objects

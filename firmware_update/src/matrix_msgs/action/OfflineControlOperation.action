@@ -1,0 +1,26 @@
+# goal definition 
+
+string forward=forward
+string backward=backward
+string rotate_left=rotate_left
+string rotate_right=rotate_right
+
+string cmd
+float64 travel_dist
+float64 vel
+---
+# results definition
+uint8 SUCCESS                   = 0
+uint8 TIMEOUT                   = 1
+uint8 CMD_NOTFOUND              = 2
+uint8 TIMMER_LATE               = 3
+
+uint8 success
+uint8 result
+string text
+uint8 sequence
+---
+# feedback definition
+uint8 sequence
+string text
+uint64 timeout

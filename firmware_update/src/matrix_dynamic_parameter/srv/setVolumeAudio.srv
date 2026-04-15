@@ -1,0 +1,12 @@
+# mode ------ description ----- audio_level
+#   1  ------ set volume  -----    0~100
+#   2  ------ current level ---     0
+
+uint8 MODE_READ_LEVEL=0
+uint8 MODE_SET_VOLUME=1
+
+uint8 mode
+uint8 audio_level
+----------------------
+bool success
+uint8 current_level

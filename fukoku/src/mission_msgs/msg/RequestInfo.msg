@@ -1,0 +1,9 @@
+string name
+string type
+int32 requestor_id
+int32 mission_id
+string objects
+string[] rooms
+int32 operator_id
+time stamp
+int32 mode

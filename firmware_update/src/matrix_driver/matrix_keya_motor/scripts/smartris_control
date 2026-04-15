@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+
+from __future__ import division
+import can
+import time
+import struct
+
+
+class SmartrirsMotor:
+    def __init__(self, can_motor_id_, can_chanel_, bitrate_):
+
+        self.RX_SDO_id_ = 0x600 + can_motor_id_
+        self.TX_SDO_id_ = 0x580 + can_motor_id_
+
+        self.bus = can.Bus(interface='socketcan',
+                            channel='can0',
+                            receive_own_messages=False,
+                            bitrate=1000000)
+    
+    def setProfielVelocity_mode(self):
+        message = can.Message(arbitration_id=self.RX_SDO_id_,
+                                is_extended_id=False,
+                                data=[0x2f, 0x60, 0x60, 0x00, 0x03, 0x00, 0x00 0x00])
+        bus.send(message, timeout=1.0)
+
+
+
+        
+
+   

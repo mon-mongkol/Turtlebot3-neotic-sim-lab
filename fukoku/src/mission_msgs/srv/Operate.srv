@@ -1,0 +1,5 @@
+string cmd
+OperatePoint[] operates
+---
+int64 result
+OperatePoint[] ret

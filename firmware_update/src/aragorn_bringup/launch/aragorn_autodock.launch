@@ -1,0 +1,7 @@
+<launch>
+    <!--<node name="control_moving" pkg="ir_auto_docking" type="control_moving.py" output="log"/>-->
+    <node name="autodocking_server" pkg="ir_auto_docking" type="autodocking_server" output="screen">
+        <rosparam command="load" file="$(find aragorn_bringup)/param/autodocking/autodock.yaml"/>
+    </node> 
+
+</launch>

@@ -1,0 +1,12 @@
+<launch>
+
+    
+    <include file="$(find matrix_autodock)/launch/matrix_dock.launch" />
+
+    <group ns="matrix_rs485">
+        <include file="$(find matrix_autodock)/launch/matrix_dock.launch" />
+    </group>
+    
+
+
+</launch>

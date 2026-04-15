@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+
+    <arg name="port" default="$(env plugin_device_port)"/>
+    <arg name="tcp_ip" default=""/>
+    <arg name="tcp_port" default=""/>
+
+    <node name="matrix_shelf_lift_operation" pkg="matrix_shelf_lift_operation" type="matrix_shelf_lift_operation_node" output="screen">
+       <param name="lift_model" value="LSD300"/>
+       <remap from="/matrix_shl100/receive" to="/matrix_canopen_lifter/LSD300/tx"/>
+       <remap from="/matrix_shl100/write" to="/matrix_canopen_lifter/LSD300/rx"/>
+
+    </node>
+
+    <node name="matrix_lsd300_driver" pkg="matrix_shelf_lift_operation" type="matrix_lsd300_driver" output="screen">
+        <!-- <rosparam file="$(find matrix_docking_track)/param/docking_track.yaml"/> -->
+        <!-- <param name="lift_model" value="LSD300"/> -->
+        <remap from="/matrix_canopen_lifter/LSD300/io_state" to="/matrix_lifter/io_state"/>
+
+    </node>
+
+
+</launch>

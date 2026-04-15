@@ -1,0 +1,16 @@
+
+
+#goal definition
+uint64 interact_timeout
+DeliveryDes[] delivery_info
+---
+
+#result definition
+uint8[] success_point
+uint8[] fail_point
+---
+
+#feedback definition
+geometry_msgs/Pose current_pose
+uint8 goalpoint
+uint8 state

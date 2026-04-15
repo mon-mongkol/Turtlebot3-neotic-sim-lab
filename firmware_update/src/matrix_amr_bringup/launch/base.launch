@@ -1,0 +1,7 @@
+<launch>
+    
+    <include file="$(find matrix_amr_bringup)/launch/include/common_device/motor/$(env motor_model).xml" >
+        <arg name="port" default="/dev/$(env motor_port)"/>
+    </include>
+
+</launch>

@@ -1,0 +1,6 @@
+<launch>
+  
+  <arg name="pkg" default="matrix_amr_bringup"/> 
+  <include file="$(find matrix_amr_bringup)/launch/include/$(env sub_model)/$(env serial_no)/camera_1_$(env serial_no).xml" />
+
+</launch>

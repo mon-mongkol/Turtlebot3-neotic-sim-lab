@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="param_path" default="$(find matrix_wall_follower_operation)/param/wall_smr100A.yaml"/>
+    <node pkg="matrix_wall_follower_operation" type="wall_follower_action_1040PM" name="matrix_wall_follower_operation" output="screen" respawn="false" respawn_delay="0">
+        <rosparam command="load" file="$(arg param_path)" />
+    </node>    
+</launch>

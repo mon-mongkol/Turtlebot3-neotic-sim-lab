@@ -1,0 +1,76 @@
+#!/usr/bin/env python3
+
+import rospy
+import sys
+
+from web_interface_msgs.msg import MapData
+
+class Current_map:
+
+    def __init__(self):
+
+        self.current_map_msg = None
+        
+
+        rospy.loginfo('Initializing Current Map.')
+        ### ============================================###
+        ###                   PUBLISH                   ###
+        ### ============================================###
+        self.current_map_pub = rospy.Publisher(
+            'current_map',
+            MapData ,queue_size=10
+            )
+        
+        ### ============================================###
+        ###                   Subscribe                 ###
+        ### ============================================###
+        # self.current_map_sub = rospy.Subscriber(
+        #     'map_data_web',
+        #     MapData,
+        #     self.current_map_sub_callback)
+
+
+    def current_map_sub_callback(self,msg):
+        # print(msg.name)
+        self.state_publish = MapData()
+        self.state_publish.id = int(msg.id)
+        self.state_publish.name = str(msg.name)
+        self.state_publish.path = msg.path
+        self.state_publish.width = int(msg.width)
+        self.state_publish.height = int(msg.height)
+        self.state_publish.resolution = float(msg.resolution)
+        self.state_publish.description =  msg.description
+        self.state_publish.origin_x = float(msg.origin_x)
+        self.state_publish.origin_y = float(msg.origin_y)
+        self.state_publish.yaw = float(msg.yaw)
+        self.state_publish.negate = int(msg.negate)
+        self.state_publish.occupied_thresh = float(msg.occupied_thresh)
+        self.state_publish.free_thresh = float(msg.free_thresh)
+        self.state_publish.is_default = bool(msg.is_default)
+        self.state_publish.move_speed = float(msg.move_speed)
+        self.state_publish.uvc_speed = float(msg.uvc_speed)
+        # print(self.state_publish)
+        self.current_map_pub.publish(self.state_publish)
+
+
+    def sub_map_data(self):
+        msg = rospy.Subscriber(
+            'map_data_web',
+            MapData,self.current_map_sub_callback)
+
+def main(argv=sys.argv):
+
+    rospy.init_node('Current_map', anonymous=True)
+    M = Current_map()
+    rate = rospy.Rate(1)
+    while not rospy.is_shutdown():
+        M.sub_map_data()
+        rate.sleep()
+    #rospy.spin()
+    
+    
+    #rospy.shutdown()
+
+
+if __name__ == '__main__':
+    main()

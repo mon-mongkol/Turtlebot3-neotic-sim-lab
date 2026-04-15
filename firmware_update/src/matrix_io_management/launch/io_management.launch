@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="matrix_io_management" type="matrix_io_management_node" name="matrix_io_management" output="screen" respawn="false" respawn_delay="0">
+        <rosparam file="$(find matrix_io_management)/param/io.yaml"/>
+    </node>
+</launch>

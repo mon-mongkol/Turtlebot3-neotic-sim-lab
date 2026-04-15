@@ -1,0 +1,12 @@
+<launch>
+
+    
+    <include file="$(find aragorn_bringup)/launch/aragorn_remote.launch"/>
+    <include file="$(find aragorn_bringup)/launch/include/start_io.launch.xml"/>
+    <include file="$(find aragorn_bringup)/launch/include/start_imu.launch.xml"/>
+    <include file="$(find aragorn_bringup)/launch/include/start_lidar_filter.launch.xml"/>
+    <include file="$(find aragorn_bringup)/launch/include/start_motor.launch.xml"/>
+    <include file="$(find aragorn_bringup)/launch/include/start_bms.launch.xml"/>
+
+
+</launch>

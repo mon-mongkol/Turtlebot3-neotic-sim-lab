@@ -1,0 +1,2446 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-1-g15f4949  Build Version: 1.6.7594.29634
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="smr0200_description">
+
+  <link name="base_footprint"/>
+
+  <joint name="base_footprint_to_base_link" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0.0 0.0 0.3478" rpy="0 0 0"/>
+  </joint>
+
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.026647 -0.0016089 -0.13415"
+        rpy="0 0 0" />
+      <mass
+        value="0.10544" />
+      <inertia
+        ixx="0.47113"
+        ixy="-0.00084986"
+        ixz="-0.016209"
+        iyy="1.206"
+        iyz="-0.0010424"
+        izz="1.3628" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="swing_arm_left_link">
+    <inertial>
+      <origin
+        xyz="-0.083791 0.023764 -0.044602"
+        rpy="0 0 0" />
+      <mass
+        value="0.0139" />
+      <inertia
+        ixx="0.017736"
+        ixy="0.0036377"
+        ixz="3.2937E-06"
+        iyy="0.046908"
+        iyz="-4.7587E-06"
+        izz="0.052747" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/swing_arm_left_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/swing_arm_left_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="swing_arm_left_joint"
+    type="continuous">
+    <origin
+      xyz="0.1575 0.21 -0.218000000000007"
+      rpy="-1.5707963267949 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="swing_arm_left_link" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="wheel_left_link">
+    <inertial>
+      <origin
+        xyz="5.76130931278368E-08 9.33412154703328E-05 3.34998105323558E-05"
+        rpy="0 0 0" />
+      <mass
+        value="4.92028521666382" />
+      <inertia
+        ixx="0.0086242644686345"
+        ixy="2.70522886397653E-08"
+        ixz="-4.32844949337095E-09"
+        iyy="0.00861561656114537"
+        iyz="-2.85497232661818E-06"
+        izz="0.0155135674366376" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/wheel_left_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.792156862745098 0.792156862745098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/wheel_left_link.STL" />
+      </geometry>
+
+      <surface>
+        <friction>
+          <ode>
+            <mu>10000000.01</mu>
+            <mu2>10000000.01</mu2>
+            <fdir1>0 0 1</fdir1>
+            <slip1>0.001</slip1>
+            <slip2>0.001</slip2>
+          </ode>
+        </friction>
+        <bounce>
+          <restitution_coefficient>0.0</restitution_coefficient>
+          <threshold>1000000000000</threshold>
+        </bounce>
+        <contact>
+          <ode>
+            <soft_cfm>0.00001</soft_cfm>
+            <soft_erp>0.2</soft_erp>
+            <kp>100000000.0</kp>
+            <kd>10.0</kd>
+            <max_vel>100.0</max_vel>
+            <min_depth>0.001</min_depth>
+          </ode>
+        </contact>
+      </surface>
+
+    </collision>
+  </link>
+  <joint
+    name="wheel_left_joint"
+    type="continuous">
+    <origin
+      xyz="-0.1575 0.054 0.037"
+      rpy="0 0 0" />
+    <parent
+      link="swing_arm_left_link" />
+    <child
+      link="wheel_left_link" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      effort="100"
+      velocity="50" />
+  </joint>
+  <link
+    name="caster_front_left_link">
+    <inertial>
+      <origin
+        xyz="-0.00916794690411099 0.000148743395371853 -0.0232497355491759"
+        rpy="0 0 0" />
+      <mass
+        value="0.148884637872198" />
+      <inertia
+        ixx="8.24463656140124E-05"
+        ixy="1.14375001225129E-08"
+        ixz="-1.83743957993879E-05"
+        iyy="8.10551190550526E-05"
+        iyz="1.1068460631072E-08"
+        izz="0.000103110866186914" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/caster_front_left_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/caster_front_left_link.STL" />
+      </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <mu>0.8</mu>
+            <mu2>0.8</mu2>
+            <kp>100000000.0</kp>
+            <kd>10.0</kd>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+  </link>
+  <joint
+    name="caster_front_left_joint"
+    type="continuous">
+    <origin
+      xyz="0.1575 0.0289999999999999 -0.0125000000000001"
+      rpy="1.5707963267949 0 0" />
+    <parent
+      link="swing_arm_left_link" />
+    <child
+      link="caster_front_left_link" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <link
+    name="caster_wheel_front_left_link">
+    <inertial>
+      <origin
+        xyz="9.07118093879111E-06 3.41600020535848E-05 1.00280443698919E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.286814980350806" />
+      <inertia
+        ixx="0.000143492634284959"
+        ixy="4.40244433021421E-09"
+        ixz="-3.53813210967159E-08"
+        iyy="0.000143527236701207"
+        iyz="-3.22862629139751E-08"
+        izz="0.000245134545952503" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/caster_wheel_front_left_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/caster_wheel_front_left_link.STL" />
+      </geometry>
+      
+      <surface>
+        <friction>
+          <ode>
+            <mu>1.01</mu>
+            <mu2>1.01</mu2>
+            <fdir1>0 0 1</fdir1>
+            <slip1>0</slip1>
+            <slip2>0</slip2>
+          </ode>
+        </friction>
+        <bounce>
+          <restitution_coefficient>0.0</restitution_coefficient>
+          <threshold>1000000000000</threshold>
+        </bounce>
+        <contact>
+          <ode>
+            <soft_cfm>0.00001</soft_cfm>
+            <soft_erp>0.2</soft_erp>
+            <kp>100000000.0</kp>
+            <kd>10.0</kd>
+            <max_vel>100.0</max_vel>
+            <min_depth>0.001</min_depth>
+          </ode>
+        </contact>
+      </surface>
+
+    </collision>
+  </link>
+  <joint
+    name="caster_wheel_front_left_joint"
+    type="continuous">
+    <origin
+      xyz="-0.038 0 -0.062"
+      rpy="-1.5708 0 0" />
+    <parent
+      link="caster_front_left_link" />
+    <child
+      link="caster_wheel_front_left_link" />
+    <axis
+      xyz="0 0 -1" />
+
+    <calibration rising="0.0"/>
+    <dynamics damping="0.0" friction="0.0"/>
+    <limit effort="30" velocity="1.0" lower="-2.2" upper="0.7" />
+    <safety_controller k_velocity="10"/>
+
+  </joint>
+  <link
+    name="swing_arm_right_link">
+    <inertial>
+      <origin
+        xyz="-0.0837911210321309 -0.023763896430483 -0.0445953369512286"
+        rpy="0 0 0" />
+      <mass
+        value="0.0139000089506776" />
+      <inertia
+        ixx="0.0177364623310523"
+        ixy="-0.00363766903324375"
+        ixz="3.59190964854568E-06"
+        iyy="0.0469077047240042"
+        iyz="1.43366828915928E-06"
+        izz="0.0527469772594403" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/swing_arm_right_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/swing_arm_right_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="swing_arm_right_joint"
+    type="continuous">
+    <origin
+      xyz="0.1575 -0.21 -0.218000000000007"
+      rpy="1.5707963267949 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="swing_arm_right_link" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <link
+    name="wheel_right_link">
+    <inertial>
+      <origin
+        xyz="5.76130930940097E-08 -9.33412154702773E-05 -3.34998105322865E-05"
+        rpy="0 0 0" />
+      <mass
+        value="4.92028521666381" />
+      <inertia
+        ixx="0.00862426446863447"
+        ixy="-2.70522886400945E-08"
+        ixz="4.32844948903954E-09"
+        iyy="0.00861561656114534"
+        iyz="-2.85497232661669E-06"
+        izz="0.0155135674366376" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/wheel_right_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.792156862745098 0.792156862745098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/wheel_right_link.STL" />
+      </geometry>
+      
+      <surface>
+        <friction>
+          <ode>
+            <mu>10000000.01</mu>
+            <mu2>10000000.01</mu2>
+            <fdir1>0 0 1</fdir1>
+            <slip1>0.001</slip1>
+            <slip2>0.001</slip2>
+          </ode>
+        </friction>
+        <bounce>
+          <restitution_coefficient>0.0</restitution_coefficient>
+          <threshold>1000000000000</threshold>
+        </bounce>
+        <contact>
+          <ode>
+            <soft_cfm>0.00001</soft_cfm>
+            <soft_erp>0.2</soft_erp>
+            <kp>100000000.0</kp>
+            <kd>10.0</kd>
+            <max_vel>100.0</max_vel>
+            <min_depth>0.001</min_depth>
+          </ode>
+        </contact>
+      </surface>
+
+    </collision>
+  </link>
+  <joint
+    name="wheel_right_joint"
+    type="continuous">
+    <origin
+      xyz="-0.1575 -0.054 0.037"
+      rpy="0 0 0" />
+    <parent
+      link="swing_arm_right_link" />
+    <child
+      link="wheel_right_link" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      effort="100"
+      velocity="50" />
+  </joint>
+  <link
+    name="caster_front_right_link">
+    <inertial>
+      <origin
+        xyz="-0.00916794689172473 0.000148743404553092 -0.0232497355369849"
+        rpy="0 0 0" />
+      <mass
+        value="0.148884637783886" />
+      <inertia
+        ixx="8.24463655345415E-05"
+        ixy="1.14375353405549E-08"
+        ixz="-1.83743957438304E-05"
+        iyy="8.10551189419511E-05"
+        iyz="1.10684955081094E-08"
+        izz="0.000103110866108712" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/caster_front_right_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/caster_front_right_link.STL" />
+      </geometry>
+      
+      <surface>
+        <friction>
+          <ode>
+            <mu>1.01</mu>
+            <mu2>1.01</mu2>
+            <fdir1>0 0 1</fdir1>
+            <slip1>0</slip1>
+            <slip2>0</slip2>
+          </ode>
+        </friction>
+        <bounce>
+          <restitution_coefficient>0.0</restitution_coefficient>
+          <threshold>1000000000000</threshold>
+        </bounce>
+        <contact>
+          <ode>
+            <soft_cfm>0.00001</soft_cfm>
+            <soft_erp>0.2</soft_erp>
+            <kp>100000000.0</kp>
+            <kd>10.0</kd>
+            <max_vel>100.0</max_vel>
+            <min_depth>0.001</min_depth>
+          </ode>
+        </contact>
+      </surface>
+
+    </collision>
+  </link>
+  <joint
+    name="caster_front_right_joint"
+    type="continuous">
+    <origin
+      xyz="0.1575 -0.0290000000000012 -0.0125"
+      rpy="-1.5707963267949 0 0" />
+    <parent
+      link="swing_arm_right_link" />
+    <child
+      link="caster_front_right_link" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <link
+    name="caster_wheel_front_right_link">
+    <inertial>
+      <origin
+        xyz="-2.81076897244992E-05 2.14277817018327E-05 1.00280443800782E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.286814980349857" />
+      <inertia
+        ixx="0.000143519083987807"
+        ixy="-1.5330308432154E-08"
+        ixz="1.63294248752922E-08"
+        iyy="0.000143500786998235"
+        iyz="-4.5028774285973E-08"
+        izz="0.000245134545952498" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/caster_wheel_front_right_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/caster_wheel_front_right_link.STL" />
+      </geometry>
+      
+      <surface>
+        <friction>
+          <ode>
+            <mu>1.01</mu>
+            <mu2>1.01</mu2>
+            <fdir1>0 0 1</fdir1>
+            <slip1>0</slip1>
+            <slip2>0</slip2>
+          </ode>
+        </friction>
+        <bounce>
+          <restitution_coefficient>0.0</restitution_coefficient>
+          <threshold>1000000000000</threshold>
+        </bounce>
+        <contact>
+          <ode>
+            <soft_cfm>0.00001</soft_cfm>
+            <soft_erp>0.2</soft_erp>
+            <kp>100000000.0</kp>
+            <kd>10.0</kd>
+            <max_vel>100.0</max_vel>
+            <min_depth>0.001</min_depth>
+          </ode>
+        </contact>
+      </surface>
+
+    </collision>
+  </link>
+  <joint
+    name="caster_wheel_front_right_joint"
+    type="continuous">
+    <origin
+      xyz="-0.038 0 -0.062"
+      rpy="1.5708 0 0" />
+    <parent
+      link="caster_front_right_link" />
+    <child
+      link="caster_wheel_front_right_link" />
+    <axis
+      xyz="0 0 -1" />
+
+    <calibration rising="0.0"/>
+    <dynamics damping="0.0" friction="0.0"/>
+    <limit effort="30" velocity="1.0" lower="-2.2" upper="0.7" />
+    <safety_controller k_velocity="10"/>
+
+  </joint>
+  <link
+    name="caster_rear_left_link">
+    <inertial>
+      <origin
+        xyz="-0.00916794690398598 0.000148743394883466 -0.0232497355491254"
+        rpy="0 0 0" />
+      <mass
+        value="0.148884637869508" />
+      <inertia
+        ixx="8.24463656126247E-05"
+        ixy="1.143749909265E-08"
+        ixz="-1.83743957990951E-05"
+        iyy="8.10551190546306E-05"
+        iyz="1.10684603347817E-08"
+        izz="0.000103110866185491" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/caster_rear_left_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/caster_rear_left_link.STL" />
+      </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <mu>0.8</mu>
+            <mu2>0.8</mu2>
+            <kp>100000000.0</kp>
+            <kd>10.0</kd>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+  </link>
+  <joint
+    name="caster_rear_left_joint"
+    type="continuous">
+    <origin
+      xyz="-0.299 0.21 -0.245800000000008"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="caster_rear_left_link" />
+    <axis
+      xyz="0 0 -1" />
+
+    <calibration rising="0.0"/>
+    <dynamics damping="0.0" friction="0.0"/>
+    <limit effort="30" velocity="1.0" lower="-2.2" upper="0.7" />
+    <safety_controller k_velocity="10"/>
+
+  </joint>
+  <link
+    name="caster_wheel_rear_left_link">
+    <inertial>
+      <origin
+        xyz="-2.81076897243882E-05 -2.14277817018882E-05 -1.00280443786627E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.286814980349859" />
+      <inertia
+        ixx="0.000143519083987807"
+        ixy="1.53303084323672E-08"
+        ixz="-1.63294248749492E-08"
+        iyy="0.000143500786998236"
+        iyz="-4.50287742863549E-08"
+        izz="0.000245134545952499" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/caster_wheel_rear_left_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/caster_wheel_rear_left_link.STL" />
+      </geometry>
+      
+      <surface>
+        <friction>
+          <ode>
+            <mu>1.01</mu>
+            <mu2>1.01</mu2>
+            <fdir1>0 0 1</fdir1>
+            <slip1>0</slip1>
+            <slip2>0</slip2>
+          </ode>
+        </friction>
+        <bounce>
+          <restitution_coefficient>0.0</restitution_coefficient>
+          <threshold>1000000000000</threshold>
+        </bounce>
+        <contact>
+          <ode>
+            <soft_cfm>0.00001</soft_cfm>
+            <soft_erp>0.2</soft_erp>
+            <kp>100000000.0</kp>
+            <kd>10.0</kd>
+            <max_vel>100.0</max_vel>
+            <min_depth>0.001</min_depth>
+          </ode>
+        </contact>
+      </surface>
+
+    </collision>
+  </link>
+  <joint
+    name="caster_wheel_rear_left_joint"
+    type="continuous">
+    <origin
+      xyz="-0.038 0 -0.062"
+      rpy="-1.5708 0 0" />
+    <parent
+      link="caster_rear_left_link" />
+    <child
+      link="caster_wheel_rear_left_link" />
+    <axis
+      xyz="0 0 -1" />
+
+    <calibration rising="0.0"/>
+    <dynamics damping="0.0" friction="0.0"/>
+    <limit effort="30" velocity="1.0" lower="-2.2" upper="0.7" />
+    <safety_controller k_velocity="10"/>
+
+  </joint>
+  <link
+    name="caster_rear_right_link">
+    <inertial>
+      <origin
+        xyz="-0.0091679468915738 0.000148743404136079 -0.023249735536938"
+        rpy="0 0 0" />
+      <mass
+        value="0.148884637780923" />
+      <inertia
+        ixx="8.24463655331095E-05"
+        ixy="1.14375344914867E-08"
+        ixz="-1.83743957435236E-05"
+        iyy="8.1055118941433E-05"
+        iyz="1.10684952341112E-08"
+        izz="0.000103110866107166" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/caster_rear_right_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/caster_rear_right_link.STL" />
+      </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <mu>0.8</mu>
+            <mu2>0.8</mu2>
+            <kp>100000000.0</kp>
+            <kd>10.0</kd>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+  </link>
+  <joint
+    name="caster_rear_right_joint"
+    type="continuous">
+    <origin
+      xyz="-0.299 -0.21 -0.2458"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="caster_rear_right_link" />
+    <axis
+      xyz="0 0 -1" />
+
+    <calibration rising="0.0"/>
+    <dynamics damping="0.0" friction="0.0"/>
+    <limit effort="30" velocity="1.0" lower="-2.2" upper="0.7" />
+    <safety_controller k_velocity="10"/>
+
+  </joint>
+  <link
+    name="caster_wheel_rear_right_link">
+    <inertial>
+      <origin
+        xyz="-2.81076897244437E-05 2.14277817017772E-05 1.00280443800227E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.286814980349855" />
+      <inertia
+        ixx="0.000143519083987805"
+        ixy="-1.53303084323849E-08"
+        ixz="1.63294248752335E-08"
+        iyy="0.000143500786998234"
+        iyz="-4.50287742856061E-08"
+        izz="0.000245134545952496" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/caster_wheel_rear_right_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/caster_wheel_rear_right_link.STL" />
+      </geometry>
+      
+      <surface>
+        <friction>
+          <ode>
+            <mu>1.01</mu>
+            <mu2>1.01</mu2>
+            <fdir1>0 0 1</fdir1>
+            <slip1>0</slip1>
+            <slip2>0</slip2>
+          </ode>
+        </friction>
+        <bounce>
+          <restitution_coefficient>0.0</restitution_coefficient>
+          <threshold>1000000000000</threshold>
+        </bounce>
+        <contact>
+          <ode>
+            <soft_cfm>0.00001</soft_cfm>
+            <soft_erp>0.2</soft_erp>
+            <kp>100000000.0</kp>
+            <kd>10.0</kd>
+            <max_vel>100.0</max_vel>
+            <min_depth>0.001</min_depth>
+          </ode>
+        </contact>
+      </surface>
+
+    </collision>
+  </link>
+  <joint
+    name="caster_wheel_rear_right_joint"
+    type="continuous">
+    <origin
+      xyz="-0.038 0.001 -0.062"
+      rpy="1.5708 0 0" />
+    <parent
+      link="caster_rear_right_link" />
+    <child
+      link="caster_wheel_rear_right_link" />
+    <axis
+      xyz="0 0 -1" />
+
+    <calibration rising="0.0"/>
+    <dynamics damping="0.0" friction="0.0"/>
+    <limit effort="30" velocity="1.0" lower="-2.2" upper="0.7" />
+    <safety_controller k_velocity="10"/>
+
+  </joint>
+  <link
+    name="lidar_front_link">
+    <inertial>
+      <origin
+        xyz="-0.000267994966892726 3.5375998918008E-06 -0.0125665312291533"
+        rpy="0 0 0" />
+      <mass
+        value="0.0932396336685257" />
+      <inertia
+        ixx="5.2510158402121E-05"
+        ixy="-6.97062431557764E-10"
+        ixz="6.39430995763527E-08"
+        iyy="5.26163151570733E-05"
+        iyz="-2.77922595269124E-09"
+        izz="9.92613112400179E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/lidar_front_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 0.501960784313725 0.501960784313725 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/lidar_front_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="lidar_front_joint"
+    type="fixed">
+    <origin
+      xyz="0.396 -0.23499 -0.14276"
+      rpy="0 0 -0.7854" />
+    <parent
+      link="base_link" />
+    <child
+      link="lidar_front_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="lidar_rear_link">
+    <inertial>
+      <origin
+        xyz="-0.000267994966919427 3.53759986759794E-06 -0.0125665312291313"
+        rpy="0 0 0" />
+      <mass
+        value="0.0932396336685166" />
+      <inertia
+        ixx="5.251015840212E-05"
+        ixy="-6.97062431689901E-10"
+        ixz="6.39430995772695E-08"
+        iyy="5.26163151570682E-05"
+        iyz="-2.77922595286048E-09"
+        izz="9.92613112400124E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/lidar_rear_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 0.501960784313725 0.501960784313725 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/lidar_rear_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="lidar_rear_joint"
+    type="fixed">
+    <origin
+      xyz="-0.38401 0.235 -0.1418"
+      rpy="0 0 2.3562" />
+    <parent
+      link="base_link" />
+    <child
+      link="lidar_rear_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="depthcam_front_left_link">
+    <inertial>
+      <origin
+        xyz="0.00205465802673033 0.000268685933432433 0.0146045324274485"
+        rpy="0 0 0" />
+      <mass
+        value="0.0607537105971397" />
+      <inertia
+        ixx="7.79818123126208E-05"
+        ixy="-2.55133558510122E-08"
+        ixz="-3.51134247448455E-08"
+        iyy="5.06158648401123E-06"
+        iyz="2.56320907246364E-08"
+        izz="7.40183063521512E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/depthcam_front_left_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/depthcam_front_left_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="depthcam_front_left_joint"
+    type="fixed">
+    <origin
+      xyz="0.41823 0.0081559 -0.23711"
+      rpy="-1.6403 -0.26357 0.5236" />
+    <parent
+      link="base_link" />
+    <child
+      link="depthcam_front_left_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="depthcam_front_right_link">
+    <inertial>
+      <origin
+        xyz="0.00205465282956815 0.000268685457639639 0.0146045316276136"
+        rpy="0 0 0" />
+      <mass
+        value="0.060753752180391" />
+      <inertia
+        ixx="7.79818605016467E-05"
+        ixy="-2.55152779380404E-08"
+        ixz="-3.51119403926908E-08"
+        iyy="5.0615887672157E-06"
+        iyz="2.56249476722596E-08"
+        izz="7.40183539559307E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/depthcam_front_right_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/depthcam_front_right_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="depthcam_front_right_joint"
+    type="fixed">
+    <origin
+      xyz="0.40422 -0.033472 -0.23905"
+      rpy="-1.5013 -0.26357 -0.5236" />
+    <parent
+      link="base_link" />
+    <child
+      link="depthcam_front_right_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="depthcam_front_top_link">
+    <inertial>
+      <origin
+        xyz="-0.00700379967453924 -0.00686872375428842 9.17697034640008E-06"
+        rpy="0 0 0" />
+      <mass
+        value="0.120538051855423" />
+      <inertia
+        ixx="0.000109400645522517"
+        ixy="-1.05823454758438E-07"
+        ixz="-1.49658476792281E-08"
+        iyy="7.39026523464577E-06"
+        iyz="3.41785510728163E-08"
+        izz="0.000103935159287737" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/depthcam_front_top_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.792156862745098 0.792156862745098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/depthcam_front_top_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="depthcam_front_top_joint"
+    type="fixed">
+    <origin
+      xyz="0.451 0.0081 -0.088"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="depthcam_front_top_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="ultrasonic_front_left_link">
+    <inertial>
+      <origin
+        xyz="-0.00990545214343536 -0.000360935413968255 -0.000782026730264507"
+        rpy="0 0 0" />
+      <mass
+        value="0.0330313597353151" />
+      <inertia
+        ixx="1.28694267013293E-06"
+        ixy="2.44775965516465E-23"
+        ixz="-1.32348898008484E-23"
+        iyy="1.08244491110523E-06"
+        iyz="1.3752801384319E-22"
+        izz="1.02007684167811E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_front_left_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.792156862745098 0.792156862745098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_front_left_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ultrasonic_front_left_joint"
+    type="fixed">
+    <origin
+      xyz="0.44853 0.17 -0.22418"
+      rpy="0 -0.10436 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="ultrasonic_front_left_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="ultrasonic_front_left_mid_link">
+    <inertial>
+      <origin
+        xyz="-0.00990545214343541 -0.000360935413968311 -0.000782026730264396"
+        rpy="0 0 0" />
+      <mass
+        value="0.0330313597353151" />
+      <inertia
+        ixx="1.28694267013293E-06"
+        ixy="-2.11758236813575E-22"
+        ixz="-1.62127400060393E-22"
+        iyy="1.08244491110522E-06"
+        iyz="8.40415502353876E-22"
+        izz="1.02007684167811E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_front_left_mid_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.792156862745098 0.792156862745098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_front_left_mid_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ultrasonic_front_left_mid_joint"
+    type="fixed">
+    <origin
+      xyz="0.43425 0.27325 -0.22418"
+      rpy="0 -0.10436 0.7854" />
+    <parent
+      link="base_link" />
+    <child
+      link="ultrasonic_front_left_mid_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="ultrasonic_front_left_side_link">
+    <inertial>
+      <origin
+        xyz="-0.0099054521434353 -0.000360935413968255 -0.000782026730264507"
+        rpy="0 0 0" />
+      <mass
+        value="0.0330313597353151" />
+      <inertia
+        ixx="1.28694267013293E-06"
+        ixy="-1.46539188336252E-22"
+        ixz="-1.25731453108056E-22"
+        iyy="1.08244491110523E-06"
+        iyz="1.58933500306917E-23"
+        izz="1.02007684167811E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_front_left_side_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.792156862745098 0.792156862745098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_front_left_side_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ultrasonic_front_left_side_joint"
+    type="fixed">
+    <origin
+      xyz="0.351 0.28753 -0.22418"
+      rpy="0 -0.10436 1.5708" />
+    <parent
+      link="base_link" />
+    <child
+      link="ultrasonic_front_left_side_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="ultrasonic_front_right_link">
+    <inertial>
+      <origin
+        xyz="-0.00990545214343552 0.00036093541396847 -0.000782026730267504"
+        rpy="0 0 0" />
+      <mass
+        value="0.0330313597353151" />
+      <inertia
+        ixx="1.28694267013293E-06"
+        ixy="6.20762565656672E-24"
+        ixz="-4.63221143029695E-23"
+        iyy="1.08244491110523E-06"
+        iyz="7.04994803944604E-24"
+        izz="1.02007684167811E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_front_right_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_front_right_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ultrasonic_front_right_joint"
+    type="fixed">
+    <origin
+      xyz="0.44853 -0.17 -0.22418"
+      rpy="0 -0.10436 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="ultrasonic_front_right_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="ultrasonic_front_right_mid_link">
+    <inertial>
+      <origin
+        xyz="-0.00990545214343569 0.000360935413968727 -0.000782026730264562"
+        rpy="0 0 0" />
+      <mass
+        value="0.033031359735315" />
+      <inertia
+        ixx="1.28694267013293E-06"
+        ixy="4.76456032830544E-22"
+        ixz="1.65436122510606E-23"
+        iyy="1.08244491110522E-06"
+        iyz="-2.44845461315696E-22"
+        izz="1.02007684167811E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_front_right_mid_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_front_right_mid_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ultrasonic_front_right_mid_joint"
+    type="fixed">
+    <origin
+      xyz="0.43425 -0.27325 -0.22418"
+      rpy="0 -0.10436 -0.7854" />
+    <parent
+      link="base_link" />
+    <child
+      link="ultrasonic_front_right_mid_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="ultrasonic_front_right_side_link">
+    <inertial>
+      <origin
+        xyz="-0.00990545214343669 0.000360935413968089 -0.000782026730264396"
+        rpy="0 0 0" />
+      <mass
+        value="0.0330313597353151" />
+      <inertia
+        ixx="1.28694267013294E-06"
+        ixy="2.0492332538577E-22"
+        ixz="-9.2644228605935E-23"
+        iyy="1.08244491110523E-06"
+        iyz="-1.53367473204685E-22"
+        izz="1.02007684167811E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_front_right_side_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_front_right_side_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ultrasonic_front_right_side_joint"
+    type="fixed">
+    <origin
+      xyz="0.351 -0.28753 -0.22418"
+      rpy="0 -0.10436 -1.5708" />
+    <parent
+      link="base_link" />
+    <child
+      link="ultrasonic_front_right_side_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="ultrasonic_rear_left_link">
+    <inertial>
+      <origin
+        xyz="-0.0099054521434353 0.000360935413968311 -0.000782026730264507"
+        rpy="0 0 0" />
+      <mass
+        value="0.0330313597353151" />
+      <inertia
+        ixx="1.28694267013293E-06"
+        ixy="-8.97285139550002E-23"
+        ixz="1.98523347012727E-23"
+        iyy="1.08244491110523E-06"
+        iyz="-8.25629212311342E-23"
+        izz="1.02007684167811E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_rear_left_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_rear_left_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ultrasonic_rear_left_joint"
+    type="fixed">
+    <origin
+      xyz="-0.43653 0.17 -0.22418"
+      rpy="0 -0.10436 3.1416" />
+    <parent
+      link="base_link" />
+    <child
+      link="ultrasonic_rear_left_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="ultrasonic_rear_left_mid_link">
+    <inertial>
+      <origin
+        xyz="-0.00990545214343541 0.0003609354139682 -0.000782026730264562"
+        rpy="0 0 0" />
+      <mass
+        value="0.0330313597353151" />
+      <inertia
+        ixx="1.28694267013293E-06"
+        ixy="1.05879118406788E-22"
+        ixz="2.81241408268029E-22"
+        iyy="1.08244491110522E-06"
+        iyz="-9.69455677912148E-22"
+        izz="1.02007684167811E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_rear_left_mid_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_rear_left_mid_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ultrasonic_rear_left_mid_joint"
+    type="fixed">
+    <origin
+      xyz="-0.42225 0.27325 -0.22418"
+      rpy="0 -0.10436 2.3562" />
+    <parent
+      link="base_link" />
+    <child
+      link="ultrasonic_rear_left_mid_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="ultrasonic_rear_left_side_link">
+    <inertial>
+      <origin
+        xyz="-0.0099054521434353 -0.0003609354139682 -0.000782026730264618"
+        rpy="0 0 0" />
+      <mass
+        value="0.0330313597353151" />
+      <inertia
+        ixx="1.28694267013293E-06"
+        ixy="8.55285245698956E-23"
+        ixz="7.9409338805092E-23"
+        iyy="1.08244491110523E-06"
+        iyz="-2.09276497044877E-24"
+        izz="1.02007684167811E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_rear_left_side_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.792156862745098 0.792156862745098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_rear_left_side_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ultrasonic_rear_left_side_joint"
+    type="fixed">
+    <origin
+      xyz="-0.339 0.28753 -0.22418"
+      rpy="0 -0.10436 1.5708" />
+    <parent
+      link="base_link" />
+    <child
+      link="ultrasonic_rear_left_side_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="ultrasonic_rear_right_link">
+    <inertial>
+      <origin
+        xyz="-0.00990545214343536 -0.000360935413968456 -0.000782026730267504"
+        rpy="0 0 0" />
+      <mass
+        value="0.0330313597353151" />
+      <inertia
+        ixx="1.28694267013293E-06"
+        ixy="1.12033891972881E-22"
+        ixz="-3.30872245021211E-23"
+        iyy="1.08244491110523E-06"
+        iyz="-4.87772114149499E-23"
+        izz="1.02007684167811E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_rear_right_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_rear_right_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ultrasonic_rear_right_joint"
+    type="fixed">
+    <origin
+      xyz="-0.43653 -0.17 -0.22418"
+      rpy="0 -0.10436 3.1416" />
+    <parent
+      link="base_link" />
+    <child
+      link="ultrasonic_rear_right_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="ultrasonic_rear_right_mid_link">
+    <inertial>
+      <origin
+        xyz="-0.00990545214343574 -0.000360935413968699 -0.000782026730264451"
+        rpy="0 0 0" />
+      <mass
+        value="0.033031359735315" />
+      <inertia
+        ixx="1.28694267013293E-06"
+        ixy="-5.82335151237331E-22"
+        ixz="6.28657265540301E-23"
+        iyy="1.08244491110522E-06"
+        iyz="4.73147310380332E-22"
+        izz="1.02007684167811E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_rear_right_mid_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_rear_right_mid_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ultrasonic_rear_right_mid_joint"
+    type="fixed">
+    <origin
+      xyz="-0.42225 -0.27325 -0.22418"
+      rpy="0 -0.10436 -2.3562" />
+    <parent
+      link="base_link" />
+    <child
+      link="ultrasonic_rear_right_mid_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="ultrasonic_rear_right_side_link">
+    <inertial>
+      <origin
+        xyz="-0.00990545214343669 0.000360935413968311 -0.000782026730264312"
+        rpy="0 0 0" />
+      <mass
+        value="0.033031359735315" />
+      <inertia
+        ixx="1.28694267013293E-06"
+        ixy="-3.50091298049347E-22"
+        ixz="-9.92616735063566E-23"
+        iyy="1.08244491110522E-06"
+        iyz="4.59431436487429E-23"
+        izz="1.02007684167811E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_rear_right_side_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/ultrasonic_rear_right_side_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="ultrasonic_rear_right_side_joint"
+    type="fixed">
+    <origin
+      xyz="-0.339 -0.28753 -0.22418"
+      rpy="0 -0.10436 -1.5708" />
+    <parent
+      link="base_link" />
+    <child
+      link="ultrasonic_rear_right_side_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="imu_link">
+    <inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0.05" />
+      <inertia
+        ixx="0"
+        ixy="0"
+        ixz="0"
+        iyy="0"
+        iyz="0"
+        izz="0" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/imu_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://smr0200_description/meshes/imu_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="imu_joint"
+    type="fixed">
+    <origin
+      xyz="0 0 -0.0230000000000049"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="imu_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+  <!-- '''mu''' is the Coulomb friction coefficient for the first friction direction, and
+       '''mu2''' is the friction coefficient for the second friction direction (perpendicular to the first friction direction). -->
+
+  <gazebo reference="wheel_left_link">
+    <surface>
+        <friction>
+          <ode>
+            <mu>10000000.01</mu>
+            <mu2>10000000.01</mu2>
+            <fdir1>0 0 1</fdir1>
+            <slip1>100</slip1>
+            <slip2>100</slip2>
+          </ode>
+        </friction>
+        <bounce>
+          <restitution_coefficient>0.0</restitution_coefficient>
+          <threshold>1000000000000</threshold>
+        </bounce>
+        <contact>
+          <ode>
+            <soft_cfm>0.00001</soft_cfm>
+            <soft_erp>0.2</soft_erp>
+            <kp>100000000.0</kp>
+            <kd>10.0</kd>
+            <max_vel>100.0</max_vel>
+            <min_depth>0.001</min_depth>
+          </ode>
+        </contact>
+    </surface>
+  </gazebo>
+
+  <gazebo reference="wheel_right_link">
+    <surface>
+        <friction>
+          <ode>
+            <mu>10000000.01</mu>
+            <mu2>10000000.01</mu2>
+            <fdir1>0 0 1</fdir1>
+            <slip1>100</slip1>
+            <slip2>100</slip2>
+          </ode>
+        </friction>
+        <bounce>
+          <restitution_coefficient>0.0</restitution_coefficient>
+          <threshold>1000000000000</threshold>
+        </bounce>
+        <contact>
+          <ode>
+            <soft_cfm>0.00001</soft_cfm>
+            <soft_erp>0.2</soft_erp>
+            <kp>100000000.0</kp>
+            <kd>10.0</kd>
+            <max_vel>100.0</max_vel>
+            <min_depth>0.001</min_depth>
+          </ode>
+        </contact>
+    </surface>
+  </gazebo>
+
+  <gazebo reference="caster_wheel_front_left_link">
+    <surface>
+        <friction>
+          <ode>
+            <mu>10000000.01</mu>
+            <mu2>10000000.01</mu2>
+            <fdir1>0 0 1</fdir1>
+            <slip1>100</slip1>
+            <slip2>100</slip2>
+          </ode>
+        </friction>
+        <bounce>
+          <restitution_coefficient>0.0</restitution_coefficient>
+          <threshold>1000000000000</threshold>
+        </bounce>
+        <contact>
+          <ode>
+            <soft_cfm>0.00001</soft_cfm>
+            <soft_erp>0.2</soft_erp>
+            <kp>100000000.0</kp>
+            <kd>10.0</kd>
+            <max_vel>100.0</max_vel>
+            <min_depth>0.001</min_depth>
+          </ode>
+        </contact>
+    </surface>
+  </gazebo>
+
+  <gazebo reference="caster_wheel_front_right_link">
+    <surface>
+        <friction>
+          <ode>
+            <mu>10000000.01</mu>
+            <mu2>10000000.01</mu2>
+            <fdir1>0 0 1</fdir1>
+            <slip1>100</slip1>
+            <slip2>100</slip2>
+          </ode>
+        </friction>
+        <bounce>
+          <restitution_coefficient>0.0</restitution_coefficient>
+          <threshold>1000000000000</threshold>
+        </bounce>
+        <contact>
+          <ode>
+            <soft_cfm>0.00001</soft_cfm>
+            <soft_erp>0.2</soft_erp>
+            <kp>100000000.0</kp>
+            <kd>10.0</kd>
+            <max_vel>100.0</max_vel>
+            <min_depth>0.001</min_depth>
+          </ode>
+        </contact>
+    </surface>
+  </gazebo>
+
+  <gazebo reference="caster_wheel_rear_left_link">
+    <surface>
+        <friction>
+          <ode>
+            <mu>10000000.01</mu>
+            <mu2>10000000.01</mu2>
+            <fdir1>0 0 1</fdir1>
+            <slip1>100</slip1>
+            <slip2>100</slip2>
+          </ode>
+        </friction>
+        <bounce>
+          <restitution_coefficient>0.0</restitution_coefficient>
+          <threshold>1000000000000</threshold>
+        </bounce>
+        <contact>
+          <ode>
+            <soft_cfm>0.00001</soft_cfm>
+            <soft_erp>0.2</soft_erp>
+            <kp>100000000.0</kp>
+            <kd>10.0</kd>
+            <max_vel>100.0</max_vel>
+            <min_depth>0.001</min_depth>
+          </ode>
+        </contact>
+    </surface>
+  </gazebo>
+
+  <gazebo reference="caster_wheel_rear_right_link">
+    <surface>
+        <friction>
+          <ode>
+            <mu>10000000.01</mu>
+            <mu2>10000000.01</mu2>
+            <fdir1>0 0 1</fdir1>
+            <slip1>100</slip1>
+            <slip2>100</slip2>
+          </ode>
+        </friction>
+        <bounce>
+          <restitution_coefficient>0.0</restitution_coefficient>
+          <threshold>1000000000000</threshold>
+        </bounce>
+        <contact>
+          <ode>
+            <soft_cfm>0.00001</soft_cfm>
+            <soft_erp>0.2</soft_erp>
+            <kp>100000000.0</kp>
+            <kd>10.0</kd>
+            <max_vel>100.0</max_vel>
+            <min_depth>0.001</min_depth>
+          </ode>
+        </contact>
+    </surface>
+  </gazebo>
+
+  <gazebo reference="caster_front_left_link">
+    <surface>
+        <friction>
+          <ode>
+            <mu>10000000.01</mu>
+            <mu2>10000000.01</mu2>
+            <fdir1>0 0 1</fdir1>
+            <slip1>100</slip1>
+            <slip2>100</slip2>
+          </ode>
+        </friction>
+        <bounce>
+          <restitution_coefficient>0.0</restitution_coefficient>
+          <threshold>1000000000000</threshold>
+        </bounce>
+        <contact>
+          <ode>
+            <soft_cfm>0.00001</soft_cfm>
+            <soft_erp>0.2</soft_erp>
+            <kp>100000000.0</kp>
+            <kd>10.0</kd>
+            <max_vel>100.0</max_vel>
+            <min_depth>0.001</min_depth>
+          </ode>
+        </contact>
+    </surface>
+  </gazebo>
+
+  <gazebo reference="caster_front_right_link">
+    <surface>
+        <friction>
+          <ode>
+            <mu>10000000.01</mu>
+            <mu2>10000000.01</mu2>
+            <fdir1>0 0 1</fdir1>
+            <slip1>100</slip1>
+            <slip2>100</slip2>
+          </ode>
+        </friction>
+        <bounce>
+          <restitution_coefficient>0.0</restitution_coefficient>
+          <threshold>1000000000000</threshold>
+        </bounce>
+        <contact>
+          <ode>
+            <soft_cfm>0.00001</soft_cfm>
+            <soft_erp>0.2</soft_erp>
+            <kp>100000000.0</kp>
+            <kd>10.0</kd>
+            <max_vel>100.0</max_vel>
+            <min_depth>0.001</min_depth>
+          </ode>
+        </contact>
+    </surface>
+  </gazebo>
+
+  <gazebo reference="caster_rear_left_link">
+    <surface>
+        <friction>
+          <ode>
+            <mu>10000000.01</mu>
+            <mu2>10000000.01</mu2>
+            <fdir1>0 0 1</fdir1>
+            <slip1>100</slip1>
+            <slip2>100</slip2>
+          </ode>
+        </friction>
+        <bounce>
+          <restitution_coefficient>0.0</restitution_coefficient>
+          <threshold>1000000000000</threshold>
+        </bounce>
+        <contact>
+          <ode>
+            <soft_cfm>0.00001</soft_cfm>
+            <soft_erp>0.2</soft_erp>
+            <kp>100000000.0</kp>
+            <kd>10.0</kd>
+            <max_vel>100.0</max_vel>
+            <min_depth>0.001</min_depth>
+          </ode>
+        </contact>
+    </surface>
+  </gazebo>
+
+  <gazebo reference="caster_rear_right_link">
+    <surface>
+        <friction>
+          <ode>
+            <mu>10000000.01</mu>
+            <mu2>10000000.01</mu2>
+            <fdir1>0 0 1</fdir1>
+            <slip1>100</slip1>
+            <slip2>100</slip2>
+          </ode>
+        </friction>
+        <bounce>
+          <restitution_coefficient>0.0</restitution_coefficient>
+          <threshold>1000000000000</threshold>
+        </bounce>
+        <contact>
+          <ode>
+            <soft_cfm>0.00001</soft_cfm>
+            <soft_erp>0.2</soft_erp>
+            <kp>100000000.0</kp>
+            <kd>10.0</kd>
+            <max_vel>100.0</max_vel>
+            <min_depth>0.001</min_depth>
+          </ode>
+        </contact>
+    </surface>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
+
+      <!-- Plugin update rate in Hz -->
+      <updateRate>40</updateRate>
+
+      <publishTf>true</publishTf>
+
+      <!-- Name of left joint, defaults to `left_joint` -->
+      <leftJoint>wheel_left_joint</leftJoint>
+
+      <!-- Name of right joint, defaults to `right_joint` -->
+      <rightJoint>wheel_right_joint</rightJoint>
+
+      <!-- The distance from the center of one wheel to the other, in meters, defaults to 0.34 m -->
+      <wheelSeparation>0.494</wheelSeparation>
+
+      <!-- Diameter of the wheels, in meters, defaults to 0.15 m -->
+      <wheelDiameter>0.15</wheelDiameter>
+
+      <!-- Wheel acceleration, in rad/s^2, defaults to 0.0 rad/s^2 -->
+      <wheelAcceleration>1.0</wheelAcceleration>
+
+      <!-- Maximum torque which the wheels can produce, in Nm, defaults to 5 Nm -->
+      <wheelTorque>500.0</wheelTorque>
+
+      <!-- Topic to receive geometry_msgs/Twist message commands, defaults to `cmd_vel` -->
+      <commandTopic>cmd_vel</commandTopic>
+
+      <!-- Topic to publish nav_msgs/Odometry messages, defaults to `odom` -->
+      <odometryTopic>odom</odometryTopic>
+
+      <!-- Odometry frame, defaults to `odom` -->
+      <odometryFrame>odom</odometryFrame>
+
+      <publishOdomTF>true</publishOdomTF>
+
+      <odometrySource>world</odometrySource>
+
+      <!-- Robot frame to calculate odometry from, defaults to `base_footprint` -->
+      <robotBaseFrame>base_footprint</robotBaseFrame>
+
+      <!-- Odometry source, 0 for ENCODER, 1 for WORLD, defaults to WORLD -->
+      <odometrySource>world</odometrySource>
+
+      <!-- Set to true to publish transforms for the wheel links, defaults to false -->
+      <publishWheelTF>false</publishWheelTF>
+
+      <!-- Set to true to publish transforms for the odometry, defaults to true -->
+      <publishOdom>true</publishOdom>
+
+      <!-- Set to true to publish sensor_msgs/JointState on /joint_states for the wheel joints, defaults to false -->
+      <publishWheelJointState>true</publishWheelJointState>
+
+      <!-- Set to true to swap right and left wheels, defaults to true -->
+      <legacyMode>false</legacyMode>
+    </plugin>
+  </gazebo>
+
+  <link name="lidar_merged_link"/>
+
+  <joint name="base_link_to_lidar_merged_link" type="fixed">
+    <parent link="base_link"/>
+    <child link="lidar_merged_link"/>
+    <origin xyz="0.0 0.0 -0.14228" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Front LiDAR RPLIDAR S2 -->
+  <gazebo reference="lidar_front_link">
+    <sensor type="gpu_ray" name="lidar_front_sensor">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>false</visualize>
+      <update_rate>40</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>3000</samples>
+            <resolution>0.12</resolution> <!-- 0.12 deg = 0.002094395 rad -->
+            <min_angle>-2.356195</min_angle>
+            <max_angle>2.356195</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.05</min>
+          <max>30.0</max> <!-- white object -->
+          <!-- <max>10.0</max> --> <!-- black object -->
+          <resolution>0.05</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <!-- Noise parameters based on published spec for Hokuyo laser
+               achieving "+-30mm" accuracy at range < 10m.  A mean of 0.0m and
+               stddev of 0.01m will put 99.7% of samples within 0.03m of the true
+               reading. -->
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+      <plugin name="gazebo_ros_lidar_front_controller" filename="libgazebo_ros_gpu_laser.so">
+        <topicName>scan_front</topicName>
+        <frameName>lidar_front_link</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <!-- Rear LiDAR RPLIDAR S2 -->
+  <gazebo reference="lidar_rear_link">
+    <sensor type="gpu_ray" name="lidar_rear_sensor">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>false</visualize>
+      <update_rate>40</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>3000</samples>
+            <resolution>0.12</resolution> <!-- deg -->
+            <min_angle>-2.356195</min_angle>
+            <max_angle>2.356195</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.05</min>
+          <max>30.0</max> <!-- white object -->
+          <!-- <max>10.0</max> --> <!-- black object -->
+          <resolution>0.05</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <!-- Noise parameters based on published spec for Hokuyo laser
+               achieving "+-30mm" accuracy at range < 10m.  A mean of 0.0m and
+               stddev of 0.01m will put 99.7% of samples within 0.03m of the true
+               reading. -->
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+      <plugin name="gazebo_ros_lidar_rear_controller" filename="libgazebo_ros_gpu_laser.so">
+        <topicName>scan_rear</topicName>
+        <frameName>lidar_rear_link</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <link name="depthcam_front_left_view_link">
+    <inertial>
+      <mass value="0.001"/>
+      <origin xyz="0 0 0"/>
+      <inertia ixx="0.000001" ixy="0.0" ixz="0.0" iyy="0.000001" iyz="0.0" izz="0.000001"/>
+    </inertial>
+  </link>
+
+  <joint name="depthcam_front_left_view_joint" type="fixed">
+    <parent link="depthcam_front_left_link"/>
+    <child link="depthcam_front_left_view_link"/>
+    <origin xyz="0.0 0.0 0.0" rpy="-1.5708 0.0 -1.5708"/>
+  </joint>
+
+  <gazebo reference="depthcam_front_left_link">
+    <sensor name="depthcam_front_left" type="depth">
+      <update_rate>20</update_rate>
+      <camera>
+        <horizontal_fov>1.51843644924</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.05</near>
+          <far>3.5</far>
+        </clip>
+      </camera>
+      <plugin name="depthcam_front_left_controller" filename="libgazebo_ros_openni_kinect.so">
+        <baseline>0.2</baseline>
+        <alwaysOn>true</alwaysOn>
+        <updateRate>1.0</updateRate>
+        <cameraName>depthcam_front_left</cameraName>
+        <imageTopicName>depthcam_front_left/color/image_raw</imageTopicName>
+        <cameraInfoTopicName>depthcam_front_left/color/camera_info</cameraInfoTopicName>
+        <depthImageTopicName>depthcam_front_left/depth/image_raw</depthImageTopicName>
+        <depthImageInfoTopicName>depthcam_front_left/depth/camera_info</depthImageInfoTopicName>
+        <pointCloudTopicName>depthcam_front_left/depth/points</pointCloudTopicName>
+        <frameName>depthcam_front_left_view_link</frameName>
+        <pointCloudCutoff>0.5</pointCloudCutoff>
+        <pointCloudCutoffMax>3.0</pointCloudCutoffMax>
+        <distortionK1>0.00000001</distortionK1>
+        <distortionK2>0.00000001</distortionK2>
+        <distortionK3>0.00000001</distortionK3>
+        <distortionT1>0.00000001</distortionT1>
+        <distortionT2>0.00000001</distortionT2>
+        <CxPrime>0</CxPrime>
+        <Cx>0</Cx>
+        <Cy>0</Cy>
+        <focalLength>0</focalLength>
+        <hackBaseline>0</hackBaseline>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <link name="depthcam_front_right_view_link">
+    <inertial>
+      <mass value="0.001"/>
+      <origin xyz="0 0 0"/>
+      <inertia ixx="0.000001" ixy="0.0" ixz="0.0" iyy="0.000001" iyz="0.0" izz="0.000001"/>
+    </inertial>
+  </link>
+
+  <joint name="depthcam_front_right_view_joint" type="fixed">
+    <parent link="depthcam_front_right_link"/>
+    <child link="depthcam_front_right_view_link"/>
+    <origin xyz="0.0 0.0 0.0" rpy="-1.5708 0.0 -1.5708"/>
+  </joint>
+
+  <gazebo reference="depthcam_front_right_link">
+    <sensor name="depthcam_front_right" type="depth">
+      <update_rate>20</update_rate>
+      <camera>
+        <horizontal_fov>1.51843644924</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.05</near>
+          <far>3.5</far>
+        </clip>
+      </camera>
+      <plugin name="depthcam_front_right_controller" filename="libgazebo_ros_openni_kinect.so">
+        <baseline>0.2</baseline>
+        <alwaysOn>true</alwaysOn>
+        <updateRate>1.0</updateRate>
+        <cameraName>depthcam_front_right</cameraName>
+        <imageTopicName>depthcam_front_right/color/image_raw</imageTopicName>
+        <cameraInfoTopicName>depthcam_front_right/color/camera_info</cameraInfoTopicName>
+        <depthImageTopicName>depthcam_front_right/depth/image_raw</depthImageTopicName>
+        <depthImageInfoTopicName>depthcam_front_right/depth/camera_info</depthImageInfoTopicName>
+        <pointCloudTopicName>depthcam_front_right/depth/points</pointCloudTopicName>
+        <frameName>depthcam_front_right_view_link</frameName>
+        <pointCloudCutoff>0.5</pointCloudCutoff>
+        <pointCloudCutoffMax>3.0</pointCloudCutoffMax>
+        <distortionK1>0.00000001</distortionK1>
+        <distortionK2>0.00000001</distortionK2>
+        <distortionK3>0.00000001</distortionK3>
+        <distortionT1>0.00000001</distortionT1>
+        <distortionT2>0.00000001</distortionT2>
+        <CxPrime>0</CxPrime>
+        <Cx>0</Cx>
+        <Cy>0</Cy>
+        <focalLength>0</focalLength>
+        <hackBaseline>0</hackBaseline>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+</robot>

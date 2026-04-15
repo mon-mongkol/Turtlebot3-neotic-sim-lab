@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<launch>
+    
+
+
+    <arg name="port" default="$(env mcu01_port)"/>
+    <arg name="sub_model" default="$(env hw_ver)"/>
+
+    <group if="$(eval sub_model == 'sdr100A')">
+        <!-- Publish Linorobot odometry -->
+        <node pkg="linorobot" name="lino_base_node" type="lino_base_node">
+            <remap from="/raw_vel" to="/matrix_controller/raw_vel"/>
+        </node>
+    </group>
+
+
+    <group if="$(eval sub_model == 'sdr100B')">
+        <!-- Publish Linorobot odometry -->
+        <node pkg="linorobot" name="lino_base_node" type="lino_base_node">
+            <remap from="/raw_vel" to="/matrix_controller/raw_vel"/>
+        </node>
+    </group>
+
+    
+    <group if="$(eval sub_model == 'sdr100C')">
+    </group>
+
+</launch>

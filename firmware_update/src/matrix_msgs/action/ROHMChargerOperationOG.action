@@ -1,0 +1,28 @@
+# goal definition 
+
+uint8 charger_no
+string poi_pre_charger
+string charger_ready     #serial string command charger response to robot when charger ready 
+string charger_pose      #robot response when reach target charger pose
+string charger_finish    #charger response when charger finish 
+string charger_end
+uint64 timeout_charger_ready
+uint64 timeout_charger_finish
+uint64 timeout_charger_pose
+uint64 timeout_charging_state
+matrix_msgs/ARTrack ar_info
+
+---
+# results definition
+uint8 SUCCESS                   = 0
+uint8 TIMEOUT_CHARGER_READY     = 1
+uint8 TIMEOUT_CHARGER_FINISH    = 2
+
+
+
+uint8 result
+string text
+
+---
+# feedback definition
+uint8 sequence

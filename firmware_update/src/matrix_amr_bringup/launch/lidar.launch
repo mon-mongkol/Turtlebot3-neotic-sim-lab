@@ -1,0 +1,22 @@
+<launch>
+  <!-- Start Motor driver-->
+
+  <include file="$(find matrix_rohm_bringup)/launch/include/$(env model)/$(env serial_no)/lidar_f.launch" />
+  <include file="$(find matrix_rohm_bringup)/launch/include/$(env model)/$(env serial_no)/lidar_r.launch" />
+
+  <!--merge front lidar and rear lidar -->
+  <node pkg="ira_laser_tools" name="laserscan_multi_merger" type="laserscan_multi_merger" output="screen">
+	  <param name="/use_sim_time" value="true"/>
+	  <param name="destination_frame" value="lidar_merged_link"/>
+	  <param name="cloud_destination_topic" value="/merged_cloud"/>
+	  <param name="scan_destination_topic" value="/scan"/>
+	  <param name="laserscan_topics" value ="/scan_f_raw /scan_r_raw" /> <!-- LIST OF THE LASER SCAN TOPICS TO SUBSCRIBE -->
+	  <param name="angle_min" value="-3.14159265359"/>
+	  <param name="angle_max" value="3.14159265359"/>
+	  <param name="angle_increment" value="0.0020943951"/> <!-- rad -->
+	  <param name="scan_time" value="0.0333333"/>
+	  <param name="range_min" value="0.05"/>
+	  <param name="range_max" value="30.0"/>
+	</node>
+
+</launch>

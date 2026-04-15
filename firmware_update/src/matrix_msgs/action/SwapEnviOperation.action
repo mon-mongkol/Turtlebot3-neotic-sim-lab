@@ -1,0 +1,16 @@
+# goal definition
+matrix_msgs/MapLayoutSwap envi_des
+
+-------------
+# result definition
+
+uint8 SUCCESS = 0
+uint8 NOT_FOUND_ENVIRONMENT = 1
+uint8 ESTIMATE_FUNC_NOT_FOUND = 2
+
+uint8 result
+string text
+
+-------------
+# feedback definition
+uint8 sequence

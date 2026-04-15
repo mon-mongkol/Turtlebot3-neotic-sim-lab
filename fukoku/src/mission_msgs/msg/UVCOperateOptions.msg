@@ -1,0 +1,6 @@
+int32 mode
+int32 uvc_turnon_time
+int32 uvc_warmup_time
+int32 uvc_point_time
+float64 uvc_move_speed
+int32 delay_start_time

@@ -1,0 +1,197 @@
+<launch>
+
+
+
+
+  <!--<arg name="slam" default="false"/>
+
+  <group if="$(arg slam)">
+    <include file="$(find turtlebot3_slam)/launch/turtlebot3_slam.launch">
+      <arg name="slam_methods" value="gmapping"/> 
+    </include>
+  </group>-->
+
+  <!-- Port for the websocket bridge -->
+  <arg name="websocket_port" default="9090"/>
+
+  <!-- Port where site and other package resources will be served -->
+  <arg name="packages_port" default="8888"/>
+
+  <!--
+    Path within each installed ROS package to serve.
+    Recommended to use the package root,
+    so resources like meshes are properly served
+  -->
+  <arg name="packages_path" default="/"/>
+
+  <!-- Set to false to prevent republishing TF -->
+  <arg name="tf" default="true"/>
+
+  <!-- Set to false if you don't want to use interactive markers. -->
+  <arg name="interactive_markers" default="true"/>
+  <!-- Target frame for interactive markers. -->
+  <arg name="interactive_markers_target_frame" default="/base_footprint"/>
+  <!-- Topic for interactive markers. -->
+  <arg name="interactive_markers_topic" default="/basic_controls"/>
+
+  <!-- Set to true if you want depth cloud support. -->
+  <arg name="depth_cloud" default="true"/>
+  <!-- Port for visualizing video streams. -->
+  <arg name="video_port" default="9999"/>
+  <!-- Depth image topic for depthcloud_encoder. -->
+  <arg name="depth_topic" default="/depthcam_front_right/color/image_raw"/>
+  <!-- RGB image topic for depthcloud_encoder. -->
+  <arg name="rgb_topic" default="/depthcam_front_right/color/image_raw"/>
+
+  <arg name="secret_file" default="/tmp/secret.txt"/>
+  <arg name="time_delta" default="-1"/>
+
+
+  <!-- Configuration. -->
+  <arg name="config_file" default="$(find web_interface)/config/configuration.json"/>
+  <rosparam file="$(find web_interface)/config/web_database.yaml" command="load" ns="web_interface" />
+
+
+
+  <!--<param name="/rvizweb/global_config" type="str" textfile="$(arg config_file)"/>-->
+
+  <!-- Websocket bridge -->
+  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
+    <arg name="port" value="$(arg websocket_port)" />
+    <arg name="address" default="127.0.0.1" />
+    <arg name="ssl" default="false" />
+    <arg name="certfile" default=""/>
+    <arg name="keyfile" default="" />
+
+    <arg name="retry_startup_delay" default="5" />
+
+    <arg name="fragment_timeout" default="600" />
+    <arg name="delay_between_messages" default="0" />
+    <arg name="max_message_size" default="None" />
+    <arg name="unregister_timeout" default="10" />
+    <arg name="websocket_external_port" default="8888" />
+
+    <arg name="use_compression" default="false" />
+
+    <arg name="authenticate" default="false" />
+    <arg name="websocket_ping_interval" default="15" />
+    <arg name="websocket_ping_timeout" default="15" />
+    <arg name="websocket_null_origin" default="true" />
+  </include>
+
+
+  <!-- TF2 republisher output="screen" -->
+  <!--<group if="$(arg tf)">
+    <node name="tf2_web_republisher" pkg="tf2_web_republisher" type="tf2_web_republisher" respawn="false" output="log"/>
+  </group>-->
+
+
+  <!-- Interactive markers -->
+  <!--<group if="$(arg interactive_markers)">
+    <node pkg="interactive_marker_proxy" type="proxy" name="interactive_marker_proxy" output="log">
+      <remap from="target_frame" to="$(arg interactive_markers_target_frame)" />
+      <remap from="topic_ns" to="$(arg interactive_markers_topic)" />
+    </node>
+  </group>-->
+
+  <!-- Depth cloud -->
+  <group if="$(arg depth_cloud)">
+    <node pkg="web_video_server" type="web_video_server" name="web_video_server" output="log">
+      <param name="type" value="vp8"/>
+      <param name="port" value="$(arg video_port)"/>
+    </node>
+    <node pkg="depthcloud_encoder" type="depthcloud_encoder_node" name="depthcloud_encoder" output="log">
+      <param name="depth" value="$(arg depth_topic)"/>
+      <param name="rgb" value="$(arg rgb_topic)"/>
+    </node>
+  </group>
+
+<!-- <group>
+    <node name="rosbridge_websocket2" pkg="rosbridge_server" type="rosbridge_websocket" output="log">
+      <param name="authenticate" value="false" />
+      <param name="port" value="9091"/>
+      <param name="address" value="127.0.0.1"/>
+      <param name="retry_startup_delay" value="5"/>
+      <param name="fragment_timeout" value="600"/>
+      <param name="delay_between_messages" value="0"/>
+      <param name="max_message_size" value="None"/>
+      <param name="unregister_timeout" value="10"/>
+      <param name="use_compression" value="false"/>
+
+      <param name="websocket_ping_interval" value="5" />
+      <param name="websocket_ping_timeout" value="5" />
+      <param name="websocket_external_port" value="None" />
+
+      <param name="topics_glob" value="[*]"/>
+      <param name="services_glob" value="[*]"/>
+      <param name="params_glob" value="[*]"/>
+
+      <param name="bson_only_mode" value="false"/>
+    </node>
+  </group> -->
+  <!-- rosauth -->
+  <!--
+  <group >
+    <node pkg="rosauth" type="ros_mac_authentication" name="ros_mac_authentication">
+      <param name="secret_file_location" value="$(find rosauth)/test/valid.secret" />
+      <param name="allowed_time_delta" value="$(arg time_delta)"/>
+    </node>
+  </group>
+-->
+  <!-- ros_webmysqlauth -->
+  <!-- <include file="$(find ros_webmysqlauth)/launch/webmysqlauth.launch">
+  </include> -->
+
+  <!-- rosrun robot_pose_publisher robot_pose_publisher output="screen" -->
+  <arg name="robot_pose" default="true"/>
+  <!--<arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>-->
+  <!-- Turtlebot3 -->
+  <!--<include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
+    <arg name="model" value="$(arg model)" />
+  </include>-->
+
+  <!--<arg name="open_rviz" default="false"/>-->
+
+  <group if="$(arg robot_pose)">
+    <node name="robot_pose_publisher" pkg="robot_pose_publisher" type="robot_pose_publisher" respawn="false" output="log">
+      <param name="map_frame" value="/map"/>
+      <param name="base_frame" value="/base_footprint"/>
+      <param name="scan_frame" value="/laser"/>
+      <param name="is_scan_pub" value="false"/>
+      <param name="publish_frequency" value="60"/>
+      <param name="is_stamped" value="false"/>
+    </node>
+  </group>
+  <!--
+  <node pkg="turtlebot3_slam" name="srv_map_saver" type="srv_map_saver" output="screen"/> ///////
+-->
+
+  <include file="$(find missions)/launch/mission.launch"/>
+  <include file="$(find mission_run)/launch/matrix_delivery.launch"/>
+  <!-- <include file="$(find mission_run)/launch/delivery.launch"/> -->
+  <include file="$(find web_interface_srv)/launch/cmd_srv.launch"/>
+  <include file="$(find web_interface_move_plan)/launch/web.launch"/>
+  <include file="$(find web_launch_srv)/launch/srv.launch"/>
+  <include file="$(find ist_layouts_srv)/launch/layout.launch"/>
+  <include file="$(find ist_layout_zones)/launch/zone.launch"/>
+  <!-- <include file="$(find ist_docking)/launch/docking.launch"/> -->
+  <include file="$(find web_map_server)/launch/web.launch"/>
+  <!-- <include file="$(find ist_robot_status)/launch/status.launch"/> -->
+  <!-- <include file="$(find mission_request)/launch/request.launch"/> -->
+  <include file="$(find ist_gui_map_server)/launch/gui_map_server.launch"/>
+
+  <include file="$(find ist_map_server)/launch/auto_load.launch"/>
+  <include file="$(find ist_gui_map_server)/launch/auto_load.launch"/>
+
+  <include file="$(find ist_layouts_srv)/launch/auto_load.launch"/>
+
+  <include file="$(find ist_route_follow)/launch/route.launch"/>
+  <include file="$(find laser_pose_publisher)/launch/laser.launch"/>
+  <include file="$(find tablet_sensors)/launch/tablet.launch"/>
+  <include file="$(find battery_monitoring)/launch/batt.launch"/>
+  <include file="$(find media_player)/launch/player.launch"/>
+  <include file="$(find media_player)/launch/volume.launch"/>
+  <include file="$(find ist_roads_srv)/launch/roads.launch"/>
+  <!-- <include file="$(find modbus_interface)/launch/modbus.launch"/> -->
+
+</launch>

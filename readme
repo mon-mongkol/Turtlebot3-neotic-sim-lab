@@ -1,0 +1,66 @@
+Allow Docker to access your display (on host)
+
+xhost +local:docker
+
+echo $DISPLAY
+
+
+
+docker compose build
+docker compose up -d
+docker exec -it ros_noetic_sdr100_port bash
+
+sudo apt install nvidia-container-toolkit
+
+
+source /opt/ros/noetic/setup.bash
+source ~/catkin_ws/devel/setup.bash
+
+
+#!/bin/bash
+source /root/miniconda3/etc/profile.d/conda.sh
+conda activate ros-lab
+source /opt/ros/noetic/setup.bash
+source /root/catkin_ws/devel/setup.bash
+exec "$@"
+
+
+
+use roscore in container before script 
+
+
+export TURTLEBOT3_MODEL=burger
+roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+roslaunch turtlebot3_gazebo turtlebot3_house.world
+
+docker exec -it ros_noetic_tb3 /bin/bash
+
+roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+roslaunch turtlebot3_bringup turtlebot3_remote.launch
+
+roslaunch turtlebot3_slam turtlebot3_slam.launch slam_methods:=gmapping
+
+rosparam set use_sim_time true
+
+
+roslaunch rosbridge_server rosbridge_websocket.launch
+
+
+
+roslaunch turtlebot3_navigation turtlebot3_navigation.launch \
+  map_file:=/root/map/my_map.yaml
+
+
+rosparam get /move_base/global_costmap/plugins
+rosparam get /move_base/local_costmap/plugins
+
+
+
+rosservice call /ist_layouts_srv "{cmd: 'add', layouts: [
+  {uuid: 'wall_horizontal_1', name: 'wall_h1', type: 13, text: '', startHandle: 0, rotateHandle: 0, points: [{x: -3.0, y: 2.5, z: 0.0}, {x: 2.0, y: 2.5, z: 0.0}], handles: []},
+  {uuid: 'wall_vertical_1', name: 'wall_v1', type: 13, text: '', startHandle: 0, rotateHandle: 0, points: [{x: 1.0, y: -1.0, z: 0.0}, {x: 1.0, y: 4.0, z: 0.0}], handles: []},
+  {uuid: 'wall_diagonal_1', name: 'wall_d1', type: 13, text: '', startHandle: 0, rotateHandle: 0, points: [{x: -4.0, y: -2.0, z: 0.0}, {x: 0.0, y: 3.0, z: 0.0}], handles: []}
+]}"
+
+rosrun dynamic_reconfigure dynparam set /move_base/global_costmap/ist_costmap_prohibition_layer dynamic_polygons true
+rosrun dynamic_reconfigure dynparam set /move_base/local_costmap/ist_costmap_prohibition_layer dynamic_polygons true

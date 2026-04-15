@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="sub_model" default="$(env sub_model)"/>
+    <arg name="hw_ver" default="$(env hw_ver)"/>
+    <arg name="param_path" default="$(find matrix_amr_bringup)/param/common/cvshape/cvshape_$(env hw_ver).yaml"/>   
+
+
+    <node pkg="matrix_cvshape_operation" type="cvshape_action" name="matrix_cvshape_operation" output="screen" respawn="false" respawn_delay="0">
+        <rosparam command="load" file="$(arg param_path)" />
+    </node>    
+
+
+
+    <group if="$(eval sub_model == 'smr100eb')">
+        <node pkg="matrix_cvshape_operation" type="cvshape_action_2dir_smr100eb" name="matrix_cvshape_2dir_operation" output="screen" respawn="false" respawn_delay="0">
+            <rosparam command="load" file="$(arg param_path)" />
+        </node>  
+    </group>  
+    
+    <group unless="$(eval sub_model == 'smr100eb')">
+        <group if="$(eval hw_ver == 'smr100R')">
+            <node pkg="matrix_cvshape_operation" type="cvshape_action_2dir" name="matrix_cvshape_2dir_operation" output="screen" respawn="false" respawn_delay="0">
+                <rosparam command="load" file="$(arg param_path)" />
+            </node>  
+        </group>  
+        <group unless="$(eval hw_ver == 'smr100R')">
+            <node pkg="matrix_cvshape_operation" type="cvshape_action_2dir" name="matrix_cvshape_2dir_operation" output="screen" respawn="false" respawn_delay="0">
+                <rosparam command="load" file="$(arg param_path)" />
+            </node>  
+        </group>  
+    </group>  
+
+
+</launch>

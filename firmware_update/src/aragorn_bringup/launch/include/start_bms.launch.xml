@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="deligreen_bms" type="deligreen_bms_pub.py" name="Deligreen_bms"/>
+</launch>

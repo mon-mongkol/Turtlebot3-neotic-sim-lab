@@ -1,0 +1,2 @@
+TrayInfo[] trays
+string objects

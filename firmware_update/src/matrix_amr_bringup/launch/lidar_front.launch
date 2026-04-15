@@ -1,0 +1,16 @@
+<launch>
+  <!-- Start Motor driver-->
+
+
+  <!-- <arg name="pkg" default="matrix_amr_bringup"/>  -->
+   <arg name="port" default="$(env lidar_front_port)" />
+    
+   <include file="$(find matrix_amr_bringup)/launch/include/$(env sub_model)/$(env serial_no)/lidar_f_$(env serial_no).xml" >
+      <arg name="port" default="/dev/$(arg port)" />
+   </include>
+
+
+  
+ 
+
+</launch>

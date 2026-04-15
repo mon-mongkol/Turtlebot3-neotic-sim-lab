@@ -1,0 +1,5 @@
+<launch>
+
+    <node pkg="robot_status" type="robot_status" name="robot_status" output="screen"/>
+    
+</launch>

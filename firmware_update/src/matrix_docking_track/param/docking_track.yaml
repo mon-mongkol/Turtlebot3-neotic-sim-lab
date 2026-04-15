@@ -1,0 +1,8 @@
+track_control_timeout : 30
+track_loss_threshold : 2
+lin_p : 0.8
+lin_i : 0.15
+lin_d : 0.125
+ang_p : 0.17
+ang_i : 0.05
+ang_d : 0.03

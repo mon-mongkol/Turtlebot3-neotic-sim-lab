@@ -1,0 +1,9 @@
+# This service sets chosen LED colors in a LED strip or other LEDs set
+
+string mode
+LEDState[] leds1
+LEDState[] leds2
+
+---
+bool success   # True if the call succeeded
+string message # Error or informational message

@@ -1,0 +1,26 @@
+# /*
+# ROBOT ORIENTATION
+#          FRONT
+#     MOTOR1  MOTOR2  (2WD/ACKERMANN)
+#     MOTOR3  MOTOR4  (4WD/MECANUM)  
+#          BACK
+# */
+
+
+wheels_x_distance: 0.0
+wheels_y_distance: 0.494
+wheel_diameter: 0.151
+gear_ratio: 10
+total_wheels: 2  #currently support diff_drive control only
+
+publish_tf: False
+base_frame: "base_footprint"
+odom_frame: "odom"
+odom_topic: "keya_odom"
+
+canbus_chanel: "can0"
+can_bitrate: 250000
+
+use_imu: False
+imu_topic: "/razor_imu/data"
+

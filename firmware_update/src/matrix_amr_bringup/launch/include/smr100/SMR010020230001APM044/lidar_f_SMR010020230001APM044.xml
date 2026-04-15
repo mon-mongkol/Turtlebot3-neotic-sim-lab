@@ -1,0 +1,44 @@
+
+ <launch>
+        <arg name="port" default="/dev/ttyUSB0"/>
+       <node name="rplidarNode_front"          pkg="rplidar_ros"  type="rplidarNode" output="screen">
+            <param name="serial_port"         type="string" value="$(arg port)"/>  
+            <param name="serial_baudrate"     type="int"    value="1000000"/>
+            <param name="frame_id"            type="string" value="lidar_front_invert_link"/>
+            <param name="inverted"            type="bool"   value="false"/>
+            <param name="angle_compensate"    type="bool"   value="true"/>
+
+            <param name="scan_sector_crop"          type="bool"   value="true"/>
+            <param name="start_trim_degree"   type="int"    value="85" />
+            <param name="stop_trim_degree"   type="int"    value="186" />
+
+            <param name="scan_sector_crop2"          type="bool"   value="false"/>
+            <param name="start_trim_degree2"   type="int"    value="130" />
+            <param name="stop_trim_degree2"   type="int"    value="142" />
+
+            <param name="scan_sector_crop3"          type="bool"   value="false"/>
+            <param name="start_trim_degree3"   type="int"    value="220" />
+            <param name="stop_trim_degree3"   type="int"    value="227" />
+
+            <param name="scan_sector_crop4"          type="bool"   value="false"/>
+            <param name="start_trim_degree4"   type="int"    value="310" />
+            <param name="stop_trim_degree4"   type="int"    value="317" />
+
+            <param name="scan_sector_crop5"          type="bool"   value="false"/>
+            <param name="start_trim_degree5"   type="int"    value="120" />
+            <param name="stop_trim_degree5"   type="int"    value="235" />
+            
+            <param name="scan_range_crop"          type="bool"   value="false"/>
+            <param name="crop_range"   type="double"    value="0.3" />
+
+            <!-- <remap from="scan" to="scan_f_raw"/> -->
+            <remap from="scan" to="scan_f_filtered"/>
+        </node>
+
+        <!-- <node pkg="laser_filters" type="scan_to_scan_filter_chain" name="scan_filter_rear">
+            <rosparam command="load" file="$(find smr_bringup)/param/lidar/angular_lidar_scan.yaml" />
+            <remap from="scan" to="/scan_f_raw" /> 
+            <remap from="scan_filtered" to="/scan_f_filtered" />
+        </node> -->
+ </launch> 
+

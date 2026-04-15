@@ -1,0 +1,744 @@
+#!/usr/bin/env python3
+
+import rospy
+import os
+import enum
+import dynamic_reconfigure.client
+from std_msgs.msg import *
+from web_interface_msgs.msg import *
+import math
+from matrix_dynamic_parameter.srv import *
+from matrix_msgs.srv import *
+from matrix_msgs.msg import *
+
+from dynamic_reconfigure.server import Server
+from matrix_dynamic_parameter.cfg import MatrixDynamicsNavigationConfig
+
+from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
+import actionlib
+from actionlib_msgs.msg import *
+try:
+    import alsaaudio
+except:
+    pass
+
+class DynamicsCostmap:
+    def __init__(self):
+
+        self.min_vel_planning = 0.15
+        self.max_vel_planning = 1.0
+
+        self.current_zone = 0
+        self.old_zone = 0
+
+        self.set_global_inflation_radius = 0.54
+        self.set_global_cost_scaling_factor = 10.00
+
+        self.set_local_inflation_radius = 0.54
+        self.set_local_cost_scaling_factor = 10.0
+
+        self.set_layout_vel = 1.0
+        self.set_oldlayout_vel = 0
+
+        self.isTrigger = False
+        self.old_set_cost_scaling_factor = 0.00
+
+        self.enable_ultrasonic = False
+
+        self.isEnable3DLayer = True
+        self.isEnableMovementSound = True
+        self.enable_local_rgbd = True
+        self.enable_global_rgbd = True
+        self.enable_static_map = True
+
+        self.set_global_decay_voxel = 0.25
+        self.set_global_mark_threshold = 0.25
+        self.set_local_decay_voxel = 0.25
+        self.set_local_mark_threshold = 3.5
+        
+        self.set_planner_frequency = 0.0
+
+        self.UIMap_ = UIMap()
+
+        self.init_vel = False
+
+        self.set_max_vel_planner = 0.0
+
+        self.orange_zone_vel = 0.0
+        self.yellow_zone_vel = 0.0
+        self.green_zone_vel = 0.0
+        self.room_zone_vel = 0.0
+        self.no_zone_vel = 0.0
+
+        
+        rospy.loginfo("[matrix_dynamic_parameter]:Get robot info ---------->>")
+        # get robot model 
+        try:
+            self.robot_model = os.environ['model']
+        except:
+            self.robot_model = "uvc"
+        
+        try:
+            self.hw_ver = os.environ['hw_ver']
+        except:
+            self.hw_ver = "unknow"
+        
+        # get serial no. of robot
+        try:
+            self.robot_selno = os.environ['serial_no']
+        except:
+            self.robot_selno = os.environ['MATRIX_UVD_SERIAL_NO']
+        
+        rospy.loginfo('[matrix_dynamic_parameter]:' + 'model: ' + self.robot_model)
+        rospy.loginfo('[matrix_dynamic_parameter]:' + 'serial_no: ' + self.robot_selno)
+        
+
+        # Tell the action client that we want to spin a thread by default
+        self.move_base = actionlib.SimpleActionClient("move_base", MoveBaseAction)
+        
+
+	    # Allow up to 5 seconds for the action server to come up
+        print("wait for move_bse comeup")
+        self.move_base.wait_for_server()
+        print("movebase_ready")
+
+        self.planner_name = ""
+        try:
+            if rospy.has_param('/move_base/DWBLocalPlanner/max_vel_x'):
+                # DWB_plannner 
+                self.planner_vel_dyc = dynamic_reconfigure.client.Client("/move_base/DWBLocalPlanner", config_callback=self.teb_callback)
+                self.planner_name = "DWB"
+            elif rospy.has_param('/move_base/DWAPlannerROS/max_vel_x'):
+                self.planner_vel_dyc = dynamic_reconfigure.client.Client("/move_base/DWAPlannerROS", config_callback=self.teb_callback)
+                self.planner_name = "DWA"
+            else:
+                # Teb_plannner 
+                self.planner_vel_dyc = dynamic_reconfigure.client.Client("/move_base/TebLocalPlannerROS", config_callback=self.teb_callback) 
+                self.planner_name = "TEB"
+        except:
+            pass
+        
+        rospy.loginfo('[matrix_dynamic_parameter]:' + 'LocalPlanner: ' + self.planner_name)
+        rospy.loginfo('[matrix_dynamic_parameter]:' + " ")
+        rospy.loginfo('[matrix_dynamic_parameter]:' + "Move_base come up Ready !!!")
+
+        #######################################################
+        ################ Subscribe Topic ######################
+        #######################################################
+        # /robot_zone for dynamics costmap
+        self.robot_zone = rospy.Subscriber("/robot_zone", Zones, self.cbZone)
+        self.subUiMap = rospy.Subscriber("/gui_layout_map", UIMap, self.cbUIMap)
+        self.subRobotMode = rospy.Subscriber("/matrix_system/movement_status", MovmentStatus, self.cbMoveMent)
+
+        # self.sub_uvc_state = rospy.Subscribe("/aragorn_io/uvc_state", Int8, self.cbUvcState)
+
+        #######################################################
+        ################ Service Server #######################
+        #######################################################
+        self.ss_enable_sonar_layer = rospy.Service("/dynamic_parameter/enable_sonar_costmap", setSonar, self.ss_enable_sonar_callback)
+        self.ss_planner_vel = rospy.Service("/dynamic_parameter/planner_velocity", setPlanVel, self.ss_setPlan_vel_callback)
+        self.ss_volume_level = rospy.Service("/matrix_dynamic_parameter/volume_level", SetAudioLevel, self.ss_SetAudioLevel_callback)
+        # self.ss_enable_costmap_layer = rospy.Service("/dynamic_parameter/enable_costmap_layer", ActionController, self.enable_costmap_layer_callback)
+        #####################################################################
+        ################ Dynamics Reconfigure parameter #####################
+        #####################################################################
+        # inflection_costmap_param
+        try:
+
+            self.local_costmap_dynamics_client = dynamic_reconfigure.client.Client("/move_base/local_costmap/inflation_layer", config_callback=self.local_callback)
+            self.global_costmap_dynamics_client = dynamic_reconfigure.client.Client("/move_base/global_costmap/inflation_layer", config_callback=self.global_callback)
+            
+            # sonar_layer
+            if self.robot_model == 'uvc': 
+                self.global_sonar_dyc = dynamic_reconfigure.client.Client("/move_base/global_costmap/sonar_layer", config_callback=self.global_sonar_callback)
+                self.local_sonar_dyc = dynamic_reconfigure.client.Client("/move_base/local_costmap/sonar_layer", config_callback=self.local_sonar_callback)
+                self.global_rgbd_layer_dyc = dynamic_reconfigure.client.Client("/move_base/global_costmap/rgbd_obstacle_layer", config_callback=self.global_rgbd_callback)
+            else:
+                pass
+            
+
+            self.static_map_layer_dyc = dynamic_reconfigure.client.Client("/move_base/global_costmap/static_layer", config_callback=self.static_callback)
+            
+            
+
+
+            # Move_base
+            # self.move_base_dyc = dynamic_reconfigure.client.Client("/move_base", config_callback=self.move_base_callback)
+
+            # try:
+            #     # rgbd_layer
+            #     self.local_rgbd_layer_dyc = dynamic_reconfigure.client.Client("/move_base/local_costmap/rgbd_obstacle_layer", config_callback=self.local_rgbd_callback) 
+            #     self.global_rgbd_layer_dyc = dynamic_reconfigure.client.Client("/move_base/global_costmap/rgbd_obstacle_layer", config_callback=self.global_rgbd_callback)
+            # except:
+            #     rospy.logwarn("[matrix_dynamics_navigation]:not found rgbd_obstacle_layer")
+
+            self.ss_enable_costmap_layer = rospy.Service("/dynamic_parameter/enable_costmap_layer", ActionController, self.enable_costmap_layer_callback)
+        except:
+            pass
+
+        
+    
+        try:
+            
+            if self.robot_selno.find("ET") != -1:
+                pass
+                # rgbd_layer
+                # self.local_rgbd_layer_dyc = dynamic_reconfigure.client.Client("/move_base/local_costmap/rgbd_obstacle_layer", config_callback=self.local_rgbd_callback) 
+                # self.global_rgbd_layer_dyc = dynamic_reconfigure.client.Client("/move_base/global_costmap/rgbd_obstacle_layer", config_callback=self.global_rgbd_callback)
+            else:
+                self.local_rgbd_layer_dyc = dynamic_reconfigure.client.Client("/move_base/local_costmap/rgbd_obstacle_layer", config_callback=self.local_rgbd_callback) 
+                self.global_rgbd_layer_dyc = dynamic_reconfigure.client.Client("/move_base/global_costmap/rgbd_obstacle_layer", config_callback=self.global_rgbd_callback)
+        except:
+            rospy.logwarn("[matrix_dynamics_navigation]:cannot setup rgbd_obstacle_layer")
+
+
+        
+        
+        
+
+
+        
+
+        
+
+        print(rospy.has_param('~orange_zone_vel'))
+
+        self.orange_zone_vel = rospy.set_param('~orange_zone_vel', 0.2)
+        self.yellow_zone_vel = rospy.set_param('~yellow_zone_vel', 0.4)
+        self.green_zone_vel = rospy.set_param('~green_zone_vel', 1.2)
+        self.room_zone_vel = rospy.set_param('~room_zone_vel', 0.5)
+        self.no_zone_vel = rospy.set_param('~no_zone_vel', 0.7)
+
+        print(self.orange_zone_vel)
+
+
+        self.srv = Server(MatrixDynamicsNavigationConfig, self.callback)
+        
+
+        
+
+        # # get robot model 
+        # try:
+        #     self.robot_model = os.environ['model']
+        # except:
+        #     self.robot_model = "uvc"
+        
+        # # get serial no. of robot
+        # try:
+        #     self.robot_selno = os.environ['serial_no']
+        # except:
+        #     self.robot_selno = os.environ['MATRIX_UVD_SERIAL_NO']
+
+
+        # self.r = rospy.sleep(0.1)
+        r = rospy.Rate(10)
+        
+        while not rospy.is_shutdown():
+            self.update_parameters()
+            try:    
+                self.update_parameters()
+            except:
+                pass
+            r.sleep()
+    
+
+    def callback(self, config, level):
+        rospy.loginfo("get requestrtttt")
+        # self.orange_zone_vel = 0.2
+        # self.yellow_zone_vel = 0.4
+        # self.green_zone_vel = 1.2
+        # self.room_zone_vel = 0.5
+        # self.no_zone_vel = 1.0
+        print(config.orange_zone_vel)
+
+        self.orange_zone_vel = config.orange_zone_vel
+        self.yellow_zone_vel = config.yellow_zone_vel
+        self.green_zone_vel = config.green_zone_vel
+        self.room_zone_vel = config.room_zone_vel
+        self.no_zone_vel = config.no_zone_vel
+        return config
+    
+    def local_rgbd_callback(self, config):
+        pass
+    
+    def global_rgbd_callback(self, config):
+        pass
+
+    def local_callback(self, config):
+        rospy.loginfo('[matrix_dynamic_parameter]:' + "config local_costmap to {cost_scaling_factor}, {inflation_radius}".format(**config))
+    
+    def global_callback(self, config):
+        rospy.loginfo('[matrix_dynamic_parameter]:' + "config global_costmap to {cost_scaling_factor}, {inflation_radius}".format(**config))
+    
+    # sonar_layer
+    def global_sonar_callback(self, config):
+        rospy.loginfo('[matrix_dynamic_parameter]:' + "config global_sonar_layer {enabled}".format(**config))
+
+    def local_sonar_callback(self, config):
+        rospy.loginfo('[matrix_dynamic_parameter]:' + "config local_sonar_layer {enabled}".format(**config))
+    
+    # teb_planner 
+    def teb_callback(self, config):
+        rospy.loginfo('[matrix_dynamic_parameter]:' + "config max_vel set {max_vel_x}".format(**config) + " m/s")
+        
+
+    # move_base
+    def move_base_callback(self, config):
+        rospy.loginfo('[matrix_dynamic_parameter]:' + "config move_base set {planner_frequency}".format(**config))
+        rospy.loginfo(" ")
+    # rgbd_layer
+    # def local_rgbd_callback(self, config):
+    #     rospy.loginfo('[matrix_dynamic_parameter]:' + "config local_rgb_layer set {enabled}, {voxel_decay}, {mark_threshold}".format(**config))
+    
+    def global_rgbd_callback(self, config):
+        rospy.loginfo('[matrix_dynamic_parameter]:' + "config global_rgb_layer set {enabled}, {voxel_decay}, {mark_threshold}".format(**config))
+    
+    def static_callback(self, config):
+        pass
+    
+    def enable_costmap_layer_callback(self, req):
+        success = True
+        try:
+            if req.cmd == "3d_layer":
+                if req.arg0 == "enabled":
+                    self.isEnable3DLayer = True
+                    success = True
+                elif req.arg0 == "disabled":
+                    self.isEnable3DLayer = False
+                    success = True
+                else:
+                    success = False
+            elif req.cmd == "enabled_movement_sond":
+                if req.arg0 == "enabled":
+                    self.isEnableMovementSound = True
+                    success = True
+                elif req.arg0 == "disabled":
+                    self.isEnableMovementSound = False
+                    success = True
+                else:
+                    success = False
+            else:
+                success = False
+        except:
+            pass
+        return success
+
+    def ss_enable_sonar_callback(self, req):
+        enable_status = False
+        try:
+            if req.enable:
+                params = {'enabled' : True}
+                enable_status = True
+                
+            else:
+                params = {'enabled' : False}
+                enable_status = False
+            self.global_sonar_dyc.update_configuration(params)
+            self.local_sonar_dyc.update_configuration(params)
+        except:
+            pass
+        return enable_status
+    
+    def ss_setPlan_vel_callback(self, req):
+        try:
+            request_vel_city = abs(req.planing_velocity)
+            if request_vel_city < self.min_vel_planning:
+                request_vel_city = self.min_vel_planning
+            elif request_vel_city > self.max_vel_planning:
+                request_vel_city = self.max_vel_planning
+            else:
+                request_vel_city = request_vel_city
+            params = {'max_vel_x' : request_vel_city}
+            self.planner_vel_dyc.update_configuration(params)
+        except:
+            pass
+        return request_vel_city
+    
+    def ss_SetAudioLevel_callback(self, req):
+        # m = alsaaudio.Mixer()
+        # if req.func == 0:
+        #     rospy.loginfo('[matrix_dynamic_parameter]:' + "[matrix_dynamic_parameter]:Service request current audio level")
+        #     pass
+        # elif req.func == 1:
+        #     rospy.loginfo('[matrix_dynamic_parameter]:' + "[matrix_dynamic_parameter]:Service request change audio level")
+        #     in_min = 0
+        #     in_max = 100
+        #     out_min = 50
+        #     out_max = 100
+        #     val_set = (req.arg0 - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+        #     m.setvolume(val_set)
+        
+        # print(m.getvolume())
+        # current_vol = m.getvolume()
+        # current_vol_cal = int(current_vol[0])
+        # in_min = 50
+        # in_max = 100
+        # out_min = 0
+        # out_max = 100
+        # current_vol_result = (current_vol_cal - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+        # rospy.loginfo('[matrix_dynamic_parameter]:' + " ")
+        try:
+            m = alsaaudio.Mixer()
+            if req.func == 0:
+                rospy.loginfo('[matrix_dynamic_parameter]:' + "[matrix_dynamic_parameter]:Service request current audio level")
+                pass
+            elif req.func == 1:
+                rospy.loginfo('[matrix_dynamic_parameter]:' + "[matrix_dynamic_parameter]:Service request change audio level")
+                in_min = 0
+                in_max = 100
+                out_min = 50
+                out_max = 100
+                val_set = (req.arg0 - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+                m.setvolume(val_set)
+            
+            current_vol = int(m.getvolume())
+            current_vol_cal = int(current_vol[0])
+            in_min = 50
+            in_max = 100
+            out_min = 0
+            out_max = 100
+            current_vol_result = (current_vol_cal - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+            rospy.loginfo('[matrix_dynamic_parameter]:' + " ")
+        except:
+            pass
+        return current_vol_result
+
+    def cbMoveMent(self, msg):
+        pass
+        #   Always Turn on 3D layer #
+        
+        # try:
+        #     getGlobal_RGBCostmapLayer = self.global_rgbd_layer_dyc.get_configuration(timeout=None)
+        #     if msg.robot_moving:
+        #         if self.isEnable3DLayer:
+        #             self.enable_local_rgbd = True
+        #         else:
+        #             self.enable_local_rgbd = False
+        #     else:
+        #         self.enable_local_rgbd = False
+            
+        #     if getGlobal_RGBCostmapLayer['enabled'] != self.enable_local_rgbd:
+        #         self.global_rgbd_layer_dyc.update_configuration( {
+        #                                                             "enabled":self.enable_local_rgbd, 
+        #                                                             })
+        #     else:
+        #         pass
+        # except:
+        #     pass
+    
+    def cbUIMap(self, msg):
+        self.UIMap_ = msg
+    
+    def cbZone(self, msg):
+        # self.old_zone = self.old_zone
+        self.current_zone = msg.zone_id
+        for x in msg.zones:
+            #check zone priority
+            if x <= self.current_zone:
+                self.current_zone = x
+        #docking, yellow
+        # if self.current_zone != self.old_zone:
+        # print(msg.zone_id)
+        #near zone
+        if self.current_zone == 19: 
+            # # inflation
+            # self.set_global_inflation_radius = 1.5  # 1.0
+            # self.set_global_scaling_factor = 5.0   # 10.0
+
+            # self.set_local_inflation_radius = 1.5  # 0.55
+            # self.set_local_scaling_factor = 5.0 # 10.0
+            
+            # sonar 
+            self.enable_ultrasonic = False
+
+            # move_base param
+            self.set_layout_vel = self.orange_zone_vel
+            self.set_planner_frequency = 0.0
+
+            # #rgbd
+            self.enable_local_rgbd = False
+            # self.set_global_decay_voxel = 7.0
+            # self.set_global_mark_threshold = 2.0
+
+            self.enable_global_rgbd = False
+            # self.set_local_decay_voxel = 0.5
+            # self.set_local_mark_threshold = 2.0 
+
+            # self.enable_static_map = False
+
+
+        
+        elif self.current_zone == 18: #yellow zone 
+            # self.set_global_inflation_radius = 1.5  # 1.0
+            # self.set_global_scaling_factor = 5.0   # 10.0
+
+            # self.set_local_inflation_radius = 1.5 # 0.45
+            # self.set_local_scaling_factor = 5.0  # 10.0
+            
+            self.enable_ultrasonic = True
+            self.set_layout_vel = self.yellow_zone_vel
+            # self.enable_local_rgbd = True
+            self.set_planner_frequency = 0.0
+
+            #rgbd
+            self.enable_local_rgbd = True
+            # self.set_global_decay_voxel = 3.0
+            # self.set_global_mark_threshold = 3.5
+
+            self.enable_global_rgbd = True
+            # self.set_local_decay_voxel = 1.0
+            # self.set_local_mark_threshold = 3.5
+            # self.enable_static_map = True
+        
+        elif self.current_zone == 17: #green zone 
+            # self.set_global_inflation_radius = 1.5  # 1.0
+            # self.set_global_scaling_factor = 5.0   # 10.0
+
+            # self.set_local_inflation_radius = 1.5 # 0.45
+            # self.set_local_scaling_factor = 5.0  # 10.0
+            
+            self.enable_ultrasonic = True
+            self.set_layout_vel = self.green_zone_vel
+            # self.enable_local_rgbd = True
+            self.set_planner_frequency = 0.0
+
+            # #rgbd
+            self.enable_local_rgbd = True
+            # self.set_global_decay_voxel = 3.0
+            # self.set_global_mark_threshold = 3.5
+
+            self.enable_global_rgbd = True
+            # self.set_local_decay_voxel = 1.0
+            # self.set_local_mark_threshold = 3.5
+            # self.enable_static_map = True
+        
+        # costmap in room 
+        elif self.current_zone == 10:
+            # self.set_global_inflation_radius = 1.5  # 1.0
+            # self.set_global_scaling_factor = 5.0   # 10.0
+
+            # self.set_local_inflation_radius = 1.5 # 0.45
+            # self.set_local_scaling_factor = 5.0  # 10.0
+            
+            self.enable_ultrasonic = True
+            self.set_layout_vel = self.room_zone_vel
+            # self.enable_local_rgbd = True
+            self.set_planner_frequency = 0.0
+
+            # #rgbd
+            self.enable_local_rgbd = True
+            # self.set_global_decay_voxel = 3.0
+            # self.set_global_mark_threshold = 3.5
+
+            self.enable_global_rgbd = True
+            # self.set_local_decay_voxel = 1.0
+            # self.set_local_mark_threshold = 3.5
+            # self.enable_static_map = True 
+
+        else:
+        #    pass
+            self.enable_ultrasonic = True
+            self.set_layout_vel = self.no_zone_vel
+
+            self.set_planner_frequency = 0.0
+
+            self.enable_local_rgbd = True
+           
+            self.enable_global_rgbd = True
+           
+        
+        # if self.set_global_inflation_radius != self.old_set_cost_scaling_factor:
+        #     self.isTrigger = True
+        #     self.old_set_cost_scaling_factor = self.set_global_inflation_radius
+        #     # print("[dynamic_zone]: change zone costmap")
+        #     # print("isTrigger", self.isTrigger)
+        # else:
+        #     #self.isTrigger = False
+        #     pass  
+        # if self.current_zone != self.old_zone:
+        #     self.isTrigger = True
+        #     self.old_zone = self.current_zone
+        # else:
+        #     pass            
+
+        
+        
+                
+    
+    def update_parameters(self):
+        try:
+
+            getStatePlanner = self.planner_vel_dyc.get_configuration(timeout=None)
+            
+            getLocalCostmap = self.local_costmap_dynamics_client.get_configuration(timeout=None)
+            getGlobalCostmap = self.global_costmap_dynamics_client.get_configuration(timeout=None)
+
+            
+            self.vel_user = rospy.wait_for_message("/gui_layout_map", UIMap)
+            # print(self.vel_user.move_speed)
+
+            
+
+
+            if self.robot_model == 'uvc':
+                self.uvc_state = rospy.wait_for_message("/aragorn_io/uvc_state", Int8)
+                getGlobalSonar_reState = self.global_sonar_dyc.get_configuration(timeout=None)
+                getLocalSonar_reState = self.local_sonar_dyc.get_configuration(timeout=None)
+                if self.uvc_state == 1:
+                    # sonar configure
+                    if getGlobalSonar_reState['enabled'] != False and getLocalSonar_reState['enabled'] != False:
+                        self.enable_ultrasonic = False
+                        self.global_sonar_dyc.update_configuration({"enabled":self.enable_ultrasonic})
+                        self.local_sonar_dyc.update_configuration({"enabled":self.enable_ultrasonic})
+                    else:
+                        pass
+
+                    # vel 
+                    if getStatePlanner['max_vel_x'] > self.vel_user.uvc_speed:
+                        self.set_max_vel_planner = self.vel_user.uvc_speed
+                        self.planner_vel_dyc.update_configuration({"max_vel_x":self.set_max_vel_planner})
+                    else:
+                        pass
+                else:
+
+                    if getStatePlanner['max_vel_x'] > self.set_layout_vel:
+                        self.set_max_vel_planner = min(self.vel_user.move_speed, self.set_layout_vel)                   
+                        self.planner_vel_dyc.update_configuration({"max_vel_x":self.set_max_vel_planner})
+                    else:
+                        pass
+                    
+                    if getLocalSonar_reState['enabled'] != self.enable_ultrasonic and getGlobalSonar_reState['enabled'] != self.enable_ultrasonic:
+                        self.global_sonar_dyc.update_configuration({"enabled":self.enable_ultrasonic})
+                        self.local_sonar_dyc.update_configuration({"enabled":self.enable_ultrasonic})
+                    else:
+                        pass
+                    
+                    # self.isTrigger = False
+                    # print("complete set param")
+                    # print(" ")
+                    
+            
+            else:
+                
+                # if not self.init_vel:
+                #     rospy.loginfo("[matrix_dynamic_parameter]:Initial velocity for local planner")
+                #     self.set_max_vel_planner = min(self.vel_user.move_speed, self.set_layout_vel)
+                #     self.planner_vel_dyc.update_configuration({"max_vel_x":self.set_max_vel_planner}) 
+                #     self.planner_vel_dyc.update_configuration({"max_speed_xy":self.set_max_vel_planner})
+                #     self.init_vel = True
+                #     rospy.loginfo(" ")
+
+                try:
+                    if getStatePlanner['max_vel_x'] != self.vel_user.move_speed or getStatePlanner['max_vel_x'] != self.set_layout_vel or not self.init_vel :
+                        self.set_max_vel_planner = min(self.vel_user.move_speed, self.set_layout_vel)                  
+                    else:
+                        pass
+                    
+                    if self.set_max_vel_planner != getStatePlanner['max_vel_x'] or not self.init_vel:
+                        if self.planner_name == "DWB":
+                            self.planner_vel_dyc.update_configuration({"max_speed_xy":self.set_max_vel_planner,
+                                                                        "max_vel_x":self.set_max_vel_planner})
+                        elif self.planner_name == "DWA":
+                            self.planner_vel_dyc.update_configuration({"max_vel_x":self.set_max_vel_planner,
+                                                                        "max_vel_trans":self.set_max_vel_planner})
+                        else:
+                            try:
+                                if self.hw_ver == "sdr100B":
+                                    self.planner_vel_dyc.update_configuration({"max_vel_x":self.set_max_vel_planner,
+                                                                                "max_vel_theta":self.set_max_vel_planner*2})
+                                elif self.hw_ver == "smr100et":
+                                    if self.set_max_vel_planner >= 0.4:
+                                        self.planner_vel_dyc.update_configuration({"max_vel_x":self.set_max_vel_planner,
+                                                                                    "max_vel_theta":self.set_max_vel_planner})
+                                    else:
+                                        self.planner_vel_dyc.update_configuration({"max_vel_x":self.set_max_vel_planner,
+                                                                                "max_vel_theta":0.4})
+                                else:
+                                    self.planner_vel_dyc.update_configuration({"max_vel_x":self.set_max_vel_planner})
+                            except:
+                                self.planner_vel_dyc.update_configuration({"max_vel_x":self.set_max_vel_planner})
+                        self.init_vel = True
+                except:
+                    print("something went wrong")
+                # print("self.set_layout_vel", getStatePlanner['max_vel_x'])
+            
+
+            
+        except:
+            pass
+        
+
+        
+        # print(getStatePlanner['max_vel_x'])
+            
+            
+            # if getLocalSonar_reState['enabled'] != self.enable_ultrasonic and getGlobalSonar_reState['enabled'] != self.enable_ultrasonic:
+            #     self.global_sonar_dyc.update_configuration({"enabled":self.enable_ultrasonic})
+            #     self.local_sonar_dyc.update_configuration({"enabled":self.enable_ultrasonic})
+            # else:
+            #     pass
+
+                
+            
+        
+
+        
+        if self.current_zone != self.old_zone:
+            # set dynamic costmap
+            print("[dyanmics_nav_param]: Trigger zone:", self.current_zone)
+            # self.local_costmap_dynamics_client.update_configuration({"cost_scaling_factor":self.set_local_scaling_factor,
+            #                                                    "inflation_radius":self.set_local_inflation_radius})
+            # self.global_costmap_dynamics_client.update_configuration({"cost_scaling_factor":self.set_global_scaling_factor,
+            #                                                    "inflation_radius":self.set_global_inflation_radius})
+            
+            # set param max velocity planner 
+            # self.planner_vel_dyc.update_configuration({"max_vel_x":self.self.set_max_vel_planner})
+
+            # set param move_base
+            # self.move_base_dyc.update_configuration({"planner_frequency":self.set_planner_frequency})
+            
+            ######## enable / disable ultrasonic costmap 
+            # try:
+            #     self.global_sonar_dyc.update_configuration({"enabled":self.enable_ultrasonic})
+            #     self.local_sonar_dyc.update_configuration({"enabled":self.enable_ultrasonic})
+            # except:
+            #     rospy.logwarn("[matrix_dynamics_navigation]:not found sonar_obstacle_layer")
+
+            # # enable / disable rgbd_layer
+            # try:
+            #     self.local_rgbd_layer_dyc.update_configuration( {
+            #                                                     "enabled":self.enable_local_rgbd 
+            #                                                     # "mark_threshold":self.set_local_mark_threshold, 
+            #                                                     # "voxel_decay":self.set_local_decay_voxel
+            #                                                     })
+                
+            #     self.global_rgbd_layer_dyc.update_configuration( {
+            #                                                     "enabled":self.enable_global_rgbd 
+            #                                                     # "mark_threshold":self.set_global_mark_threshold, 
+            #                                                     # "voxel_decay":self.set_global_decay_voxel
+            #                                                     })
+            # except:
+            #     rospy.logwarn("[matrix_dynamics_navigation]:not found rgbd_obstacle_layer")
+            
+
+            ########## set Static Map following zone 
+            # self.static_map_layer_dyc.update_configuration({"enabled":self.enable_static_map})
+            
+           
+
+
+            
+
+            self.isTrigger = False
+            print("complete set param")
+            print(" ")
+            self.old_zone = self.current_zone
+        else:
+            pass
+     
+
+
+if __name__ == '__main__':
+    rospy.init_node('dynamic_params')
+    DynamicsCostmap()
+    rospy.spin()

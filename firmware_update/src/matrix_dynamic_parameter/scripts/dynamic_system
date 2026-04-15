@@ -1,0 +1,64 @@
+#!/usr/bin/env python2
+
+import rospy
+import alsaaudio
+import os
+import subprocess
+
+from std_msgs.msg import *
+from dynamic_parameter.srv import *
+
+
+class DynamicsSystem:
+    def __init__(self):
+        #######################################################
+        ################ Service Server #######################
+        #######################################################
+        self.ss_enable_sonar_layer = rospy.Service("/dynamic_parameter/volume_level", setVolumeAudio, self.ss_volume_callback)
+        
+        #######################################################
+        ################ Publish volume level #################
+        #######################################################
+        self.pub_volume_level = rospy.Publisher("/volume_level", Int8, queue_size=10)
+        
+        r = rospy.Rate(0.5)
+        
+        while not rospy.is_shutdown():
+            self.update_system()
+            r.sleep()
+        
+    def ss_volume_callback(self, req):
+        # set audio level
+        if req.mode == 1:
+            level = str(abs(req.audio_level))
+            cmd_set_valume = 'pactl -- set-sink-volume 0 ' + level+'%'
+            os.system(cmd_set_valume)
+        else:
+            pass
+
+        # return audio voulme level 
+        m = alsaaudio.Mixer()
+        volume_level = m.getvolume()[0]
+        # rospy.loginfo("[Dynamic system]: current volume level is ", str(volume_level))
+        return True, volume_level
+                
+    
+    def update_system(self):
+        m = alsaaudio.Mixer()
+        volume_level = m.getvolume()
+
+        level_msg = Int8()
+        level_msg.data = volume_level[0]
+        self.pub_volume_level.publish(level_msg)
+        
+        
+
+
+if __name__ == '__main__':
+    rospy.init_node('dynamic_system')
+    rospy.loginfo("[Dynamic system]: ready for adjust system")
+    DynamicsSystem()
+    rospy.spin()
+
+
+

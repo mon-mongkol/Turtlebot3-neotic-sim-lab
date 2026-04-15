@@ -1,0 +1,17 @@
+string cycle_no
+string serial_no
+string factory_name
+string department
+string log_dose
+string disinfaction_type
+string name
+int32  mission_id
+int32 operator_id
+int32 requestor_id
+string start_time
+string end_time
+int32 id
+int32 result
+string objects
+string type
+int32 mode

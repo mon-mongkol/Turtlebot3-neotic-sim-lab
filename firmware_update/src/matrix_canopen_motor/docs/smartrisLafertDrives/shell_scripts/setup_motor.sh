@@ -1,0 +1,40 @@
+#!/bin/sh
+sudo ip link set can0 up type can bitrate 1000000
+sudo ip link set can1 up type can bitrate 1000000
+sudo ip link set can2 up type can bitrate 1000000
+cansend can0 601#2396600100400000
+sleep 3.0
+cansend can0 601#239660023C000000
+sleep 3.0
+cansend can0 601#2397600100400000
+sleep 3.0
+cansend can0 601#239760023C000000
+sleep 3.0
+cansend can0 601#2310100173617665
+sleep 3.0
+cansend can0 000#8100
+sleep 5.0
+
+cansend can0 601#2B6D600032000000
+sleep 3.0
+cansend can0 601#2B6F600005000000
+sleep 3.0
+cansend can0 601#23C56000B4080000
+sleep 3.0
+cansend can0 601#23C66000B4080000
+sleep 3.0
+cansend can0 601#2310100173617665
+sleep 3.0
+cansend can0 000#8100
+sleep 5.0
+
+cansend can0 601#23836000E8030000
+sleep 3.0
+cansend can0 601#23846000E8030000
+sleep 3.0
+cansend can0 601#2310100173617665
+sleep 3.0
+cansend can0 000#8100
+sleep 5.0
+
+echo Done

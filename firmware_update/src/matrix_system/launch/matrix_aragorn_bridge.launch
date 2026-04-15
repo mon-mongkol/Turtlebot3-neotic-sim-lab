@@ -1,0 +1,7 @@
+<launch>
+    <node name="matrix_bridge_aragorn" pkg="matrix_system" type="bridge_aragorn" output="screen">
+        <!-- <param name="model" type="str"  value="$(env model)"/>
+        <param name="serial_no" type="str"  value="$(env serial_no)"/> 
+        <rosparam file="$(find matrix_system)/param/movement/$(env model).yaml"/> -->
+    </node>
+</launch>

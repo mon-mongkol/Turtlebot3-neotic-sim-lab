@@ -1,0 +1,16 @@
+<launch>
+
+  <!-- Start IMU -->
+  <include file="$(find aragorn_bringup)/launch/include/start_imu.launch.xml" />
+
+  <!-- Start Motor driver-->
+  <include file="$(find aragorn_bringup)/launch/include/start_motor.launch.xml" />
+
+  <!-- Start Motor driver-->
+  <include file="$(find aragorn_bringup)/launch/include/start_localization.launch.xml" />
+
+  <!-- Strart Docking -->
+  <include file="$(find ir_auto_docking)/launch/auto_docking_server.launch"/>
+
+</launch>
+
