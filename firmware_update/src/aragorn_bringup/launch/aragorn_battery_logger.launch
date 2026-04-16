@@ -1,3 +1,0 @@
-<launch>
-    <node pkg="aragorn_bringup" type="battery_logger" name="battery_logger"/>
-</launch>

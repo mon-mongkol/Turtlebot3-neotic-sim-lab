@@ -1,6 +1,0 @@
-<launch>
-
-  
-  <node name="matrix_state_controller" pkg="matrix_state_controller" type="matrix_state_controller" output="screen"/>
-
-</launch>

@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-    <arg name="param_path" default="$(find matrix_cvshape_operation)/param/cvshape_sdr100_backward.yaml"/>
-    <node pkg="matrix_cvshape_operation" type="cvshape_action_backward" name="matrix_cvshape_backward_operation" output="screen" respawn="false" respawn_delay="0">
-        <rosparam command="load" file="$(arg param_path)" />
-    </node>    
-</launch>

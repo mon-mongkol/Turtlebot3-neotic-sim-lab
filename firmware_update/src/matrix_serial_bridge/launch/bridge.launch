@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-    <node pkg="matrix_serial_bridge" type="bridge_rs485" name="matrix_serial_bridge_rs485" output="log" respawn="false" respawn_delay="0">
-        <rosparam file="$(find matrix_serial_bridge)/param/rs485.yaml" />
-    </node>
-</launch>

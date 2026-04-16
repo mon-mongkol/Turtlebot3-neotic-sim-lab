@@ -1,8 +1,0 @@
-<launch>
-    <node pkg="aragorn_io_action" type="uvc_server" name="uvc_server" output="screen">
-    </node>
-
-    <!-- <node pkg="scan_motion" type="dummy_pir" name="dummy_pir" output="screen">
-    </node> -->
-
-</launch>

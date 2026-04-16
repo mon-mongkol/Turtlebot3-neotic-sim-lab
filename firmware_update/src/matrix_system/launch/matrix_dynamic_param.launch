@@ -1,5 +1,0 @@
-<launch>
-
-    <include file="$(find matrix_dynamic_parameter)/launch/dynamic_parameters.launch" />
-
-</launch>

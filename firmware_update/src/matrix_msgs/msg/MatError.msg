@@ -1,6 +1,0 @@
-BoxPose order_detail
-ModernBoxPose orders_detail
-uint8 mode
-Exchange_pose exchange_pose
-uint8 error_code 
-uint8 error_controllerstep

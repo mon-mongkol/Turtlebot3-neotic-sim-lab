@@ -1,0 +1,17 @@
+analyzers:
+  system_info:
+    type: diagnostic_aggregator/AnalyzerGroup
+    path: 'Robot System'
+    analyzers:
+      cpu:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: 'Compute'
+        startswith: 'System: CPU'
+      disk:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: 'Storage'
+        startswith: 'System: Disk'
+  navigation:
+    type: diagnostic_aggregator/GenericAnalyzer
+    path: 'Navigation'
+    contains: 'AMCL'

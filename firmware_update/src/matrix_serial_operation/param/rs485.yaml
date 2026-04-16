@@ -1,5 +1,0 @@
-
-device_name: "rs485"
-serial_receive_topic: "/matrix_serial_bridge/rs485_receive"
-serial_send_topic: "/matrix_serial_bridge/rs485_send"
-serial_communication_srv: "/matrix_serial_bridge/serial_communication_srv"

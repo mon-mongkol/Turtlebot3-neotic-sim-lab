@@ -1,8 +1,0 @@
-<launch>
-    <!-- Odom-IMU Extended Kalman Filter-->
-    <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization"> 
-        <!-- <remap from="odometry/filtered" to="odom" /> -->
-        <!-- <remap from="/tf" to="/ekf/tf"/> -->
-        <rosparam command="load" file="$(find aragorn_bringup)/param/ekf/ekf_wheel_imu.yaml" />
-    </node>
-</launch>

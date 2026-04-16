@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-    <node name="aragorn_launch_control" pkg="aragorn_bringup" type="startup_robot" output="screen">
-    </node>
-    <include file="$(find aragorn_bringup)/launch/aragorn_dynamic_param.launch"/>
-    <node pkg="robot_status" type="robot_status" name="robot_status" output="screen"/>
-
-</launch>

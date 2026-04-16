@@ -1,5 +1,0 @@
-
-device_name: "xbeeRohm"
-serial_receive_topic: "/raw_read"
-serial_send_topic: "/remote_xbee"
-serial_communication_srv: "/serial_communication_srv"

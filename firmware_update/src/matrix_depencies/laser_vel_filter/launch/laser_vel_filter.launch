@@ -1,5 +1,0 @@
-<launch>
-
-    <node pkg="laser_vel_filter" type="zone_detected" name="laser_vel_filter" output="screen"/>
-    
-</launch>

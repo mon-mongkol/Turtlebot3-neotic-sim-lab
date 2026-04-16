@@ -1,6 +1,0 @@
-<launch>
-    <node name="aragorn_diag" pkg="aragorn_bringup" type="aragorn_diagnostics" output="screen">
-        <rosparam file="$(find aragorn_bringup)/param/diagnostics/diagnostics.yaml"/>
-        <param name="serial_no" type="str"  value="$(env MATRIX_UVD_SERIAL_NO)"/> 
-    </node>
-</launch>

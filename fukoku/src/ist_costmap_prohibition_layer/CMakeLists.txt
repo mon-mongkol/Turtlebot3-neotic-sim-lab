@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   costmap_2d
   dynamic_reconfigure
   roscpp
+  web_interface_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -113,7 +114,7 @@ generate_dynamic_reconfigure_options(
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ist_costmap_prohibition_layer
-  CATKIN_DEPENDS costmap_2d dynamic_reconfigure
+  CATKIN_DEPENDS costmap_2d dynamic_reconfigure web_interface_msgs
   DEPENDS
 )
 
@@ -124,7 +125,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
-include_directories(${catkin_INCLUDE_DIRS} include)
+include_directories(${catkin_INCLUDE_DIRS} include ${web_interface_msgs_INCLUDE_DIRS})
 
 ## Declare a C++ library
 

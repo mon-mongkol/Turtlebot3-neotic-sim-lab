@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-   <include file="$(find web_interface)/launch/istweb.launch"/>
-   <!-- <include file="$(find ir_auto_docking)/launch/auto_docking_server.launch"/> -->
-   <include file="$(find aragorn_bringup)/launch/aragorn_launch_contol.launch"/>
-</launch>

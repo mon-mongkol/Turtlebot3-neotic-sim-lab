@@ -1,9 +1,0 @@
-<launch>
-    <!-- <group if="$(eval sub_model == 'smr200')"> -->
-        <node name="matrix_diagnostics" pkg="matrix_system" type="diagnostics" output="screen">
-            <param name="model" type="str"  value="$(env model)"/>
-            <param name="serial_no" type="str"  value="$(env serial_no)"/> 
-            <rosparam file="$(find matrix_amr_bringup)/param/$(env sub_model)/$(env serial_no)/diagnostics/diagnostics.yaml"/>
-        </node>
-    <!-- </group> -->
-</launch>

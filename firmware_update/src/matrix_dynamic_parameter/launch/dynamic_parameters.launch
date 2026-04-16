@@ -1,4 +1,0 @@
-<launch>
-    <node pkg="matrix_dynamic_parameter" name="matrix_dynamic_navigation" type="dynamic_navigation" output="screen"/>
-    <!--<node pkg="dynamic_parameter" name="dynamic_system" type="dynamic_system" output="log"/>-->
-</launch>

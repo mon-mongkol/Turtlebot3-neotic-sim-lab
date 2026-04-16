@@ -1,3 +1,0 @@
-KERNEL=="video*", SUBSYSTEM=="video4linux", ATTR{index}=="0", ATTR{name}==" Feeltek HD Webcam 720P:  Feelt", MODE="0666", SYMLINK+="matrix_rgb_camera"
-KERNEL=="video*", SUBSYSTEM=="video4linux", ATTR{index}=="0", ATTRS{manufacturer}=="XHT-5693-20092", SYMLINK+="matrix_rgb_camera_NWC500"
-KERNEL=="video*", SUBSYSTEM=="video4linux", ATTR{index}=="0", ATTRS{manufacturer}=="AX-5693-220921-ZW", SYMLINK+="matrix_rgb_camera_NWC500_AX"

@@ -1,3 +1,0 @@
-Header header
-IOs_mcu01_input input
-IOs_mcu01_output output

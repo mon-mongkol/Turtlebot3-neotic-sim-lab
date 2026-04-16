@@ -1,2 +1,0 @@
-uint8 robot_tray
-uint8 machine_tray

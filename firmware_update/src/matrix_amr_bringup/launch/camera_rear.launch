@@ -1,8 +1,0 @@
-<launch>
-
-    <arg name="port" default="$(env camera_rear_port)"/>
-    <include file="$(find matrix_amr_bringup)/launch/include/common_device/camera_rear/$(env camera_rear_model).xml" >
-      <arg name="port" default="/dev/$(arg port)"/>
-    </include>
-
-</launch>

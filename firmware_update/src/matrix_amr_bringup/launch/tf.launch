@@ -1,5 +1,0 @@
-<launch>
-
-    <include file="$(find matrix_amr_bringup)/launch/include/$(env sub_model)/$(env serial_no)/tf_$(env serial_no).xml" />
-
-</launch>

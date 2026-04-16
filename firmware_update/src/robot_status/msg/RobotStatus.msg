@@ -1,1 +1,0 @@
-bool robot_moving 

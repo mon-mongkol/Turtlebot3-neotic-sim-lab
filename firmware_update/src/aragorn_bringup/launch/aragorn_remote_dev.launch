@@ -1,7 +1,0 @@
-<launch>
-  <!-- Start Motor driver-->
-
-  <include file="$(find aragorn_bringup)/launch/include/tf/tf_$(env MATRIX_UVD_SERIAL_NO).launch" />
-  
-
-</launch>

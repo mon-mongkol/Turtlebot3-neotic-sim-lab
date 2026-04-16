@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-    <arg name="port" default="/dev/ttyACM0" />
-    <!-- Start ROS communication between the robot's computer and Matrix-Delivery, Matrix-Advertise, Matrix-ROHM base -->
-        <node pkg="rosserial_python" name="matrix_navgo_io" type="serial_node.py" output="screen">
-            <param name="port" value="$(arg port)" />
-            <param name="baud" value="57600" />
-        </node>
-</launch>

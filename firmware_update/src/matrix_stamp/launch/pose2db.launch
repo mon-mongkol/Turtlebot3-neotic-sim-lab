@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-    <node pkg="matrix_stamp" type="pose2db" name="matrix_stamp_pose2db" output="log" respawn="false" respawn_delay="0">
-    </node>
-</launch>

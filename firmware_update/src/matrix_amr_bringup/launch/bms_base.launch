@@ -1,8 +1,0 @@
-<launch>
-    
-    <include file="$(find matrix_amr_bringup)/launch/include/common_device/bms/$(env bms_base_model).xml" >
-        <arg name="port" default="/dev/$(env bms_base_port)"/>
-        <arg name="name" default="matrix_bms_base_$(env bms_base_model)"/>
-    </include>
-
-</launch>

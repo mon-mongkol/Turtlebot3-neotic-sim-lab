@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-  <arg name="port" default="/dev/bms_pzem"/>
-  <arg name="name" default="matrix_io_virtual"/>
-  
-  <node pkg="matrix_amr_bringup" type="matrix_virtual_io.py" name="$(arg name)" output="screen">
-    <param name="serial_port" value="$(arg port)"/>
-  </node> 
-</launch>
