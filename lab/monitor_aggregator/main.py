@@ -3,27 +3,30 @@ import rospy
 import psutil
 import actionlib
 import math
-import sys
+import sys , os , json ,csv
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from actionlib_msgs.msg import GoalStatus
 from sensor_msgs.msg import LaserScan, Imu  # เพิ่ม Imu
 from actionlib_msgs.msg import GoalStatus, GoalStatusArray
+from typing import Any
+from typing import Optional
+import datetime
 
-CATEGORY_ID = {
-    "Safety_Compliance": 0,
-    "Localization_Mapping": 1,
-    "Navigation_Path_Control": 2,
-    "Motion_Drive_System": 3,
-    "Battery_Charging": 4,
-    "Sensor_Vision": 5,
-    "IO_Electrical_Alarm": 6,
-    "Task_Mission": 7,
-    "Software_Controller": 8,
-    "Maintenance_Warning": 9
-}
 
 class RobotMonitor:
+    CATEGORY_ID = {
+        "Safety_Compliance": 0,
+        "Localization_Mapping": 1,
+        "Navigation_Path_Control": 2,
+        "Motion_Drive_System": 3,
+        "Battery_Charging": 4,
+        "Sensor_Vision": 5,
+        "IO_Electrical_Alarm": 6,
+        "Task_Mission": 7,
+        "Software_Controller": 8,
+        "Maintenance_Warning": 9
+    }
     def __init__(self):
         rospy.init_node('robot_monitor_node')
 
@@ -36,7 +39,7 @@ class RobotMonitor:
         self.current_motor_hours = 1950
         
         # Configuration parameters
-        self.cpu_threshold = rospy.get_param('~cpu_threshold', 85.0)
+        self.cpu_threshold = rospy.get_param('~cpu_threshold', 10.0)
         self.disk_threshold = rospy.get_param('~disk_threshold', 90.0)
         
         # --- Per-component Diagnostic Publishers (separate topics) ---
@@ -83,6 +86,12 @@ class RobotMonitor:
 
         rospy.loginfo("Monitor Node Initialized...")
 
+
+    ID_TO_CATEGORY = {v: k for k, v in CATEGORY_ID.items()}
+
+    def get_category_type(self, category_id: int) -> Optional[str]:
+        return self.ID_TO_CATEGORY.get(category_id)
+
     def create_status(self, name, level, message, values):
         """Helper to build a DiagnosticStatus message."""
         status = DiagnosticStatus()
@@ -92,17 +101,29 @@ class RobotMonitor:
         status.values = [KeyValue(key=k, value=str(v)) for k, v in values.items()]
         return status
 
+
     def check_cpu(self):
         usage = psutil.cpu_percent()
         level = DiagnosticStatus.OK
         msg = "CPU Usage OK"
         
         if usage > self.cpu_threshold:
+            get_type_cpu = self.get_category_type(8) or "Unknown"
+            base_dir = rospy.get_param('~log_base_dir', os.path.join(os.path.dirname(__file__), 'LOG'))
+            log_dir = os.path.abspath(os.path.join(base_dir, get_type_cpu))
+            try:
+                monitor.write_log_entry(
+                    {"CPU_Percent": usage},
+                    log_dir=log_dir,
+                    header=["Timestamp_ISO", "Date_TH", "Time_HM", "CPU_Percent"]
+                )
+
+                rospy.loginfo(f"CPU log appended: {log_dir}")
+            except Exception as e:
+                rospy.logerr(f"Failed to write CPU log: {e}")
             level = DiagnosticStatus.WARN
             msg = "CPU Overload detected"
-            write_log_json(self, data, prefix="robot_monitor" ):
-            # cat_id_cpu_check = CATEGORY_ID["Software_Controller"]
-            # print(cat_id_cpu_check)  # 2
+
             
         return self.create_status("System: CPU", level, msg, {"Usage (%)": usage})
 
@@ -349,12 +370,109 @@ class RobotMonitor:
         # publish updated navigation diagnostic
         self.publish_report()
 
-    def write_log_json(data: Any, log_dir: str = "lab/monitor_aggregator/LOG", filename: str = "data.json") -> str:
-        os.makedirs(log_dir, exist_ok=True)
+    def write_log_entry(self, data, log_dir: str, filename: str = "cpu_log.json", header: Optional[list] = None) -> str:
+        """
+        Append a JSON record file in this structure:
+        { "records": [ { "header": [...], "linedata": [...] }, ... ] }
+
+        - data can be dict, list/tuple, or scalar.
+        - If data is dict and header is None, header is derived from dict.keys().
+        - If data is list/tuple, header must be provided.
+        - If data is scalar and header is None, uses default columns:
+          ["Timestamp_ISO","Date_TH","Time_HM","CPU_Percent"]
+        """
         path = os.path.join(log_dir, filename)
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
-        return path
+        try:
+            # ensure variables used later are defined early (avoids NameError if mkdir fails)
+            
+            csv_path = os.path.splitext(path)[0] + ".csv"
+
+            os.makedirs(log_dir, exist_ok=True)
+
+            # Thailand timezone (UTC+7)
+            tz_th = datetime.timezone(datetime.timedelta(hours=7))
+            now = datetime.datetime.now(datetime.timezone.utc).astimezone(tz_th)
+            defaults = {
+                "Timestamp_ISO": now.isoformat(),
+                "Date_TH": f"{now.day:02d}/{now.month:02d}/{now.year + 543}",
+                "Time_HM": f"{now.hour:02d}:{now.minute:02d}"
+            }
+
+            # Normalize header and linedata
+            if isinstance(data, dict):
+                if header:
+                    linedata = [str(data.get(col, defaults.get(col, ""))) for col in header]
+                else:
+                    header = list(data.keys())
+                    linedata = [str(data[k]) for k in header]
+            elif isinstance(data, (list, tuple)):
+                if not header:
+                    raise ValueError("header is required when data is a list/tuple")
+                linedata = [str(v) for v in data]
+                linedata = [v if v != "" else defaults.get(col, "") for col, v in zip(header, linedata)]
+            # else:
+            #     if not header:
+            #         header = ["Timestamp_ISO", "Date_TH", "Time_HM", "DATA"]
+            #     linedata = [
+            #         defaults["Timestamp_ISO"],
+            #         defaults["Date_TH"],
+            #         defaults["Time_HM"],
+            #         str(data)
+            #     ]
+
+            record = {"header": header, "linedata": linedata}
+
+            # Read existing file (if any), append record, and write back
+            records_obj = {"records": []}
+            if os.path.exists(path):
+                try:
+                    with open(path, "r", encoding="utf-8") as f:
+                        existing = json.load(f)
+                        if isinstance(existing, dict) and "records" in existing and isinstance(existing["records"], list):
+                            records_obj = existing
+                        elif isinstance(existing, list):
+                            records_obj = {"records": existing}
+                except Exception:
+                    records_obj = {"records": []}
+
+            records_obj["records"].append(record)
+
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(records_obj, f, ensure_ascii=False, indent=2)
+
+            # --- Also write a CSV version of the log ---
+            try:
+                # collect a stable ordered union of headers (preserve first-seen order)
+                ordered_headers = []
+                for rec in records_obj.get("records", []):
+                    for h in rec.get("header", []):
+                        if h not in ordered_headers:
+                            ordered_headers.append(h)
+
+                # build rows as dicts keyed by ordered_headers
+                rows = []
+                for rec in records_obj.get("records", []):
+                    hdr = rec.get("header", [])
+                    lined = rec.get("linedata", [])
+                    row = {h: "" for h in ordered_headers}
+                    for i, h in enumerate(hdr):
+                        if i < len(lined):
+                            row[h] = lined[i]
+                    rows.append(row)
+
+                # write CSV
+                with open(csv_path, "w", encoding="utf-8", newline='') as cf:
+                    writer = csv.DictWriter(cf, fieldnames=ordered_headers)
+                    writer.writeheader()
+                    for r in rows:
+                        writer.writerow(r)
+            except Exception as e:
+                rospy.logwarn(f"write_log_entry: failed to write CSV for {path}: {e}")
+
+            return os.path.abspath(path)
+        except Exception as e:
+            rospy.logerr(f"write_log_entry error writing to {log_dir}/{filename}: {e}")
+            raise
 
 
 if __name__ == '__main__':
