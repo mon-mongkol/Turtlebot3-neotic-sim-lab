@@ -1,18 +1,74 @@
 #!/usr/bin/env python3
-import rospy
-import psutil
-import actionlib
-import math
-import sys , os , json ,csv
-from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
-from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
-from actionlib_msgs.msg import GoalStatus
-from sensor_msgs.msg import LaserScan, Imu  # เพิ่ม Imu
-from actionlib_msgs.msg import GoalStatus, GoalStatusArray
-from typing import Any
-from typing import Optional
-import datetime
+try:
+    import rospy
+    import psutil
+    import actionlib
+    import uuid as _uuid
+    import math
+    from geometry_msgs.msg import PoseWithCovarianceStamped
+    import sys , os , json ,csv
+    from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
+    from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
+    from actionlib_msgs.msg import GoalStatus
+    from sensor_msgs.msg import LaserScan, Imu  # เพิ่ม Imu
+    from actionlib_msgs.msg import GoalStatus, GoalStatusArray
+    from typing import Any
+    from typing import Optional
+    from web_interface_msgs.srv import Layout, LayoutRequest
+    from web_interface_msgs.msg import UILayout
+    from dynamic_reconfigure.msg import BoolParameter
+    from dynamic_reconfigure.srv import Reconfigure, ReconfigureRequest
+    from geometry_msgs.msg import Point as ROSPoint
+    from threading import Lock
+    import datetime
+    ROS_AVAILABLE = True
+except ImportError:
+    ROS_AVAILABLE = False
+    print("[WARN] ROS packages not found — running in offline/demo mode.")
 
+# ═══════════════════════════════════════════════════════
+#  Data structures
+# ═══════════════════════════════════════════════════════
+WALL_TYPE = 13
+ZONE_TYPE = 9
+
+class WallItem:
+    """Represents a single wall (line) or zone (polygon)."""
+    def __init__(self, item_type, points, name="", uid=None):
+        self.type = item_type          # WALL_TYPE or ZONE_TYPE
+        self.points = list(points)     # list of (x_world, y_world)
+        self.name = name or ("wall" if item_type == WALL_TYPE else "zone")
+        self.uuid = uid or str(_uuid.uuid4())[:12]
+        self.selected = False
+
+    def as_dict(self):
+        return {
+            "type": self.type,
+            "points": self.points,
+            "name": self.name,
+            "uuid": self.uuid,
+            "selected": self.selected,
+        }
+    def label(self):
+        kind = "Wall" if self.type == WALL_TYPE else "Zone"
+        return f"{kind} [{self.uuid}]"
+
+    def to_uilayout(self):
+        """Convert to a UILayout message (requires ROS)."""
+        layout = UILayout()
+        layout.uuid = self.uuid
+        layout.name = self.name
+        layout.type = self.type
+        layout.text = ""
+        layout.startHandle = 0
+        layout.rotateHandle = 0
+        for pt in self.points:
+            p = ROSPoint()
+            p.x = pt[0]
+            p.y = pt[1]
+            p.z = 0.0
+            layout.points.append(p)
+        return layout
 
 class RobotMonitor:
     CATEGORY_ID = {
@@ -29,6 +85,9 @@ class RobotMonitor:
     }
     def __init__(self):
         rospy.init_node('robot_monitor_node')
+                # ── Walls data ──
+        self.walls: list = []          # list[WallItem]
+        self.walls_lock = Lock()
 
         # Maintenance Thresholds (Example: hours or cycles)
         self.battery_max_cycles = 500
@@ -83,7 +142,7 @@ class RobotMonitor:
 
         
 
-
+        self.amcl_sub = rospy.Subscriber('/amcl_pose', PoseWithCovarianceStamped, self.amcl_pose_callback)
         rospy.loginfo("Monitor Node Initialized...")
 
 
@@ -118,7 +177,7 @@ class RobotMonitor:
                     header=["Timestamp_ISO", "Date_TH", "Time_HM", "CPU_Percent"]
                 )
 
-                rospy.loginfo(f"CPU log appended: {log_dir}")
+                # rospy.loginfo(f"CPU log appended: {log_dir}")
             except Exception as e:
                 rospy.logerr(f"Failed to write CPU log: {e}")
             level = DiagnosticStatus.WARN
@@ -474,10 +533,130 @@ class RobotMonitor:
             rospy.logerr(f"write_log_entry error writing to {log_dir}/{filename}: {e}")
             raise
 
+    def list_wall_and_zone_layouts(self):
+        rospy.wait_for_service('/ist_layouts_srv')
+        try:
+            list_srv = rospy.ServiceProxy('/ist_layouts_srv', Layout)
+            req = LayoutRequest()
+            req.cmd = "list"
+            # To list all, send an empty UILayout in the layouts array
+            req.layouts.append(UILayout())
+            resp = list_srv(req)
+            # Define your type values for wall and zone
+            WALL_TYPE = 1
+            ZONE_TYPE = 2
+            wall_zone_layouts = [l for l in resp.layouts if l.type in (WALL_TYPE, ZONE_TYPE)]
+            for layout in wall_zone_layouts:
+                print(f"uuid={layout.uuid}, name={layout.name}, type={layout.type}")
+            return wall_zone_layouts
+        except rospy.ServiceException as e:
+            print("Service call failed:", e)
+            return []
+        
+    def _call_layout_srv(self, cmd, layouts_list=None):
+        """Call ist_layouts_srv with the given command. Returns response or None."""
+        if not ROS_AVAILABLE:
+            pass
+            # self._set_status("ROS not available", self.COL_STATUS_ERR)
+            return None
+        try:
+            rospy.wait_for_service("ist_layouts_srv", timeout=3.0)
+            proxy = rospy.ServiceProxy("ist_layouts_srv", Layout)
+            req = LayoutRequest()
+            req.cmd = cmd
+            if layouts_list:
+                req.layouts = layouts_list
+            resp = proxy(req)
+            return resp
+        except Exception as e:
+        
+            # self._set_status(f"Service error: {e}", self.COL_STATUS_ERR)
+            return None
+        
+    def _pull_from_ros(self):
+        if not ROS_AVAILABLE:
+            rospy.loginfo('ros module error')
+            # self._set_status("ROS not available", self.COL_STATUS_ERR)
+            return
+        try:
+            query = UILayout()
+            query.uuid = ""
+            query.type = 0
+            resp = self._call_layout_srv("list", [query])
+            if resp is None:
+                rospy.loginfo('ros sercice error')
+                return
+            # self._save_history()
+            with self.walls_lock:
+                self.walls.clear()
+                for layout in resp.layouts:
+                    pts = [(p.x, p.y) for p in layout.points]
+                    self.walls.append(WallItem(
+                        item_type=layout.type,
+                        points=pts,
+                        name=layout.name,
+                        uid=layout.uuid,
+                    ))
+                n = len(self.walls)
+            # print(f"Pulled {n} items from ROS:") 
+            # rospy.loginfo(f"Pulled {n} items from ROS: {self.walls}")  
+            walls_data = [w.as_dict() for w in self.walls]
+            rospy.loginfo(f"Pulled {n} items from ROS: {walls_data}")
+            # self._set_status(f"Pulled {n} items from ROS", self.COL_STATUS_OK)
+        except Exception as e:
+            rospy.loginfo(f"Error pulling from ROS: {e}")
+            #pass
+            # self._set_status(f"Pull error: {e}", self.COL_STATUS_ERR)
+
+    def point_in_polygon(self,point, polygon):
+        """Ray casting algorithm for checking if point is inside polygon."""
+        x, y = point
+        inside = False
+        n = len(polygon)
+        if n < 3:
+            return False
+        px1, py1 = polygon[0]
+        for i in range(n + 1):
+            px2, py2 = polygon[i % n]
+            if min(py1, py2) < y <= max(py1, py2) and x <= max(px1, px2):
+                if py1 != py2:
+                    xinters = (y - py1) * (px2 - px1) / (py2 - py1 + 1e-9) + px1
+                if px1 == px2 or x <= xinters:
+                    inside = not inside
+            px1, py1 = px2, py2
+        return inside
+    
+    def amcl_pose_callback(self, msg):
+        x = msg.pose.pose.position.x
+        y = msg.pose.pose.position.y
+        robot_pos = (x, y)
+        with self.walls_lock:
+            for wall in self.walls:
+                # ถ้าเป็นโซน (polygon)
+                if wall.type == ZONE_TYPE and self.point_in_polygon(robot_pos, wall.points):
+                    rospy.logwarn(f"Robot entered ZONE: {wall.name} ({wall.uuid})")
+                # ถ้าเป็น wall (เส้นตรง 2 จุด) ให้เช็คระยะ
+                elif wall.type == WALL_TYPE and len(wall.points) == 2:
+                    p1, p2 = wall.points
+                    px, py = robot_pos
+                    x1, y1 = p1
+                    x2, y2 = p2
+                    dx, dy = x2 - x1, y2 - y1
+                    if dx == dy == 0:
+                        dist = ((px - x1)**2 + (py - y1)**2)**0.5
+                    else:
+                        t = max(0, min(1, ((px - x1) * dx + (py - y1) * dy) / (dx * dx + dy * dy)))
+                        proj_x = x1 + t * dx
+                        proj_y = y1 + t * dy
+                        dist = ((px - proj_x)**2 + (py - proj_y)**2)**0.5
+                    if dist < 0.1:  # ปรับ threshold ระยะใกล้ wall (เมตร)
+                        rospy.logwarn(f"Robot is near WALL: {wall.name} ({wall.uuid}) dist={dist:.2f}")
 
 if __name__ == '__main__':
     try:
         monitor = RobotMonitor()
+        # monitor.list_wall_and_zone_layouts()
+        monitor._pull_from_ros()
         rospy.spin()
     except rospy.ROSInterruptException:
         pass

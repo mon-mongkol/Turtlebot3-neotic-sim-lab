@@ -1,4 +1,4 @@
-version: "3.9"
+version: '3.9'
 
 services:
   ros-noetic:
@@ -7,25 +7,107 @@ services:
       dockerfile: Dockerfile
     image: ros-noetic-turtlebot3-slam:latest
     container_name: ros_noetic_sdr100_port
-    # runtime: nvidia
     environment:
+      - ROS_MASTER_URI=http://ros-noetic:11311
       - DISPLAY=${DISPLAY}
       - QT_X11_NO_MITSHM=1
-      # - NVIDIA_VISIBLE_DEVICES=all
-      # - NVIDIA_DRIVER_CAPABILITIES=all
+      - LANG=C.UTF-8
+      - LC_ALL=C.UTF-8
+      - ROS_DISTRO=noetic
       - TURTLEBOT3_MODEL=waffle
-      - ROS_MASTER_URI=http://localhost:11311
-      # ROS_IP and ROS_HOSTNAME are intentionally not set
+    ports:
+      - "11311:11311"
+      - "9090:9090"
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      #- ./catkin_ws:/root/catkin_ws
       - ./firmware_update:/root/firmware_update
       - ./map:/root/map
       - ./scripts:/root/scripts
       - ./lab:/root/lab
       - ./fukoku:/root/fukoku
       - ./turtlebot3_config:/root/turtlebot3_config
-    network_mode: host
+    command: >
+      bash -c "source /opt/ros/noetic/setup.bash &&
+               roscore &
+               sleep 3 &&
+               roslaunch rosbridge_server rosbridge_websocket.launch port:=9090"
+    networks:
+      - node-red-dev_matrix2-network
     privileged: true
     stdin_open: true
     tty: true
+
+  nodered:
+    container_name: NodeRed-Matrix
+    image: node:19-slim
+    tty: true
+    restart: unless-stopped
+    ports:
+      - "1888:1888"
+    volumes:
+      - ./node-red-dev/:/node-red-dev/
+    environment:
+      - NODE_OPTIONS=--max-old-space-size=4096
+    command: ["/bin/bash", "/node-red-dev/run.sh"]
+    depends_on:
+      - ros-noetic
+    networks:
+      - node-red-dev_matrix2-network
+      # - matrix2-network
+    # env_file:
+    #   - .env.dev   # Use .env.dev if .env.prod does not exist
+
+  db:
+    image: mysql:8.0
+    env_file:
+      - .env
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./node-red-dev/matrix2_sql_17_08_2025.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      # - matrix2-network
+      - node-red-dev_matrix2-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+      interval: 10s
+
+  apache2:
+    image: httpd:latest
+    container_name: apache2
+    ports:
+      - "8888:80"
+      - "8443:443"
+    volumes:
+      - ./apache2_conf/etc/apache2:/usr/local/apache2/conf
+    networks:
+      - node-red-dev_matrix2-network
+    depends_on:
+      - ros-noetic
+    restart: unless-stopped
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    env_file:
+      - .env
+    ports:
+      - "8080:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      # - matrix2-network
+      - node-red-dev_matrix2-network
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+
+networks:
+  node-red-dev_matrix2-network:
+    external: true

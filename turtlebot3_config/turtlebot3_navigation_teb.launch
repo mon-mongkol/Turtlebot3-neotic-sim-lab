@@ -35,7 +35,7 @@
   <!-- ── 5. rosbridge + tf2_web_republisher (optional) ── -->
   <group if="$(arg open_rosbridge)">
     <!-- rosbridge websocket server on port 9090 -->
-    <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
+    <!-- <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/> -->
 
     <!-- tf2_web_republisher -->
     <node pkg="tf2_web_republisher" type="tf2_web_republisher" name="tf2_web_republisher"/>
